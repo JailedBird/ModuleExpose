@@ -10,8 +10,6 @@ import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.model.ConfigModel
 import cn.jailedbird.smartappsearch.utils.log
 import cn.jailedbird.smartappsearch.utils.toPinyin
-import cn.jailedbird.smartappsearch.utils.toast
-import com.github.promeg.pinyinhelper.Pinyin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
