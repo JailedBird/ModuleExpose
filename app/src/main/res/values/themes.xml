@@ -1,0 +1,10 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.SmartAppSearch" parent="Theme.AppCompat.Light.NoActionBar" />
+
+    <style name="Theme.SmartAppSearch.Dialog" parent="Theme.AppCompat.Light.Dialog">
+        <!--No action bar-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources>
