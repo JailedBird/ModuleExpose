@@ -1,7 +1,7 @@
 package cn.jailedbird.smartappsearch.model
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import cn.jailedbird.smartappsearch.utils.finishProcess
@@ -22,20 +22,21 @@ data class AppModel(
     val appNamePinyin: String? = null,
 ) {
     fun launch(context: Context) {
-        if (context is AppCompatActivity) {
+        context.packageManager.getLaunchIntentForPackage(packageName)?.let {
+            context.startActivity(it)
+        }
+        if (context is LifecycleOwner) {
             context.lifecycleScope.launch(Dispatchers.IO) {
                 withTimeout(1000) {
                     //  TODO save recently select result
                     delay(200)
                     "save ok".log()
                 }
-                // 进程退出
                 "kill process".log()
                 context.finishProcess()
             }
-        }
-        context.packageManager.getLaunchIntentForPackage(packageName)?.let {
-            context.startActivity(it)
+        } else {
+            context.finishProcess()
         }
 
     }
