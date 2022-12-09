@@ -52,11 +52,14 @@ data class AppModel(
 
     class Diff() : DiffUtil.ItemCallback<AppModel>() {
         override fun areItemsTheSame(oldItem: AppModel, newItem: AppModel): Boolean {
-            return oldItem.id == newItem.id && oldItem.packageName == newItem.packageName
+            return oldItem.id == newItem.id &&
+                    oldItem.packageName == newItem.packageName
         }
 
         override fun areContentsTheSame(oldItem: AppModel, newItem: AppModel): Boolean {
-            return oldItem.id == newItem.id && oldItem.packageName == newItem.packageName && oldItem.appName == newItem.appName
+            return oldItem.id == newItem.id &&
+                    oldItem.packageName == newItem.packageName &&
+                    oldItem.appName == newItem.appName
         }
 
     }
