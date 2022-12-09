@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingHorizontal="20dp"
     android:paddingVertical="20dp"
     tools:context=".MainActivity">
 
@@ -12,10 +12,20 @@
         android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
         android:background="@null"
+        android:hint="Type app name"
         android:imeOptions="actionSearch"
         android:importantForAutofill="no"
         android:singleLine="true"
-        android:text="Hello World!"
-        tools:ignore="LabelFor,TextFields" />
+        tools:ignore="HardcodedText,LabelFor,TextFields" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_app_list" />
+
 </androidx.appcompat.widget.LinearLayoutCompat>
