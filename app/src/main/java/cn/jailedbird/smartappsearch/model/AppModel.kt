@@ -5,6 +5,9 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.log
 import kotlinx.coroutines.Dispatchers
@@ -12,8 +15,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 
-
+@Entity(tableName = "apps")
 data class AppModel(
+    @PrimaryKey  /*@ColumnInfo(name = "id")*/
     val id: Int,
     /*Full package*/
     val packageName: String,

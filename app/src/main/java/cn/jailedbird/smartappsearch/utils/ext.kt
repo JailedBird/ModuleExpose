@@ -38,7 +38,7 @@ internal fun String?.toPinyin(): String? {
     val s = this
     return try {
         if (s.isChinese()) {
-            Pinyin.toPinyin(s, "")
+            Pinyin.toPinyin(s, EMPTY)
         } else {
             s
         }
