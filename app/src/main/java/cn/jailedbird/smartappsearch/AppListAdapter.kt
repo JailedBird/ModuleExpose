@@ -7,6 +7,7 @@ import cn.jailedbird.smartappsearch.databinding.ItemAppListBinding
 import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.utils.DebouncingUtils
 import cn.jailedbird.smartappsearch.utils.toast
+import coil.load
 
 class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppModel.Diff()) {
     private lateinit var context: Context
@@ -20,6 +21,7 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
 
     override fun bind(bean: AppModel?, binding: ItemAppListBinding) {
         binding.bean = bean
+        binding.ivIcon.load(bean?.appIcon)
         binding.executePendingBindings()
     }
 

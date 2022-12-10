@@ -18,8 +18,9 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:id="@+id/ivIcon"
             android:layout_marginStart="20dp"
-            android:src="@color/teal_200" />
+            tools:src="@color/teal_200" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvContent"

@@ -1,8 +1,15 @@
 package cn.jailedbird.smartappsearch
 
+import android.annotation.SuppressLint
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Window
+import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
@@ -10,6 +17,7 @@ import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.model.ConfigModel
 import cn.jailedbird.smartappsearch.utils.log
 import cn.jailedbird.smartappsearch.utils.toPinyin
+import cn.jailedbird.smartappsearch.utils.toPx
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -61,8 +69,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return result
-
     }
+
 
     private fun prettifyDialogStyle() {
         val metrics = resources.displayMetrics
@@ -70,9 +78,18 @@ class MainActivity : AppCompatActivity() {
         val height = metrics.heightPixels
         window.setLayout((width * 0.9f).toInt(), (height * 0.6f).toInt())
         this.setFinishOnTouchOutside(true)
+        // TODO request ime
         if (config.popImeWhenStart) {
             binding.search.requestFocus()
+            WindowCompat.getInsetsController(window, window.decorView)
+                .show(WindowInsetsCompat.Type.ime())
         }
+        window.decorView.background = GradientDrawable().apply {
+            cornerRadius = 8.toPx()
+            shape = GradientDrawable.RECTANGLE
+            color = ColorStateList.valueOf(Color.WHITE)
+        }
+
     }
 
     private suspend fun getAllPackage(): List<AppModel> = withContext(Dispatchers.IO) {
@@ -84,12 +101,14 @@ class MainActivity : AppCompatActivity() {
                 "Skip $packageName".log()
             } else {
                 val appName = packageManager.getApplicationLabel(it).toString()
+                val appIcon = it.loadIcon(packageManager)
                 apps.add(
                     AppModel(
                         id = index++,
                         packageName = it.packageName,
                         appName = appName.lowercase(Locale.ENGLISH),
-                        appNamePinyin = appName.toPinyin()?.lowercase(Locale.ENGLISH)
+                        appNamePinyin = appName.toPinyin()?.lowercase(Locale.ENGLISH),
+                        appIcon = appIcon
                     )
                 )
             }

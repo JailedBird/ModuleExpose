@@ -1,6 +1,7 @@
 package cn.jailedbird.smartappsearch.model
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
@@ -20,6 +21,7 @@ data class AppModel(
     val appName: String,
     /*App ping yin (if chinese)*/
     val appNamePinyin: String? = null,
+    val appIcon: Drawable? = null,
 ) {
     fun launch(context: Context) {
         context.packageManager.getLaunchIntentForPackage(packageName)?.let {

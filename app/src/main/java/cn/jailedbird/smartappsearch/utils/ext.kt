@@ -1,6 +1,7 @@
 package cn.jailedbird.smartappsearch.utils
 
 import android.content.Context
+import android.content.res.Resources
 import android.util.Log
 import android.widget.Toast
 import cn.jailedbird.smartappsearch.App
@@ -48,4 +49,10 @@ internal fun String?.toPinyin(): String? {
 
 internal fun Context.finishProcess() {
     android.os.Process.killProcess(android.os.Process.myPid())
+}
+
+fun Int.toPx(): Float {
+    val dpValue = this
+    val scale = Resources.getSystem().displayMetrics.density
+    return (dpValue * scale + 0.5f)
 }
