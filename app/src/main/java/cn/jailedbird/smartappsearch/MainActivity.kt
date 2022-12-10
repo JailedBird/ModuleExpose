@@ -1,12 +1,10 @@
 package cn.jailedbird.smartappsearch
 
-import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Window
-import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -104,12 +102,13 @@ class MainActivity : AppCompatActivity() {
                 val appIcon = it.loadIcon(packageManager)
                 apps.add(
                     AppModel(
-                        id = index++,
-                        packageName = it.packageName,
+                        appId = index++,
+                        appPackageName = it.packageName,
                         appName = appName.lowercase(Locale.ENGLISH),
-                        appNamePinyin = appName.toPinyin()?.lowercase(Locale.ENGLISH),
-                        appIcon = appIcon
-                    )
+                        appNamePinyin = appName.toPinyin()?.lowercase(Locale.ENGLISH)
+                    ).apply {
+                        this.appIcon = appIcon
+                    }
                 )
             }
         }

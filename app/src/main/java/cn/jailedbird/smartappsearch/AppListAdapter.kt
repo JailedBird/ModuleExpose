@@ -34,7 +34,7 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
 
         binding.ivMore.setOnClickListener {
             if (DebouncingUtils.isValid(it)) {
-                toast("${binding.bean?.packageName} more info")
+                toast("${binding.bean?.appPackageName} more info")
             }
         }
 

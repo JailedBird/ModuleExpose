@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.log
@@ -17,18 +18,19 @@ import kotlinx.coroutines.withTimeout
 
 @Entity(tableName = "apps")
 data class AppModel(
-    @PrimaryKey  /*@ColumnInfo(name = "id")*/
-    val id: Int,
+    @PrimaryKey @ColumnInfo(name = "id")
+    var appId: Int,
     /*Full package*/
-    val packageName: String,
+    var appPackageName: String,
     /*App name*/
-    val appName: String,
+    var appName: String,
     /*App ping yin (if chinese)*/
-    val appNamePinyin: String? = null,
-    val appIcon: Drawable? = null,
+    var appNamePinyin: String? = null,
 ) {
+    @Ignore
+    var appIcon: Drawable? = null
     fun launch(context: Context) {
-        context.packageManager.getLaunchIntentForPackage(packageName)?.let {
+        context.packageManager.getLaunchIntentForPackage(appPackageName)?.let {
             context.startActivity(it)
         }
         if (context is LifecycleOwner) {
@@ -52,19 +54,19 @@ data class AppModel(
             true
         } else {
             appName.startsWith(key) ||
-                    (!appNamePinyin.isNullOrEmpty() && appNamePinyin.startsWith(key))
+                    (!appNamePinyin.isNullOrEmpty() && appNamePinyin!!.startsWith(key))
         }
     }
 
     class Diff() : DiffUtil.ItemCallback<AppModel>() {
         override fun areItemsTheSame(oldItem: AppModel, newItem: AppModel): Boolean {
-            return oldItem.id == newItem.id &&
-                    oldItem.packageName == newItem.packageName
+            return oldItem.appId == newItem.appId &&
+                    oldItem.appPackageName == newItem.appPackageName
         }
 
         override fun areContentsTheSame(oldItem: AppModel, newItem: AppModel): Boolean {
-            return oldItem.id == newItem.id &&
-                    oldItem.packageName == newItem.packageName &&
+            return oldItem.appId == newItem.appId &&
+                    oldItem.appPackageName == newItem.appPackageName &&
                     oldItem.appName == newItem.appName
         }
 
