@@ -72,6 +72,9 @@ class MainActivity : AppCompatActivity() {
         initEvent()
     }
 
+    /**
+     * TODO implement dark mode, [google dark mode doc](https://developer.android.com/develop/ui/views/theming/darktheme)
+     * */
     private fun initView() {
         binding.search.requestFocus()
         binding.recyclerView.adapter = adapter
