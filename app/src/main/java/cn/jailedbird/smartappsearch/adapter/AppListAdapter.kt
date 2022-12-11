@@ -3,6 +3,7 @@ package cn.jailedbird.smartappsearch.adapter
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.Settings
 import androidx.recyclerview.widget.RecyclerView
 import cn.jailedbird.smartappsearch.R
 import cn.jailedbird.smartappsearch.databinding.ItemAppListBinding
@@ -16,11 +17,14 @@ import coil.load
 
 class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppModel.Diff()) {
     private lateinit var context: Context
+
     private val listener = object : AppListPopWindow.Listener {
         override fun showInfo(appModel: AppModel?) {
             appModel?.appPackageName?.let {
-                "show info $it".toast()
-
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.parse("package:$it")
+                }
+                context.startActivity(intent)
             }
         }
 
@@ -29,10 +33,13 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
          * */
         override fun unInstall(appModel: AppModel?) {
             appModel?.appPackageName?.let {
-                "uninstall $it".toast()
-                val intent = Intent(Intent.ACTION_DELETE)
-                intent.data = Uri.parse("package:$it")
-                context.startActivity(intent)
+                try {
+                    context.startActivity(Intent(Intent.ACTION_DELETE).apply {
+                        data = Uri.parse("package:$it")
+                    })
+                } catch (e: Exception) {
+                    e.message?.toast()
+                }
             }
         }
 
