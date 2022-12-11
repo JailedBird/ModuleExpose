@@ -1,19 +1,17 @@
 package cn.jailedbird.smartappsearch.model
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import cn.jailedbird.smartappsearch.utils.AppInfo
 import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.log
 import cn.jailedbird.smartappsearch.utils.toast
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 
@@ -21,15 +19,10 @@ import kotlinx.coroutines.withTimeout
 data class AppModel(
     @PrimaryKey @ColumnInfo(name = "id")
     var appId: Int,
-    /*Full package*/
     var appPackageName: String,
-    /*App name*/
     var appName: String,
-    /*App ping yin (if chinese)*/
     var appNamePinyin: String? = null,
 ) {
-    @Ignore
-    var appIcon: Drawable? = null
     fun launch(context: Context) {
         context.packageManager.getLaunchIntentForPackage(appPackageName)?.let {
             try {
@@ -40,11 +33,12 @@ data class AppModel(
             }
         }
         if (context is LifecycleOwner) {
+            // refresh room job
             context.lifecycleScope.launch(Dispatchers.IO) {
-                withTimeout(1000) {
-                    //  TODO save recently select result
-                    delay(200)
-                    "save ok".log()
+                // Set time out 3000
+                withTimeout(3000) {
+                    val apps = AppInfo.refresh(context)
+                    "Save ok items(${apps.size})".log()
                 }
                 "kill process".log()
                 context.finishProcess()
@@ -64,7 +58,7 @@ data class AppModel(
         }
     }
 
-    class Diff() : DiffUtil.ItemCallback<AppModel>() {
+    class Diff : DiffUtil.ItemCallback<AppModel>() {
         override fun areItemsTheSame(oldItem: AppModel, newItem: AppModel): Boolean {
             return oldItem.appId == newItem.appId &&
                     oldItem.appPackageName == newItem.appPackageName

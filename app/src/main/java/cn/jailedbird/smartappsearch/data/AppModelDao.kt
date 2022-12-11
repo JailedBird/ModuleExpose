@@ -8,8 +8,6 @@ import cn.jailedbird.smartappsearch.model.AppModel
 
 @Dao
 interface AppModelDao {
-    /*@Query("SELECT * FROM apps ORDER BY appName")
-    fun getApps(): Flow<List<AppModel>>*/
     @Query("SELECT * FROM apps ORDER BY appName")
     suspend fun getApps(): List<AppModel>
 
