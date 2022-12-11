@@ -13,6 +13,17 @@ import android.widget.PopupWindow
  * Popup document: [Popup document](https://www.jianshu.com/p/6c32889e6377)
  * */
 abstract class BaseSimplePopUp(context: Context) : PopupWindow() {
+    companion object {
+        fun makeDropDownMeasureSpec(measureSpec: Int): Int {
+            val mode: Int = if (measureSpec == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                View.MeasureSpec.UNSPECIFIED
+            } else {
+                View.MeasureSpec.EXACTLY
+            }
+            return View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.getSize(measureSpec), mode)
+        }
+    }
+
     init {
         innerInit(context)
     }

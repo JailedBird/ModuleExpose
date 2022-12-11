@@ -86,8 +86,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initEvent() {
         binding.ivMore.setDebouncedClick {
-            AppSettingsPopWindow(this@MainActivity, listener)
-                .showAsDropDown(it, -100.toPx().toInt(), 0)
+            AppSettingsPopWindow.open(this, it, listener)
         }
     }
 

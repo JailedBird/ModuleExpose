@@ -8,9 +8,9 @@ import cn.jailedbird.smartappsearch.dialog.AppListPopWindow
 import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.utils.DebouncingUtils
 import cn.jailedbird.smartappsearch.utils.hideKeyboard
-import cn.jailedbird.smartappsearch.utils.toPx
 import cn.jailedbird.smartappsearch.utils.toast
 import coil.load
+
 
 class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppModel.Diff()) {
     private lateinit var context: Context
@@ -62,10 +62,11 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
 
         binding.ivMore.setOnClickListener {
             if (DebouncingUtils.isValid(it)) {
-                AppListPopWindow(context, binding.bean, listener)
-                    .showAsDropDown(it, -50.toPx().toInt(), 0)
+                AppListPopWindow.open(context, it, binding.bean, listener)
             }
         }
 
     }
+
+
 }
