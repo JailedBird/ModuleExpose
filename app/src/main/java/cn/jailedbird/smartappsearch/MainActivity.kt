@@ -105,7 +105,10 @@ class MainActivity : AppCompatActivity() {
             var index = 0
             packageManager.getInstalledApplications(0).forEach {
                 val packageName = it.packageName
-                if (packageName.startsWith("com.google") || packageName.startsWith("com.android")) {
+                if (packageName.startsWith("com.google") ||
+                    packageName.startsWith("com.android") ||
+                    packageName.startsWith("android")
+                ) {
                     "Skip $packageName".log()
                 } else {
                     val appName = packageManager.getApplicationLabel(it).toString()

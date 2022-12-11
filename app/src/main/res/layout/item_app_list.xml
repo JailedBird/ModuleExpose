@@ -11,14 +11,14 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="48dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivIcon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginStart="20dp"
             tools:src="@drawable/ic_android" />
 
@@ -34,9 +34,10 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivMore"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_baseline_more_vert_16" />
+            android:layout_width="24dp"
+            android:paddingEnd="8dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_baseline_more_vert_24" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>
