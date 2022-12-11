@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun settings() {
-            "settings".toast()
+            SettingsActivity.start(this@MainActivity)
         }
 
     }
@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView() {
+        binding.search.requestFocus()
         binding.recyclerView.adapter = adapter
         binding.search.addTextChangedListener(onTextChanged = { text, _, _, _ ->
             val result = searchFilter(apps, text.toString())
@@ -86,7 +87,7 @@ class MainActivity : AppCompatActivity() {
     private fun initEvent() {
         binding.ivMore.setDebouncedClick {
             AppSettingsPopWindow(this@MainActivity, listener)
-                .showAsDropDown(it, -50.toPx().toInt(), 0)
+                .showAsDropDown(it, -100.toPx().toInt(), 0)
         }
     }
 

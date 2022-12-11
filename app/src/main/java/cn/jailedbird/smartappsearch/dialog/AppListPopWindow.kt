@@ -24,8 +24,14 @@ class AppListPopWindow(
     }
 
     override fun initEvent(root: View) {
-        binding.tvInfo.setDebouncedClick { listener.showInfo(appModel) }
-        binding.tvUnInstall.setDebouncedClick { listener.unInstall(appModel) }
+        binding.tvInfo.setDebouncedClick {
+            listener.showInfo(appModel)
+            dismiss()
+        }
+        binding.tvUnInstall.setDebouncedClick {
+            listener.unInstall(appModel)
+            dismiss()
+        }
     }
 
     interface Listener {

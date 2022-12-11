@@ -21,11 +21,26 @@ class AppSettingsPopWindow(
     }
 
     override fun initEvent(root: View) {
-        binding.tvRefreshApp.setDebouncedClick { listener.refreshApp() }
-        binding.tvRate.setDebouncedClick { listener.rate() }
-        binding.tvShare.setDebouncedClick { listener.share() }
-        binding.tvClearHistory.setDebouncedClick { listener.clearHistory() }
-        binding.tvSettings.setDebouncedClick { listener.settings() }
+        binding.tvRefreshApp.setDebouncedClick {
+            listener.refreshApp()
+            dismiss()
+        }
+        binding.tvRate.setDebouncedClick {
+            listener.rate()
+            dismiss()
+        }
+        binding.tvShare.setDebouncedClick {
+            listener.share()
+            dismiss()
+        }
+        binding.tvClearHistory.setDebouncedClick {
+            listener.clearHistory()
+            dismiss()
+        }
+        binding.tvSettings.setDebouncedClick {
+            listener.settings()
+            dismiss()
+        }
     }
 
     interface Listener {
