@@ -117,11 +117,10 @@ class MainActivity : AppCompatActivity() {
                         AppModel(
                             appId = index++,
                             appPackageName = it.packageName,
-                            appName = appName.lowercase(Locale.ENGLISH),
+                            appName = appName,
                             appNamePinyin = appName.toPinyin()?.lowercase(Locale.ENGLISH)
                         ).apply {
                             this.appIcon = appIcon
-                            this.appIconRes = it.icon
                         }
                     )
                 }

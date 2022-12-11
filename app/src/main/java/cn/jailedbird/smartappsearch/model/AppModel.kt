@@ -30,7 +30,6 @@ data class AppModel(
 ) {
     @Ignore
     var appIcon: Drawable? = null
-    var appIconRes: Int? = null
     fun launch(context: Context) {
         context.packageManager.getLaunchIntentForPackage(appPackageName)?.let {
             try {
@@ -60,7 +59,7 @@ data class AppModel(
         return if (key.isNullOrEmpty()) {
             true
         } else {
-            appName.startsWith(key) ||
+            appName.startsWith(key, ignoreCase = true) ||
                     (!appNamePinyin.isNullOrEmpty() && appNamePinyin!!.startsWith(key))
         }
     }
