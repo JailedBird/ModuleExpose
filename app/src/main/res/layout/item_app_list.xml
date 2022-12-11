@@ -26,9 +26,12 @@
             android:id="@+id/tvContent"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_weight="1"
+            android:ellipsize="middle"
             android:gravity="center_vertical"
+            android:singleLine="true"
             android:text="@{bean.appName}"
             tools:text="App simple name" />
 
