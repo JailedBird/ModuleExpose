@@ -1,6 +1,8 @@
 package cn.jailedbird.smartappsearch.adapter
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.recyclerview.widget.RecyclerView
 import cn.jailedbird.smartappsearch.R
 import cn.jailedbird.smartappsearch.databinding.ItemAppListBinding
@@ -16,14 +18,21 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
     private lateinit var context: Context
     private val listener = object : AppListPopWindow.Listener {
         override fun showInfo(appModel: AppModel?) {
-            appModel?.appPackageName?.apply {
-                "show info $this".toast()
+            appModel?.appPackageName?.let {
+                "show info $it".toast()
+
             }
         }
 
+        /**
+         * Remove apk method [link](https://stackoverflow.com/questions/6813322/install-uninstall-apks-programmatically-packagemanager-vs-intents)
+         * */
         override fun unInstall(appModel: AppModel?) {
-            appModel?.appPackageName?.apply {
-                "uninstall $this".toast()
+            appModel?.appPackageName?.let {
+                "uninstall $it".toast()
+                val intent = Intent(Intent.ACTION_DELETE)
+                intent.data = Uri.parse("package:$it")
+                context.startActivity(intent)
             }
         }
 
