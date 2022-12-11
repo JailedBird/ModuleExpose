@@ -15,7 +15,7 @@
         android:layout_height="48dp">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/appCompatImageView"
+            android:id="@+id/ivSearch"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_baseline_search_24"
@@ -35,13 +35,13 @@
             android:importantForAutofill="no"
             android:singleLine="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/appCompatImageView1"
-            app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
+            app:layout_constraintEnd_toStartOf="@+id/ivMore"
+            app:layout_constraintStart_toEndOf="@+id/ivSearch"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="HardcodedText,LabelFor,TextFields" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/appCompatImageView1"
+            android:id="@+id/ivMore"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_baseline_more_vert_24"

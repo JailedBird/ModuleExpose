@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import cn.jailedbird.smartappsearch.App
 import com.github.promeg.pinyinhelper.Pinyin
@@ -64,4 +65,16 @@ fun Int.toPx(): Float {
     val dpValue = this
     val scale = Resources.getSystem().displayMetrics.density
     return (dpValue * scale + 0.5f)
+}
+
+
+/**
+ * Avoid view's fast-click
+ * */
+inline fun View.setDebouncedClick(duration: Long = 1000L, crossinline block: (view: View) -> Unit) {
+    setOnClickListener {
+        if (DebouncingUtils.isValid(it)) {
+            block.invoke(this)
+        }
+    }
 }

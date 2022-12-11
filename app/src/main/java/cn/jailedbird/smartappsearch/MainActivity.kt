@@ -11,10 +11,13 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
+import cn.jailedbird.smartappsearch.adapter.AppListAdapter
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
+import cn.jailedbird.smartappsearch.dialog.AppListPopWindow
 import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.model.ConfigModel
 import cn.jailedbird.smartappsearch.utils.AppInfo
+import cn.jailedbird.smartappsearch.utils.setDebouncedClick
 import cn.jailedbird.smartappsearch.utils.toPx
 import kotlinx.coroutines.launch
 
@@ -47,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()
+        initEvent()
     }
 
     private fun initView() {
@@ -58,7 +62,13 @@ class MainActivity : AppCompatActivity() {
                 result[0].launch(this@MainActivity)
             }
         })
+    }
 
+    private fun initEvent() {
+        binding.ivMore.setDebouncedClick {
+            AppListPopWindow(this@MainActivity).showAsDropDown(binding.ivMore)
+
+        }
     }
 
     private fun searchFilter(origin: List<AppModel>, key: String): List<AppModel> {

@@ -1,8 +1,8 @@
-package cn.jailedbird.smartappsearch
+package cn.jailedbird.smartappsearch.adapter
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
-import cn.jailedbird.smartappsearch.adapter.BaseSimpleListAdapter
+import cn.jailedbird.smartappsearch.R
 import cn.jailedbird.smartappsearch.databinding.ItemAppListBinding
 import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.utils.DebouncingUtils
