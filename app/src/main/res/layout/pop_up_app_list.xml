@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:background="#FFFFFF"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/ic_round_gray_10dp"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="vertical"
+    tools:ignore="HardcodedText">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvContent"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:id="@+id/tvInfo"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
         android:layout_weight="1"
-        android:ellipsize="middle"
+        android:background="?android:selectableItemBackground"
+        android:clickable="true"
         android:gravity="center_vertical"
-        android:singleLine="true"
-        android:text="Show"
-        tools:text="App simple name" />
+        android:paddingHorizontal="16dp"
+        android:text="App info"
+        android:textColor="@android:color/white" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvUnInstall"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="?android:selectableItemBackground"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:text="Uninstalled"
+        android:textColor="@android:color/white" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -50,7 +50,8 @@ dependencies {
 
     ksp("androidx.room:room-compiler:$room_version")
     implementation project(":lib")
-
+    // https://square.github.io/leakcanary/getting_started/
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

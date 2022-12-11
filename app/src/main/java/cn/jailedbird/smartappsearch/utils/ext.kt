@@ -1,5 +1,6 @@
 package cn.jailedbird.smartappsearch.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.os.Handler
@@ -7,6 +8,8 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import cn.jailedbird.smartappsearch.App
 import com.github.promeg.pinyinhelper.Pinyin
 
@@ -57,6 +60,7 @@ internal fun String?.toPinyin(): String? {
     }
 }
 
+@Suppress("unused")
 internal fun Context.finishProcess() {
     android.os.Process.killProcess(android.os.Process.myPid())
 }
@@ -71,10 +75,30 @@ fun Int.toPx(): Float {
 /**
  * Avoid view's fast-click
  * */
-inline fun View.setDebouncedClick(duration: Long = 1000L, crossinline block: (view: View) -> Unit) {
+inline fun View.setDebouncedClick(
+    @Suppress("UNUSED_PARAMETER") duration: Long = 1000L,
+    crossinline block: (view: View) -> Unit
+) {
     setOnClickListener {
         if (DebouncingUtils.isValid(it)) {
             block.invoke(this)
         }
+    }
+}
+
+
+fun Context.hideKeyboard() {
+    if (this is Activity) {
+        val window = this.window
+        WindowCompat.getInsetsController(window, window.decorView)
+            .hide(WindowInsetsCompat.Type.ime())
+    }
+}
+
+fun Context.showKeyboard() {
+    if (this is Activity) {
+        val window = this.window
+        WindowCompat.getInsetsController(window, window.decorView)
+            .show(WindowInsetsCompat.Type.ime())
     }
 }

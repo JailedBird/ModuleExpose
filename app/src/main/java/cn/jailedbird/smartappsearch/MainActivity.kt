@@ -7,18 +7,14 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import cn.jailedbird.smartappsearch.adapter.AppListAdapter
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
-import cn.jailedbird.smartappsearch.dialog.AppListPopWindow
+import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
 import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.model.ConfigModel
-import cn.jailedbird.smartappsearch.utils.AppInfo
-import cn.jailedbird.smartappsearch.utils.setDebouncedClick
-import cn.jailedbird.smartappsearch.utils.toPx
+import cn.jailedbird.smartappsearch.utils.*
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -26,6 +22,29 @@ class MainActivity : AppCompatActivity() {
     private val config = ConfigModel()
     private val adapter = AppListAdapter()
     private var apps = emptyList<AppModel>()
+
+    private val listener = object : AppSettingsPopWindow.Listener {
+        override fun refreshApp() {
+            "refreshApp".toast()
+        }
+
+        override fun rate() {
+            "rate".toast()
+        }
+
+        override fun share() {
+            "share".toast()
+        }
+
+        override fun clearHistory() {
+            "clearHistory".toast()
+        }
+
+        override fun settings() {
+            "settings".toast()
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycleScope.launch {
@@ -66,8 +85,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun initEvent() {
         binding.ivMore.setDebouncedClick {
-            AppListPopWindow(this@MainActivity).showAsDropDown(binding.ivMore)
-
+            AppSettingsPopWindow(this@MainActivity, listener)
+                .showAsDropDown(it, -50.toPx().toInt(), 0)
         }
     }
 
@@ -83,7 +102,6 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
-
     private fun initWindowStyle(activity: Activity) {
         val window = activity.window
         val (width, height) = activity.resources.displayMetrics.let {
@@ -94,8 +112,7 @@ class MainActivity : AppCompatActivity() {
         window.setLayout((width * widthPercent).toInt(), (height * heightPercent).toInt())
         activity.setFinishOnTouchOutside(true)
         if (config.popImeWhenStart) {
-            WindowCompat.getInsetsController(window, window.decorView)
-                .show(WindowInsetsCompat.Type.ime())
+            activity.showKeyboard()
         }
         window.decorView.background = GradientDrawable().apply {
             cornerRadius = 8.toPx()
