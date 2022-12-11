@@ -21,7 +21,16 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
 
     override fun bind(bean: AppModel?, binding: ItemAppListBinding) {
         binding.bean = bean
-        binding.ivIcon.load(bean?.appIcon)
+        bean?.let {
+            try {
+                binding.ivIcon.load(context.packageManager.getApplicationIcon(it.appPackageName)) {
+                    placeholder(R.drawable.ic_android)
+                    error(R.drawable.ic_android)
+                }
+            } catch (e: Exception) {
+                binding.ivIcon.load(R.drawable.ic_android)
+            }
+        }
         binding.executePendingBindings()
     }
 
@@ -34,7 +43,7 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
 
         binding.ivMore.setOnClickListener {
             if (DebouncingUtils.isValid(it)) {
-                toast("${binding.bean?.appPackageName} more info")
+                "${binding.bean?.appPackageName} more info".toast()
             }
         }
 

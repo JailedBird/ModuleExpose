@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import cn.jailedbird.smartappsearch.App
 import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.utils.DATABASE_NAME
 
 /**
- * The Room database for this app
+ * The Room database for this app,
+ * [document](https://developer.android.com/training/data-storage/room?hl=zh-cn)
  */
 @Database(entities = [AppModel::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
@@ -20,9 +22,9 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var instance: AppDatabase? = null
 
-        fun getInstance(context: Context): AppDatabase {
+        fun getInstance(): AppDatabase {
             return instance ?: synchronized(this) {
-                instance ?: buildDatabase(context).also { instance = it }
+                instance ?: buildDatabase(App.applicationContext).also { instance = it }
             }
         }
 

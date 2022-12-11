@@ -16,11 +16,11 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:id="@+id/ivIcon"
             android:layout_marginStart="20dp"
-            tools:src="@color/teal_200" />
+            tools:src="@drawable/ic_android" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvContent"
@@ -36,7 +36,7 @@
             android:id="@+id/ivMore"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_baseline_more_vert_24" />
+            android:src="@drawable/ic_baseline_more_vert_16" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

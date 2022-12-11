@@ -2,14 +2,23 @@ package cn.jailedbird.smartappsearch.utils
 
 import android.content.Context
 import android.content.res.Resources
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import cn.jailedbird.smartappsearch.App
 import com.github.promeg.pinyinhelper.Pinyin
 
-internal fun toast(s: String?) {
+internal fun String?.toast() {
+    val s = this
     if (!s.isNullOrEmpty()) {
-        Toast.makeText(App.applicationContext, s, Toast.LENGTH_SHORT).show()
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(App.applicationContext, s, Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(App.applicationContext, s, Toast.LENGTH_SHORT).show()
+        }
     }
 }
 

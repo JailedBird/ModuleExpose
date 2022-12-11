@@ -7,7 +7,8 @@ class App : Application() {
     companion object {
         @Suppress("ObjectPropertyName")
         private var _applicationContext: Context? = null
-        val applicationContext get() = _applicationContext
+        val applicationContext: Context
+            get() = _applicationContext!!
         const val appName = "SmartAppSearch"
     }
 

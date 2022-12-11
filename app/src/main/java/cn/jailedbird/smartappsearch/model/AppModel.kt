@@ -11,6 +11,7 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.log
+import cn.jailedbird.smartappsearch.utils.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,9 +30,15 @@ data class AppModel(
 ) {
     @Ignore
     var appIcon: Drawable? = null
+    var appIconRes: Int? = null
     fun launch(context: Context) {
         context.packageManager.getLaunchIntentForPackage(appPackageName)?.let {
-            context.startActivity(it)
+            try {
+                context.startActivity(it)
+            } catch (e: Exception) {
+                e.message.toast()
+                return
+            }
         }
         if (context is LifecycleOwner) {
             context.lifecycleScope.launch(Dispatchers.IO) {
