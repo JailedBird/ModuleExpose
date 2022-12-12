@@ -9,8 +9,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import cn.jailedbird.smartappsearch.utils.AppInfo
 import cn.jailedbird.smartappsearch.utils.finishProcess
+import cn.jailedbird.smartappsearch.utils.launchApk
 import cn.jailedbird.smartappsearch.utils.log
-import cn.jailedbird.smartappsearch.utils.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
@@ -24,14 +24,10 @@ data class AppModel(
     var appNamePinyin: String? = null,
 ) {
     fun launch(context: Context) {
-        context.packageManager.getLaunchIntentForPackage(appPackageName)?.let {
-            try {
-                context.startActivity(it)
-            } catch (e: Exception) {
-                e.message.toast()
-                return
-            }
+        if (!context.launchApk(appPackageName)) {
+            return
         }
+        // When launch success
         if (context is LifecycleOwner) {
             // refresh room job
             context.lifecycleScope.launch(Dispatchers.IO) {

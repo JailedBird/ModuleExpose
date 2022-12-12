@@ -1,17 +1,15 @@
 package cn.jailedbird.smartappsearch.dialog
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import android.view.Gravity
 import android.view.View
 import androidx.core.widget.PopupWindowCompat
 import cn.jailedbird.smartappsearch.R
 import cn.jailedbird.smartappsearch.databinding.PopUpAppListBinding
 import cn.jailedbird.smartappsearch.model.AppModel
+import cn.jailedbird.smartappsearch.utils.gotoApkSettings
 import cn.jailedbird.smartappsearch.utils.setDebouncedClick
-import cn.jailedbird.smartappsearch.utils.toast
+import cn.jailedbird.smartappsearch.utils.uninstallApk
 
 
 class AppListPopWindow(
@@ -38,31 +36,14 @@ class AppListPopWindow(
 
     private lateinit var binding: PopUpAppListBinding
 
-    private val listener = object : AppListPopWindow.Listener {
+    private val listener = object : Listener {
         override fun showInfo(appModel: AppModel?) {
-            appModel?.appPackageName?.let {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.parse("package:$it")
-                }
-                context.startActivity(intent)
-            }
+            context.gotoApkSettings(appModel?.appPackageName)
         }
 
-        /**
-         * Remove apk method [link](https://stackoverflow.com/questions/6813322/install-uninstall-apks-programmatically-packagemanager-vs-intents)
-         * */
         override fun unInstall(appModel: AppModel?) {
-            appModel?.appPackageName?.let {
-                try {
-                    context.startActivity(Intent(Intent.ACTION_DELETE).apply {
-                        data = Uri.parse("package:$it")
-                    })
-                } catch (e: Exception) {
-                    e.message?.toast()
-                }
-            }
+            context.uninstallApk(appModel?.appPackageName)
         }
-
     }
 
     override fun getLayout(): Int {
