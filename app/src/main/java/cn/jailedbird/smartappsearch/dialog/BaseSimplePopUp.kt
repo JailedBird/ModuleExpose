@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.MeasureSpec
 import android.view.ViewGroup
 import android.widget.PopupWindow
 
@@ -16,11 +17,11 @@ abstract class BaseSimplePopUp(context: Context) : PopupWindow() {
     companion object {
         fun makeDropDownMeasureSpec(measureSpec: Int): Int {
             val mode: Int = if (measureSpec == ViewGroup.LayoutParams.WRAP_CONTENT) {
-                View.MeasureSpec.UNSPECIFIED
+                MeasureSpec.UNSPECIFIED
             } else {
-                View.MeasureSpec.EXACTLY
+                MeasureSpec.EXACTLY
             }
-            return View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.getSize(measureSpec), mode)
+            return MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(measureSpec), mode)
         }
     }
 
