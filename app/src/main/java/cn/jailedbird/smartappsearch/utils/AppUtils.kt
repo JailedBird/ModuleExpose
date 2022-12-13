@@ -52,38 +52,6 @@ object AppUtils {
             return@withContext res
         }
 
-    private suspend fun getAppsFromPackageManager1(context: Context): List<AppModel> =
-        withContext(Dispatchers.IO) {
-            val startTime = System.nanoTime()
-            val packageManager = context.packageManager
-            val apps = mutableListOf<AppModel>()
-            var index = 0
-            packageManager.getInstalledApplications(0).forEach {
-                val packageName = it.packageName
-                if (packageName.startsWith("com.google") ||
-                    packageName.startsWith("com.android") ||
-                    packageName.startsWith("android")
-                ) {
-                    "Skip $packageName".log()
-                } else {
-                    val appName = packageManager.getApplicationLabel(it).toString()
-                    apps.add(
-                        AppModel(
-                            appId = index++,
-                            appPackageName = it.packageName,
-                            appName = appName,
-                            appNamePinyin = appName.toPinyin()?.lowercase(Locale.ENGLISH)
-                        )
-                    )
-                }
-            }
-            "getAppsFromPackageManager() cost ${(System.nanoTime() - startTime) / 1000_000} ms".apply {
-                this.toast()
-                this.log()
-            }
-            return@withContext apps
-        }
-
     private suspend fun saveAppsToRoom(apps: List<AppModel>) {
         if (apps.isNotEmpty()) {
             AppDatabase.getInstance().appModelDao().insertAll(apps)

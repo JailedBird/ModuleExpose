@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycleScope.launch {
             // Fast path: get Apps info from Room
-            apps = /*AppUtils.getAppsFromRoom()*/ emptyList()
+            apps = AppUtils.getAppsFromRoom()
             // Slow path: get Apps info from PackageManager
             if (apps.isEmpty()) {
                 apps = AppUtils.refresh(this@MainActivity)
