@@ -8,11 +8,20 @@ import cn.jailedbird.smartappsearch.dialog.AppListPopWindow
 import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.utils.DebouncingUtils
 import cn.jailedbird.smartappsearch.utils.hideKeyboard
+import cn.jailedbird.smartappsearch.utils.log
 import coil.load
+import kotlinx.coroutines.*
 
 
 class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppModel.Diff()) {
     private lateinit var context: Context
+    private val coroutineExceptionHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            throwable.message.log()
+        }
+
+    private val scope =
+        CoroutineScope(SupervisorJob() + coroutineExceptionHandler)
 
 
     override fun initLayout(): Int {
@@ -23,16 +32,20 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
         context = recyclerView.context
     }
 
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        scope.cancel("onDetachedFromRecyclerView, cancel this scope")
+    }
+
     override fun bind(bean: AppModel?, binding: ItemAppListBinding) {
         binding.bean = bean
         bean?.let {
-            try {
-                binding.ivIcon.load(context.packageManager.getApplicationIcon(it.appPackageName)) {
+            scope.launch(Dispatchers.IO) {
+                // Spend time function, place it in IO
+                val drawable = context.packageManager.getApplicationIcon(it.appPackageName)
+                binding.ivIcon.load(drawable) {
                     placeholder(R.drawable.ic_android)
                     error(R.drawable.ic_android)
                 }
-            } catch (e: Exception) {
-                binding.ivIcon.load(R.drawable.ic_android)
             }
         }
         binding.executePendingBindings()
