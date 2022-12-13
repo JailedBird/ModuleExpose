@@ -22,6 +22,7 @@ data class AppModel(
     var appPackageName: String,
     var appName: String,
     var appNamePinyin: String? = null,
+    /* var launch: Intent? = null*/
 ) {
     fun launch(context: Context) {
         if (!context.launchApk(appPackageName)) {

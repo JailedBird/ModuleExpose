@@ -54,10 +54,10 @@ internal fun String?.toPinyin(): String? {
         if (s.isChinese()) {
             Pinyin.toPinyin(s, EMPTY)
         } else {
-            s
+            null
         }
     } catch (e: Exception) {
-        s
+        null
     }
 }
 
