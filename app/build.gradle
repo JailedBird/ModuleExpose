@@ -50,6 +50,7 @@ dependencies {
 
     ksp("androidx.room:room-compiler:$room_version")
     implementation project(":lib")
+    implementation ("com.github.JailedBird:EdgeUtils:0.0.1-beta06")
     // https://square.github.io/leakcanary/getting_started/
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
 

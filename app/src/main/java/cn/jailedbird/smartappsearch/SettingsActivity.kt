@@ -4,12 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
+import cn.jailedbird.edgeutils.EdgeUtils.edgeSetSystemBarLight
+import cn.jailedbird.edgeutils.EdgeUtils.edgeToEdge
 import cn.jailedbird.smartappsearch.databinding.ActivitySettingsBinding
-import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
-import cn.jailedbird.smartappsearch.utils.setDebouncedClick
-import cn.jailedbird.smartappsearch.utils.toPx
-import kotlinx.coroutines.launch
 
 class SettingsActivity : AppCompatActivity() {
     companion object {
@@ -24,6 +21,8 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        edgeToEdge(false)
+        edgeSetSystemBarLight(true)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()

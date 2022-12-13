@@ -1,8 +1,6 @@
 package cn.jailedbird.smartappsearch.model
 
 import android.content.Context
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -11,9 +9,7 @@ import cn.jailedbird.smartappsearch.utils.AppUtils
 import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.launchApk
 import cn.jailedbird.smartappsearch.utils.log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.*
 
 @Entity(tableName = "apps")
 data class AppModel(
@@ -24,25 +20,35 @@ data class AppModel(
     var appNamePinyin: String? = null,
     /* var launch: Intent? = null*/
 ) {
+    @OptIn(DelicateCoroutinesApi::class)
     fun launch(context: Context) {
         if (!context.launchApk(appPackageName)) {
             return
         }
-        // When launch success
-        if (context is LifecycleOwner) {
-            // refresh room job
-            context.lifecycleScope.launch(Dispatchers.IO) {
-                // Set time out 3000
-                withTimeout(3000) {
-                    val apps = AppUtils.refresh(context)
-                    "Save ok items(${apps.size})".log()
-                }
-                "kill process".log()
-                context.finishProcess()
+        // Use [GlobalScope] rather than LifecycleOwner to ensure [launch] must be execute
+        GlobalScope.launch(Dispatchers.IO) {
+            withTimeout(3000) {
+                val apps = AppUtils.refresh(context)
+                "Save ok items(${apps.size})".log()
             }
-        } else {
+            "kill process".log()
             context.finishProcess()
         }
+        // When launch success
+        // if (context is LifecycleOwner) {
+        //     // refresh room job
+        //     context.lifecycleScope.launch(Dispatchers.IO) {
+        //         // Set time out 3000
+        //         withTimeout(3000) {
+        //             val apps = AppUtils.refresh(context)
+        //             "Save ok items(${apps.size})".log()
+        //         }
+        //         "kill process".log()
+        //         context.finishProcess()
+        //     }
+        // } else {
+        //     context.finishProcess()
+        // }
 
     }
 

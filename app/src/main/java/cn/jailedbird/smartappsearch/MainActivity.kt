@@ -26,6 +26,12 @@ class MainActivity : AppCompatActivity() {
     private val listener = object : AppSettingsPopWindow.Listener {
         override fun refreshApp() {
             "refreshApp".toast()
+            lifecycleScope.launch {
+                apps = AppUtils.refresh(this@MainActivity)
+                lifecycleScope.launchWhenStarted {
+                    adapter.submitList(apps)
+                }
+            }
         }
 
         override fun rate() {

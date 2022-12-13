@@ -52,9 +52,14 @@ object AppUtils {
             return@withContext res
         }
 
-    private suspend fun saveAppsToRoom(apps: List<AppModel>) {
+    private suspend fun saveAppsToRoom(apps: List<AppModel>) = withContext(Dispatchers.IO) {
         if (apps.isNotEmpty()) {
+            val startTime = System.nanoTime()
             AppDatabase.getInstance().appModelDao().insertAll(apps)
+            "saveAppsToRoom() cost ${(System.nanoTime() - startTime) / 1000_000} ms".apply {
+                this.toast()
+                this.log()
+            }
         }
     }
 
