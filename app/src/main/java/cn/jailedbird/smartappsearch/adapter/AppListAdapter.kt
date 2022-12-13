@@ -38,15 +38,23 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
 
     override fun bind(bean: AppModel?, binding: ItemAppListBinding) {
         binding.bean = bean
+
         bean?.let {
-            scope.launch(Dispatchers.IO) {
+            // TODO 子线程加载可能会存在图片时序问题 由于本地加载可能不会出现
+            // 但是这场景换做了网络加载是否会出现？ 使用本地添加job的方案即是取消上次任务
+            binding.job?.cancel()
+            val job = scope.launch(Dispatchers.IO) {
                 // Spend time function, place it in IO
-                val drawable = context.packageManager.getApplicationIcon(it.appPackageName)
+                // Make spend function getApplicationIcon can response cancel
+                val drawable = runInterruptible {
+                    context.packageManager.getApplicationIcon(it.appPackageName)
+                }
                 binding.ivIcon.load(drawable) {
                     placeholder(R.drawable.ic_android)
                     error(R.drawable.ic_android)
                 }
             }
+            binding.job = job
         }
         binding.executePendingBindings()
     }

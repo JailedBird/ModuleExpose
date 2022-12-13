@@ -7,6 +7,9 @@
         <variable
             name="bean"
             type="cn.jailedbird.smartappsearch.model.AppModel" />
+        <variable
+            name="job"
+            type="kotlinx.coroutines.Job" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
