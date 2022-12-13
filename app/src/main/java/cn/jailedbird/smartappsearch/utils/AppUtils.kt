@@ -7,8 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
-object AppInfo {
-    suspend fun getAppsFromPackageManager(context: Context): List<AppModel> =
+object AppUtils {
+    private suspend fun getAppsFromPackageManager(context: Context): List<AppModel> =
         withContext(Dispatchers.IO) {
             val startTime = System.nanoTime()
             val packageManager = context.packageManager
@@ -40,7 +40,7 @@ object AppInfo {
             return@withContext apps
         }
 
-    suspend fun saveAppsToRoom(apps: List<AppModel>) {
+    private suspend fun saveAppsToRoom(apps: List<AppModel>) {
         if (apps.isNotEmpty()) {
             AppDatabase.getInstance().appModelDao().insertAll(apps)
         }

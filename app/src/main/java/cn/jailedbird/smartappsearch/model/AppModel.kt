@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import cn.jailedbird.smartappsearch.utils.AppInfo
+import cn.jailedbird.smartappsearch.utils.AppUtils
 import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.launchApk
 import cn.jailedbird.smartappsearch.utils.log
@@ -33,7 +33,7 @@ data class AppModel(
             context.lifecycleScope.launch(Dispatchers.IO) {
                 // Set time out 3000
                 withTimeout(3000) {
-                    val apps = AppInfo.refresh(context)
+                    val apps = AppUtils.refresh(context)
                     "Save ok items(${apps.size})".log()
                 }
                 "kill process".log()
