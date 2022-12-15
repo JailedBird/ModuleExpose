@@ -3,6 +3,7 @@ package cn.jailedbird.smartappsearch.data.entity
 import android.content.Context
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Entity
+import cn.jailedbird.smartappsearch.model.AppConfig
 import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.launchApk
 import kotlinx.coroutines.*
@@ -18,7 +19,7 @@ data class AppModel(
         if (context.launchApk(appPackageName, activityName)) {
             @OptIn(DelicateCoroutinesApi::class)
             GlobalScope.launch(Dispatchers.IO) {
-                delay(800)
+                delay(AppConfig.LAUNCH_DELAY_TIME)
                 context.finishProcess()
             }
         }

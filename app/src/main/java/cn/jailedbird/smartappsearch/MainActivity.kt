@@ -17,7 +17,7 @@ import cn.jailedbird.smartappsearch.adapter.AppListAdapter
 import cn.jailedbird.smartappsearch.data.AppDao
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
-import cn.jailedbird.smartappsearch.model.ConfigModel
+import cn.jailedbird.smartappsearch.model.AppConfig
 import cn.jailedbird.smartappsearch.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val config = ConfigModel()
+    private val config = AppConfig()
 
     @Inject
     lateinit var appDao: AppDao
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
             if (adapter.itemCount > 0) {
                 adapter.currentList[0].launch(this@MainActivity)
                 lifecycleScope.launch(Dispatchers.IO) {
-                    delay(800)
+                    delay(AppConfig.LAUNCH_DELAY_TIME)
                     this@MainActivity.finishProcess()
                 }
             }

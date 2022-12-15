@@ -32,14 +32,19 @@ class MainViewModel @Inject constructor(
         private const val APP_SEARCH = "APP_SEARCH_KEYWORD"
     }
 
-    // Latest memory cache for all apk
-    private var apps = emptyList<AppModel>()
-    private var _list = MutableStateFlow(emptyList<AppModel>())
-    val list = _list.asStateFlow()
     private var keyword = EMPTY
 
+    // Latest memory cache for all apk
+    private var apps = emptyList<AppModel>()
 
+    // StateFlow
+    private var _list = MutableStateFlow(emptyList<AppModel>())
+    val list = _list.asStateFlow()
+
+    // Search job
     private var job: Job? = null
+
+    // Observable Flow
     private val appsFlow = repository.getAppsFlow().distinctUntilChanged()
 
     init {
