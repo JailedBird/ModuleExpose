@@ -1,11 +1,15 @@
 package cn.jailedbird.smartappsearch.utils
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 
-internal fun Context.launchApk(packageName: String): Boolean {
+/**
+ * launch via package name
+ * */
+private fun Context.launchApk(packageName: String): Boolean {
     packageManager.getLaunchIntentForPackage(packageName)?.let {
         try {
             startActivity(it)
@@ -14,6 +18,30 @@ internal fun Context.launchApk(packageName: String): Boolean {
             return false
         }
     }
+    return true
+}
+
+/**
+ * launch via package name and activity name (Launcher)
+ * */
+internal fun Context.launchApk(packageName: String, activityName: String?): Boolean {
+    if (activityName.isNullOrEmpty()) {
+        return launchApk(packageName)
+    }
+    val launchIntent = Intent(Intent.ACTION_MAIN)
+    launchIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+    val cn = ComponentName(
+        packageName,
+        activityName
+    )
+    launchIntent.component = cn
+    try {
+        startActivity(launchIntent)
+    } catch (e: Exception) {
+        e.message?.toast()
+        return false
+    }
+
     return true
 }
 

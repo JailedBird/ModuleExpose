@@ -30,16 +30,12 @@ object AppUtils {
                 val pkgName = reInfo.activityInfo.packageName
                 val appLabel = reInfo.loadLabel(pm) as String
 
-                val launchIntent = Intent()
-                launchIntent.component = ComponentName(
-                    pkgName,
-                    activityName
-                )
                 val item = AppModel(
                     appId = index++,
                     appPackageName = pkgName,
                     appName = appLabel,
-                    appNamePinyin = appLabel.toPinyin()?.lowercase(Locale.ENGLISH)
+                    appNamePinyin = appLabel.toPinyin()?.lowercase(Locale.ENGLISH),
+                    activityName = activityName
                 )
                 item.toString().log()
                 res.add(item)

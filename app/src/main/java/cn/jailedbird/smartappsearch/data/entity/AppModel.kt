@@ -14,11 +14,10 @@ data class AppModel(
     var appPackageName: String,
     var appName: String,
     var appNamePinyin: String? = null,
+    val activityName: String? = null
 ) {
     fun launch(context: Context) {
-        if (!context.launchApk(appPackageName)) {
-            return
-        }
+        context.launchApk(appPackageName, activityName)
     }
 
     fun match(key: String?): Boolean {
