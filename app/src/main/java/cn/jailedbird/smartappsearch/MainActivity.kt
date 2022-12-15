@@ -62,23 +62,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    /** Dynamic broadcast for apk install and uninstall
-     * [StackOverflow](https://stackoverflow.com/questions/7470314/receiving-package-install-and-uninstall-events)*/
-    private val apkChangeListener = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            viewModel.refreshAppDatabase()
-        }
-    }
 
-    private val apkChangeIntentFilter = IntentFilter().apply {
-        addAction(Intent.ACTION_PACKAGE_ADDED)
-        addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
-        addDataScheme("package")
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        registerReceiver(apkChangeListener, apkChangeIntentFilter)
+
         // Please use NoActionBar theme
         window.requestFeature(Window.FEATURE_NO_TITLE)
         // prettify Window as Dialog style, Do this when Window is attached
@@ -137,8 +125,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(apkChangeListener)
-    }
 }

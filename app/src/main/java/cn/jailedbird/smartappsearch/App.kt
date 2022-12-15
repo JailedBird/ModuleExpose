@@ -5,9 +5,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import cn.jailedbird.smartappsearch.utils.log
-import cn.jailedbird.smartappsearch.utils.toast
+import cn.jailedbird.smartappsearch.data.AppRepository
+import cn.jailedbird.smartappsearch.utils.AppUtils
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @HiltAndroidApp
@@ -20,28 +25,34 @@ class App : Application() {
         const val appName = "SmartAppSearch"
     }
 
-
     override fun onCreate() {
         super.onCreate()
         _applicationContext = this
         listenApkChange()
-        /*@Suppress("EXPERIMENTAL_API_USAGE")
-        GlobalScope.launch(Dispatchers.IO) {bas
-
-        }*/
     }
+
+    @Inject
+    lateinit var appRepository: AppRepository
 
     private fun listenApkChange() {
-        val br = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                intent.toString().log()
-                intent.toString().toast()
+        /** Dynamic broadcast for apk install and uninstall
+         * [StackOverflow](https://stackoverflow.com/questions/7470314/receiving-package-install-and-uninstall-events)*/
+        val broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                @OptIn(DelicateCoroutinesApi::class)
+                GlobalScope.launch(Dispatchers.IO) {
+                    appRepository.insertAll(AppUtils.getAppsFromPackageManager(this@App))
+                }
             }
         }
+
         val intentFilter = IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED)
-            addAction(Intent.ACTION_PACKAGE_INSTALL)
+            addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
+            addDataScheme("package")
         }
-        registerReceiver(br, intentFilter)
+
+        registerReceiver(broadcastReceiver, intentFilter)
     }
+
 }
