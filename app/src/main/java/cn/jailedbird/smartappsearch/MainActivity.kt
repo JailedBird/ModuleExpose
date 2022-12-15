@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import cn.jailedbird.smartappsearch.adapter.AppListAdapter
+import cn.jailedbird.smartappsearch.adapter.AppListTwoTypeAdapter
 import cn.jailedbird.smartappsearch.data.AppDao
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
@@ -33,8 +34,8 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var appDao: AppDao
-    private val adapter = AppListAdapter()
-
+//    private val adapter = AppListAdapter()
+    private val adapter = AppListTwoTypeAdapter()
     private val viewModel by viewModels<MainViewModel>()
 
     private val listener = object : AppSettingsPopWindow.Listener {
