@@ -1,15 +1,14 @@
 package cn.jailedbird.smartappsearch
 
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.Window
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -19,11 +18,10 @@ import cn.jailedbird.smartappsearch.data.AppDao
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
 import cn.jailedbird.smartappsearch.model.ConfigModel
-import cn.jailedbird.smartappsearch.utils.setDebouncedClick
-import cn.jailedbird.smartappsearch.utils.showKeyboard
-import cn.jailedbird.smartappsearch.utils.toPx
-import cn.jailedbird.smartappsearch.utils.toast
+import cn.jailedbird.smartappsearch.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -63,7 +61,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -89,6 +86,18 @@ class MainActivity : AppCompatActivity() {
         binding.search.addTextChangedListener(onTextChanged = { text, _, _, _ ->
             viewModel.search(text.toString().trim())
         })
+
+        initSearch(binding.search) {
+            if (adapter.itemCount > 0) {
+                adapter.currentList[0].launch(this@MainActivity)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    delay(800)
+                    this@MainActivity.finishProcess()
+                }
+            }
+        }
+
+
     }
 
     private fun initEvent() {
@@ -122,6 +131,26 @@ class MainActivity : AppCompatActivity() {
             cornerRadius = 8.toPx()
             shape = GradientDrawable.RECTANGLE
             color = ColorStateList.valueOf(Color.WHITE)
+        }
+    }
+
+
+    private fun initSearch(editText: EditText, doSearch: () -> Unit) {
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                doSearch.invoke()
+                true
+            } else {
+                false
+            }
+        }
+        editText.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                doSearch.invoke()
+                true
+            } else {
+                false
+            }
         }
     }
 

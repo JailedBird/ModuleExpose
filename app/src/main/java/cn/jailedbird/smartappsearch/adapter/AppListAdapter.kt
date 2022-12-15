@@ -14,7 +14,9 @@ import kotlinx.coroutines.*
 
 
 class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppModel.Diff()) {
+
     private lateinit var context: Context
+
     private val coroutineExceptionHandler =
         CoroutineExceptionHandler { _, throwable ->
             throwable.message.log()
@@ -40,8 +42,9 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
         binding.bean = bean
 
         bean?.let {
-            // TODO 子线程加载可能会存在图片时序问题 由于本地加载可能不会出现
-            // 但是这场景换做了网络加载是否会出现？ 使用本地添加job的方案即是取消上次任务
+            // 子线程加载可能会存在图片时序问题 由于本地加载可能不会出现
+            // 但是这场景换做了网络加载是否会出现？ 使用本地添加job的方案
+            // 即是取消上次任务避免出现这样的问题
             binding.job?.cancel()
             val job = scope.launch(Dispatchers.IO) {
                 // Spend time function, place it in IO
