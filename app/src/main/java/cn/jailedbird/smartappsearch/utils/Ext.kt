@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package cn.jailedbird.smartappsearch.utils
 
 import android.app.Activity

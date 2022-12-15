@@ -9,9 +9,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AppDao {
-    @Query("SELECT * FROM apps ORDER BY appName")
-    suspend fun getApps(): List<AppModel>
-
     @Query("SELECT * FROM apps ORDER BY appName and appNamePinyin")
     fun getAppsFlow(): Flow<List<AppModel>>
 

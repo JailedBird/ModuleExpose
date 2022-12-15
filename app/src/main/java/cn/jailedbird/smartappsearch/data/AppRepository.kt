@@ -8,6 +8,5 @@ import javax.inject.Singleton
 @Singleton
 class AppRepository @Inject constructor(private val appDao: AppDao) {
     fun getAppsFlow() = appDao.getAppsFlow()
-    suspend fun getApps() = appDao.getApps()
     suspend fun insertAll(app: List<AppModel>) = appDao.insertAll(app)
 }

@@ -1,6 +1,10 @@
 package cn.jailedbird.smartappsearch
 
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -37,9 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     private val listener = object : AppSettingsPopWindow.Listener {
         override fun refreshApp() {
-            lifecycleScope.launch {
-                viewModel.refreshAppDatabase()
-            }
+            viewModel.refreshAppDatabase()
         }
 
         override fun rate() {
@@ -60,8 +62,23 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /** Dynamic broadcast for apk install and uninstall
+     * [StackOverflow](https://stackoverflow.com/questions/7470314/receiving-package-install-and-uninstall-events)*/
+    private val apkChangeListener = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            viewModel.refreshAppDatabase()
+        }
+    }
+
+    private val apkChangeIntentFilter = IntentFilter().apply {
+        addAction(Intent.ACTION_PACKAGE_ADDED)
+        addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
+        addDataScheme("package")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        registerReceiver(apkChangeListener, apkChangeIntentFilter)
         // Please use NoActionBar theme
         window.requestFeature(Window.FEATURE_NO_TITLE)
         // prettify Window as Dialog style, Do this when Window is attached
@@ -118,5 +135,10 @@ class MainActivity : AppCompatActivity() {
             shape = GradientDrawable.RECTANGLE
             color = ColorStateList.valueOf(Color.WHITE)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(apkChangeListener)
     }
 }

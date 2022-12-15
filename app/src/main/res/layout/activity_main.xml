@@ -31,6 +31,7 @@
             android:layout_marginHorizontal="12dp"
             android:background="@null"
             android:hint="Type app name"
+            android:focusable="true"
             android:imeOptions="actionSearch"
             android:importantForAutofill="no"
             android:singleLine="true"

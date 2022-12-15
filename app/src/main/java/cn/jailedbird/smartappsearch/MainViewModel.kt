@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
@@ -61,13 +60,13 @@ class MainViewModel @Inject constructor(
             }
         }
         // Ensure latest result apk
-        viewModelScope.launch {
-            refreshAppDatabase()
-        }
+        refreshAppDatabase()
     }
 
-    suspend fun refreshAppDatabase() = withContext(Dispatchers.IO) {
-        repository.insertAll(AppUtils.getAppsFromPackageManager(context))
+    fun refreshAppDatabase() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.insertAll(AppUtils.getAppsFromPackageManager(context))
+        }
     }
 
     private fun updateResult(apps: List<AppModel>, key: String) {
