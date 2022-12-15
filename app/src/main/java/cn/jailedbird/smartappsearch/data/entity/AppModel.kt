@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Entity
 import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.launchApk
+import kotlinx.coroutines.*
 
 @Entity(tableName = "apps", primaryKeys = ["appPackageName", "appName"])
 data class AppModel(
@@ -15,7 +16,11 @@ data class AppModel(
 ) {
     fun launch(context: Context) {
         if (context.launchApk(appPackageName, activityName)) {
-            context.finishProcess()
+            @OptIn(DelicateCoroutinesApi::class)
+            GlobalScope.launch(Dispatchers.IO) {
+                delay(800)
+                context.finishProcess()
+            }
         }
     }
 
