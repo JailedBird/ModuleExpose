@@ -12,6 +12,7 @@ import android.provider.Settings
 private fun Context.launchApk(packageName: String): Boolean {
     packageManager.getLaunchIntentForPackage(packageName)?.let {
         try {
+            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(it)
         } catch (e: Exception) {
             e.message.toast()
@@ -35,6 +36,8 @@ internal fun Context.launchApk(packageName: String, activityName: String?): Bool
         activityName
     )
     launchIntent.component = cn
+    // New stack
+    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     try {
         startActivity(launchIntent)
     } catch (e: Exception) {

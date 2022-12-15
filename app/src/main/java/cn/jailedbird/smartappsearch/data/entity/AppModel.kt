@@ -3,17 +3,20 @@ package cn.jailedbird.smartappsearch.data.entity
 import android.content.Context
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Entity
+import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.launchApk
 
 @Entity(tableName = "apps", primaryKeys = ["appPackageName", "appName"])
 data class AppModel(
-    var appPackageName: String,
-    var appName: String,
-    var appNamePinyin: String? = null,
+    val appPackageName: String,
+    val appName: String,
+    val appNamePinyin: String? = null,
     val activityName: String? = null
 ) {
     fun launch(context: Context) {
-        context.launchApk(appPackageName, activityName)
+        if (context.launchApk(appPackageName, activityName)) {
+            context.finishProcess()
+        }
     }
 
     fun match(key: String?): Boolean {
