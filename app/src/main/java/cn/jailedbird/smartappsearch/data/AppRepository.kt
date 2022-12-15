@@ -7,5 +7,13 @@ import javax.inject.Singleton
 @Singleton
 class AppRepository @Inject constructor(private val appDao: AppDao) {
     fun getAppsFlow() = appDao.getAppsFlow()
-    suspend fun insertAll(app: List<AppModel>) = appDao.insertAll(app)
+
+    /**
+     * Primary key is random id, not the package name, avoid two same app item,
+     * delete all table content before insert
+     * */
+    suspend fun insertAll(app: List<AppModel>) {
+        appDao.deleteAll()
+        appDao.insertAll(app)
+    }
 }

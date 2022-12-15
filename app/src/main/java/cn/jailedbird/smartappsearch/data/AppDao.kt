@@ -12,6 +12,10 @@ interface AppDao {
     @Query("SELECT * FROM apps ORDER BY appName and appNamePinyin")
     fun getAppsFlow(): Flow<List<AppModel>>
 
+
+    @Query("DELETE FROM apps")
+    suspend fun deleteAll()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(app: List<AppModel>)
 }
