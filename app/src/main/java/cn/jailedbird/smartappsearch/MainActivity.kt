@@ -6,17 +6,18 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Window
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import cn.jailedbird.smartappsearch.adapter.AppListAdapter
 import cn.jailedbird.smartappsearch.data.AppDao
-import cn.jailedbird.smartappsearch.data.entity.AppModel
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
 import cn.jailedbird.smartappsearch.model.ConfigModel
 import cn.jailedbird.smartappsearch.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,17 +29,14 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var appDao: AppDao
     private val adapter by lazy { AppListAdapter(appDao) }
-    private var apps = emptyList<AppModel>()
+    // private var apps = emptyList<AppModel>()
 
+    private val viewModel by viewModels<MainViewModel>()
 
     private val listener = object : AppSettingsPopWindow.Listener {
         override fun refreshApp() {
-            "refreshApp".toast()
             lifecycleScope.launch {
-                apps = AppUtils.refresh(this@MainActivity, appDao)
-                lifecycleScope.launchWhenStarted {
-                    adapter.submitList(apps)
-                }
+                AppUtils.refresh(this@MainActivity, appDao)
             }
         }
 
@@ -62,18 +60,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            // Fast path: get Apps info from Room
-            apps = AppUtils.getAppsFromRoom(appDao)
-            // Slow path: get Apps info from PackageManager
-            if (apps.isEmpty()) {
-                apps = AppUtils.refresh(this@MainActivity, appDao)
-            }
-            // submit info when list has init
-            lifecycleScope.launchWhenStarted {
-                adapter.submitList(apps)
-            }
-        }
         // Please use NoActionBar theme
         window.requestFeature(Window.FEATURE_NO_TITLE)
         // prettify Window as Dialog style, Do this when Window is attached
@@ -84,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initView()
         initEvent()
+        initObserver()
     }
 
     /**
@@ -93,11 +80,7 @@ class MainActivity : AppCompatActivity() {
         binding.search.requestFocus()
         binding.recyclerView.adapter = adapter
         binding.search.addTextChangedListener(onTextChanged = { text, _, _, _ ->
-            val result = searchFilter(apps, text.toString())
-            adapter.submitList(result)
-            if (result.size == 1 && config.launchRightNow) {
-                result[0].launch(this@MainActivity, appDao)
-            }
+            viewModel.search(text.toString().trim())
         })
     }
 
@@ -107,17 +90,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchFilter(origin: List<AppModel>, key: String): List<AppModel> {
-        val result = mutableListOf<AppModel>()
-        for (i in origin.indices) {
-            origin[i].let {
-                if (it.match(key)) {
-                    result.add(it)
-                }
+    private fun initObserver() {
+        lifecycleScope.launch {
+            viewModel.list.collectLatest {
+                adapter.submitList(it)
             }
         }
-        return result
     }
+
 
     private fun initWindowStyle(activity: Activity) {
         val window = activity.window
