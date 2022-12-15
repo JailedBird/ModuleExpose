@@ -49,10 +49,11 @@ class MainViewModel @Inject constructor(
             appsFlow.collectLatest {
                 // Careful dead loop by observer
                 if (it.isEmpty()) {
-                    refreshAppDatabase()
+                    return@collectLatest
+                } else {
+                    apps = it
+                    updateResult(it, keyword)
                 }
-                apps = it
-                updateResult(it, keyword)
             }
         }
         // Ensure latest result apk

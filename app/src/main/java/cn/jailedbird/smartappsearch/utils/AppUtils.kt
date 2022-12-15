@@ -23,14 +23,12 @@ object AppUtils {
                 pm.queryIntentActivities(mainIntent, PackageManager.MATCH_ALL)
             Collections.sort(resolveInfoList, ResolveInfo.DisplayNameComparator(pm))
             val res = mutableListOf<AppModel>()
-            var index = 0
             resolveInfoList.forEach { reInfo ->
                 val activityName = reInfo.activityInfo.name
                 val pkgName = reInfo.activityInfo.packageName
                 val appLabel = reInfo.loadLabel(pm) as String
 
                 val item = AppModel(
-                    appId = index++,
                     appPackageName = pkgName,
                     appName = appLabel,
                     appNamePinyin = appLabel.toPinyin()?.lowercase(Locale.ENGLISH),

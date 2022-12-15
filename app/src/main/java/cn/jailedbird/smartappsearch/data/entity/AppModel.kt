@@ -2,15 +2,11 @@ package cn.jailedbird.smartappsearch.data.entity
 
 import android.content.Context
 import androidx.recyclerview.widget.DiffUtil
-import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import cn.jailedbird.smartappsearch.utils.launchApk
 
-@Entity(tableName = "apps")
+@Entity(tableName = "apps", primaryKeys = ["appPackageName", "appName"])
 data class AppModel(
-    @PrimaryKey @ColumnInfo(name = "id")
-    var appId: Int,
     var appPackageName: String,
     var appName: String,
     var appNamePinyin: String? = null,
@@ -31,12 +27,12 @@ data class AppModel(
 
     class Diff : DiffUtil.ItemCallback<AppModel>() {
         override fun areItemsTheSame(oldItem: AppModel, newItem: AppModel): Boolean {
-            return oldItem.appId == newItem.appId
+            return oldItem.appPackageName == newItem.appPackageName &&
+                    oldItem.appName == newItem.appName
         }
 
         override fun areContentsTheSame(oldItem: AppModel, newItem: AppModel): Boolean {
-            return oldItem.appId == newItem.appId &&
-                    oldItem.appPackageName == newItem.appPackageName &&
+            return oldItem.appPackageName == newItem.appPackageName &&
                     oldItem.appName == newItem.appName
         }
 
