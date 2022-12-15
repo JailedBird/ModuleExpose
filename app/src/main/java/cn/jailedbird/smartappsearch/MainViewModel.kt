@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cn.jailedbird.smartappsearch.data.AppDao
 import cn.jailedbird.smartappsearch.data.AppRepository
 import cn.jailedbird.smartappsearch.data.entity.AppModel
 import cn.jailedbird.smartappsearch.utils.AppUtils
@@ -32,9 +31,6 @@ class MainViewModel @Inject constructor(
     companion object {
         private const val APP_SEARCH = "APP_SEARCH_KEYWORD"
     }
-
-    @Inject
-    lateinit var appDao: AppDao
 
     // Latest memory cache for all apk
     private var apps = emptyList<AppModel>()

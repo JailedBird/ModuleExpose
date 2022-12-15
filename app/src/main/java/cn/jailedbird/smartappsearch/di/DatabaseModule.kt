@@ -17,8 +17,8 @@
 package cn.jailedbird.smartappsearch.di
 
 import android.content.Context
-import cn.jailedbird.smartappsearch.data.AppDatabase
 import cn.jailedbird.smartappsearch.data.AppDao
+import cn.jailedbird.smartappsearch.data.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

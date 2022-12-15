@@ -5,8 +5,8 @@ import android.view.Gravity
 import android.view.View
 import androidx.core.widget.PopupWindowCompat
 import cn.jailedbird.smartappsearch.R
-import cn.jailedbird.smartappsearch.databinding.PopUpAppListBinding
 import cn.jailedbird.smartappsearch.data.entity.AppModel
+import cn.jailedbird.smartappsearch.databinding.PopUpAppListBinding
 import cn.jailedbird.smartappsearch.utils.gotoApkSettings
 import cn.jailedbird.smartappsearch.utils.setDebouncedClick
 import cn.jailedbird.smartappsearch.utils.uninstallApk

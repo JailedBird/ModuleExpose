@@ -1,7 +1,6 @@
 package cn.jailedbird.smartappsearch.data
 
 import cn.jailedbird.smartappsearch.data.entity.AppModel
-import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 import javax.inject.Singleton
 

@@ -8,9 +8,6 @@ import android.content.IntentFilter
 import cn.jailedbird.smartappsearch.utils.log
 import cn.jailedbird.smartappsearch.utils.toast
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
 @HiltAndroidApp
