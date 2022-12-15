@@ -1,5 +1,6 @@
 package cn.jailedbird.smartappsearch
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -18,13 +19,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
 @HiltViewModel
+@SuppressLint("StaticFieldLeak")
 class MainViewModel @Inject constructor(
-    repository: AppRepository,
-    @ApplicationContext context: Context,
+    @ApplicationContext private val context: Context,
+    private val repository: AppRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     companion object {
@@ -46,16 +49,25 @@ class MainViewModel @Inject constructor(
 
     init {
         keyword = savedStateHandle.get<String>(APP_SEARCH) ?: EMPTY
+        // Fast path: get result from room
         viewModelScope.launch {
             appsFlow.collectLatest {
                 // Careful dead loop by observer
                 if (it.isEmpty()) {
-                    AppUtils.refresh(context, appDao)
+                    refreshAppDatabase()
                 }
                 apps = it
                 updateResult(it, keyword)
             }
         }
+        // Ensure latest result apk
+        viewModelScope.launch {
+            refreshAppDatabase()
+        }
+    }
+
+    suspend fun refreshAppDatabase() = withContext(Dispatchers.IO) {
+        repository.insertAll(AppUtils.getAppsFromPackageManager(context))
     }
 
     private fun updateResult(apps: List<AppModel>, key: String) {

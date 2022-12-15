@@ -15,7 +15,10 @@ import cn.jailedbird.smartappsearch.data.AppDao
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
 import cn.jailedbird.smartappsearch.model.ConfigModel
-import cn.jailedbird.smartappsearch.utils.*
+import cn.jailedbird.smartappsearch.utils.setDebouncedClick
+import cn.jailedbird.smartappsearch.utils.showKeyboard
+import cn.jailedbird.smartappsearch.utils.toPx
+import cn.jailedbird.smartappsearch.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,15 +31,14 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var appDao: AppDao
-    private val adapter by lazy { AppListAdapter(appDao) }
-    // private var apps = emptyList<AppModel>()
+    private val adapter = AppListAdapter()
 
     private val viewModel by viewModels<MainViewModel>()
 
     private val listener = object : AppSettingsPopWindow.Listener {
         override fun refreshApp() {
             lifecycleScope.launch {
-                AppUtils.refresh(this@MainActivity, appDao)
+                viewModel.refreshAppDatabase()
             }
         }
 

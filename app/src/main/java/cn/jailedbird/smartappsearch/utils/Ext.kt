@@ -125,3 +125,15 @@ private fun Context.isLightSystemTheme(): Boolean {
         }
     }
 }
+
+internal fun Long.timer(label: String, withToast: Boolean = false): Long {
+    val startTime = this
+    val spend: Long = ((System.nanoTime() - startTime) / 1000_000)
+    "$label cost $spend ms".apply {
+        if (withToast) {
+            this.toast()
+        }
+        this.log()
+    }
+    return spend
+}
