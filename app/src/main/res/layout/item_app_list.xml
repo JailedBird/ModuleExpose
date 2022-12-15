@@ -6,7 +6,7 @@
 
         <variable
             name="bean"
-            type="cn.jailedbird.smartappsearch.model.AppModel" />
+            type="cn.jailedbird.smartappsearch.data.entity.AppModel" />
         <variable
             name="job"
             type="kotlinx.coroutines.Job" />

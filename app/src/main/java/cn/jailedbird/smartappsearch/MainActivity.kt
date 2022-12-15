@@ -10,24 +10,32 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import cn.jailedbird.smartappsearch.adapter.AppListAdapter
+import cn.jailedbird.smartappsearch.data.AppDao
+import cn.jailedbird.smartappsearch.data.entity.AppModel
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
-import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.model.ConfigModel
 import cn.jailedbird.smartappsearch.utils.*
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val config = ConfigModel()
-    private val adapter = AppListAdapter()
+
+    @Inject
+    lateinit var appDao: AppDao
+    private val adapter by lazy { AppListAdapter(appDao) }
     private var apps = emptyList<AppModel>()
+
 
     private val listener = object : AppSettingsPopWindow.Listener {
         override fun refreshApp() {
             "refreshApp".toast()
             lifecycleScope.launch {
-                apps = AppUtils.refresh(this@MainActivity)
+                apps = AppUtils.refresh(this@MainActivity, appDao)
                 lifecycleScope.launchWhenStarted {
                     adapter.submitList(apps)
                 }
@@ -53,19 +61,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             // Fast path: get Apps info from Room
-            apps = AppUtils.getAppsFromRoom()
+            apps = AppUtils.getAppsFromRoom(appDao)
             // Slow path: get Apps info from PackageManager
             if (apps.isEmpty()) {
-                apps = AppUtils.refresh(this@MainActivity)
+                apps = AppUtils.refresh(this@MainActivity, appDao)
             }
             // submit info when list has init
             lifecycleScope.launchWhenStarted {
                 adapter.submitList(apps)
             }
         }
-        super.onCreate(savedInstanceState)
         // Please use NoActionBar theme
         window.requestFeature(Window.FEATURE_NO_TITLE)
         // prettify Window as Dialog style, Do this when Window is attached
@@ -88,7 +96,7 @@ class MainActivity : AppCompatActivity() {
             val result = searchFilter(apps, text.toString())
             adapter.submitList(result)
             if (result.size == 1 && config.launchRightNow) {
-                result[0].launch(this@MainActivity)
+                result[0].launch(this@MainActivity, appDao)
             }
         })
     }

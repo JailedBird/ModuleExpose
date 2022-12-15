@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import cn.jailedbird.smartappsearch.data.AppDatabase
-import cn.jailedbird.smartappsearch.model.AppModel
+import cn.jailedbird.smartappsearch.data.AppDao
+import cn.jailedbird.smartappsearch.data.entity.AppModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -52,20 +52,21 @@ object AppUtils {
             return@withContext res
         }
 
-    private suspend fun saveAppsToRoom(apps: List<AppModel>) = withContext(Dispatchers.IO) {
-        if (apps.isNotEmpty()) {
-            val startTime = System.nanoTime()
-            AppDatabase.getInstance().appModelDao().insertAll(apps)
-            "saveAppsToRoom() cost ${(System.nanoTime() - startTime) / 1000_000} ms".apply {
-                this.toast()
-                this.log()
+    private suspend fun saveAppsToRoom(apps: List<AppModel>, appDao: AppDao) =
+        withContext(Dispatchers.IO) {
+            if (apps.isNotEmpty()) {
+                val startTime = System.nanoTime()
+                appDao.insertAll(apps)
+                "saveAppsToRoom() cost ${(System.nanoTime() - startTime) / 1000_000} ms".apply {
+                    this.toast()
+                    this.log()
+                }
             }
         }
-    }
 
-    suspend fun getAppsFromRoom(): List<AppModel> {
+    suspend fun getAppsFromRoom(appDao: AppDao): List<AppModel> {
         val startTime = System.nanoTime()
-        val res = AppDatabase.getInstance().appModelDao().getApps()
+        val res = appDao.getApps()
         "getAppsFromRoom() cost ${(System.nanoTime() - startTime) / 1000_000} ms".apply {
             this.toast()
             this.log()
@@ -76,9 +77,9 @@ object AppUtils {
     /**
      * Get origin PackageInfo from PackageManager, and save it into room
      * */
-    suspend fun refresh(context: Context): List<AppModel> {
+    suspend fun refresh(context: Context, appDao: AppDao): List<AppModel> {
         val res = getAppsFromPackageManager(context)
-        saveAppsToRoom(res)
+        saveAppsToRoom(res, appDao)
         return res
     }
 }

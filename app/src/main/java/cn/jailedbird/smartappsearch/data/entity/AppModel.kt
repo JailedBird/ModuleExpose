@@ -1,12 +1,12 @@
-package cn.jailedbird.smartappsearch.model
+package cn.jailedbird.smartappsearch.data.entity
 
 import android.content.Context
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import cn.jailedbird.smartappsearch.data.AppDao
 import cn.jailedbird.smartappsearch.utils.AppUtils
-import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.launchApk
 import cn.jailedbird.smartappsearch.utils.log
 import kotlinx.coroutines.*
@@ -21,18 +21,18 @@ data class AppModel(
     /* var launch: Intent? = null*/
 ) {
     @OptIn(DelicateCoroutinesApi::class)
-    fun launch(context: Context) {
+    fun launch(context: Context, appDao: AppDao) {
         if (!context.launchApk(appPackageName)) {
             return
         }
         // Use [GlobalScope] rather than LifecycleOwner to ensure [launch] must be execute
         GlobalScope.launch(Dispatchers.IO) {
             withTimeout(3000) {
-                val apps = AppUtils.refresh(context)
+                val apps = AppUtils.refresh(context, appDao)
                 "Save ok items(${apps.size})".log()
             }
             "kill process".log()
-            context.finishProcess()
+            // context.finishProcess()
         }
         // When launch success
         // if (context is LifecycleOwner) {

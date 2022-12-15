@@ -3,9 +3,10 @@ package cn.jailedbird.smartappsearch.adapter
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import cn.jailedbird.smartappsearch.R
+import cn.jailedbird.smartappsearch.data.AppDao
+import cn.jailedbird.smartappsearch.data.entity.AppModel
 import cn.jailedbird.smartappsearch.databinding.ItemAppListBinding
 import cn.jailedbird.smartappsearch.dialog.AppListPopWindow
-import cn.jailedbird.smartappsearch.model.AppModel
 import cn.jailedbird.smartappsearch.utils.DebouncingUtils
 import cn.jailedbird.smartappsearch.utils.hideKeyboard
 import cn.jailedbird.smartappsearch.utils.log
@@ -13,7 +14,8 @@ import coil.load
 import kotlinx.coroutines.*
 
 
-class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppModel.Diff()) {
+class AppListAdapter(val appDao: AppDao) :
+    BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppModel.Diff()) {
     private lateinit var context: Context
     private val coroutineExceptionHandler =
         CoroutineExceptionHandler { _, throwable ->
@@ -63,7 +65,7 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
         binding.tvContent.setOnClickListener {
             if (DebouncingUtils.isValid(it)) {
                 context.hideKeyboard()
-                binding.bean?.launch(context)
+                binding.bean?.launch(context, appDao)
             }
         }
 

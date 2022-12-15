@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import cn.jailedbird.smartappsearch.App
-import cn.jailedbird.smartappsearch.model.AppModel
+import cn.jailedbird.smartappsearch.data.entity.AppModel
 import cn.jailedbird.smartappsearch.utils.DATABASE_NAME
 
 /**
@@ -14,7 +13,7 @@ import cn.jailedbird.smartappsearch.utils.DATABASE_NAME
  */
 @Database(entities = [AppModel::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun appModelDao(): AppModelDao
+    abstract fun appDao(): AppDao
 
     companion object {
 
@@ -22,9 +21,9 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var instance: AppDatabase? = null
 
-        fun getInstance(): AppDatabase {
+        fun getInstance(context: Context): AppDatabase {
             return instance ?: synchronized(this) {
-                instance ?: buildDatabase(App.applicationContext).also { instance = it }
+                instance ?: buildDatabase(context).also { instance = it }
             }
         }
 
