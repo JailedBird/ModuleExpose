@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
+@Suppress("unused")
 abstract class BaseSimpleListAdapter<DB : ViewDataBinding, T>(
     df: DiffUtil.ItemCallback<T>,
 ) : ListAdapter<T, BaseSimpleListAdapter.ViewHolder<DB>>(df) {
