@@ -11,7 +11,7 @@ class SettingFragment : BaseVBFragment<FragmentSettingMainBinding>() {
         get() = FragmentSettingMainBinding::inflate
 
     override fun initView() {
-        binding.toolBarLayout.paddingTopSystemWindowInsets()
+        binding.appbar.paddingTopSystemWindowInsets()
 
     }
 
