@@ -30,7 +30,7 @@ data class AppModel(
             true
         } else {
             appName.startsWith(key, ignoreCase = true) ||
-                    (!appNamePinyin.isNullOrEmpty() && appNamePinyin!!.startsWith(key))
+                    (!appNamePinyin.isNullOrEmpty() && appNamePinyin.startsWith(key))
         }
     }
 
