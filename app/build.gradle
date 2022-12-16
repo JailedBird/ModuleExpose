@@ -46,7 +46,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.activity:activity-ktx:1.6.1'
     implementation("io.coil-kt:coil:2.2.2")
-    // implementation("com.google.android.material:material:1.4.0")
+    implementation("com.google.android.material:material:1.4.0")
     // Room
     def room_version = "2.4.3"
     implementation("androidx.room:room-runtime:$room_version")
