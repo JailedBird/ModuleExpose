@@ -1,50 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:gravity="center_vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="8dp"
+    android:orientation="horizontal">
 
-    <data>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="4dp"
+        tools:src="@drawable/ic_android" />
 
-        <variable
-            name="bean"
-            type="cn.jailedbird.smartappsearch.data.entity.AppModel" />
-        <variable
-            name="job"
-            type="kotlinx.coroutines.Job" />
-    </data>
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvContent"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="1"
+        android:ellipsize="middle"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:singleLine="true"
+        android:text="@{bean.appName}"
+        tools:text="App simple name" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ivIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="4dp"
-            tools:src="@drawable/ic_android" />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivMore"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginVertical="2dp"
+        android:paddingStart="12dp"
+        android:src="@drawable/ic_baseline_more_vert_24" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvContent"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_weight="1"
-            android:ellipsize="middle"
-            android:gravity="center_vertical"
-            android:singleLine="true"
-            android:text="@{bean.appName}"
-            tools:text="App simple name" />
+</androidx.appcompat.widget.LinearLayoutCompat>
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ivMore"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginVertical="2dp"
-            android:paddingStart="12dp"
-            android:src="@drawable/ic_baseline_more_vert_24" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-</layout>

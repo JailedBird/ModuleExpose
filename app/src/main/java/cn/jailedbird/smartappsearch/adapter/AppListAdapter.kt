@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import cn.jailedbird.smartappsearch.R
 import cn.jailedbird.smartappsearch.data.entity.AppModel
-import cn.jailedbird.smartappsearch.databinding.ItemAppListBinding
+import cn.jailedbird.smartappsearch.databinding.ItemAppListDataBindingBinding
 import cn.jailedbird.smartappsearch.dialog.AppListPopWindow
 import cn.jailedbird.smartappsearch.utils.DebouncingUtils
 import cn.jailedbird.smartappsearch.utils.hideKeyboard
@@ -12,8 +12,9 @@ import cn.jailedbird.smartappsearch.utils.log
 import coil.load
 import kotlinx.coroutines.*
 
-
-class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppModel.Diff()) {
+@Deprecated("Please reference [AppListTwoTypeAdapter]")
+class AppListAdapter :
+    BaseSimpleListAdapter<ItemAppListDataBindingBinding, AppModel>(AppModel.Diff()) {
 
     private lateinit var context: Context
 
@@ -38,7 +39,7 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
         scope.cancel("onDetachedFromRecyclerView, cancel this scope")
     }
 
-    override fun bind(bean: AppModel?, binding: ItemAppListBinding) {
+    override fun bind(bean: AppModel?, binding: ItemAppListDataBindingBinding) {
         binding.bean = bean
 
         bean?.let {
@@ -62,7 +63,7 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
         binding.executePendingBindings()
     }
 
-    override fun event(binding: ItemAppListBinding) {
+    override fun event(binding: ItemAppListDataBindingBinding) {
         binding.root.setOnClickListener {
             if (DebouncingUtils.isValid(it)) {
                 context.hideKeyboard()
@@ -77,6 +78,5 @@ class AppListAdapter : BaseSimpleListAdapter<ItemAppListBinding, AppModel>(AppMo
         }
 
     }
-
 
 }
