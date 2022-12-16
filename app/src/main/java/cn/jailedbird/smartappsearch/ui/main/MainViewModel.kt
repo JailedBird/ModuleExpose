@@ -1,4 +1,4 @@
-package cn.jailedbird.smartappsearch
+package cn.jailedbird.smartappsearch.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context

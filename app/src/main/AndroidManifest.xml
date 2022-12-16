@@ -20,7 +20,7 @@
         android:theme="@style/Theme.SmartAppSearch"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SmartAppSearch.Dialog">
             <intent-filter>
@@ -31,7 +31,7 @@
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.setting.SettingsActivity"
             android:exported="false"
             android:theme="@style/Theme.SmartAppSearch" />
     </application>

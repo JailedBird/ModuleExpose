@@ -1,6 +1,7 @@
-package cn.jailedbird.smartappsearch
+package cn.jailedbird.smartappsearch.ui.main
 
 import android.app.Activity
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -13,10 +14,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
+import cn.jailedbird.smartappsearch.BuildConfig
 import cn.jailedbird.smartappsearch.adapter.AppListTwoTypeAdapter
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
 import cn.jailedbird.smartappsearch.model.AppConfig
+import cn.jailedbird.smartappsearch.ui.setting.SettingsActivity
 import cn.jailedbird.smartappsearch.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +61,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // Please use NoActionBar theme
         window.requestFeature(Window.FEATURE_NO_TITLE)
         // prettify Window as Dialog style, Do this when Window is attached
@@ -70,6 +72,13 @@ class MainActivity : AppCompatActivity() {
         initView()
         initEvent()
         initObserver()
+        quickDebug()
+    }
+
+    private fun quickDebug() {
+        if (BuildConfig.DEBUG) {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
     }
 
     /**
