@@ -13,16 +13,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
-import cn.jailedbird.smartappsearch.adapter.AppListAdapter
 import cn.jailedbird.smartappsearch.adapter.AppListTwoTypeAdapter
 import cn.jailedbird.smartappsearch.data.AppDao
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
 import cn.jailedbird.smartappsearch.model.AppConfig
-import cn.jailedbird.smartappsearch.utils.*
+import cn.jailedbird.smartappsearch.utils.setDebouncedClick
+import cn.jailedbird.smartappsearch.utils.showKeyboard
+import cn.jailedbird.smartappsearch.utils.toPx
+import cn.jailedbird.smartappsearch.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -91,10 +91,11 @@ class MainActivity : AppCompatActivity() {
         initSearch(binding.search) {
             if (adapter.itemCount > 0) {
                 adapter.currentList[0].launch(this@MainActivity)
-                lifecycleScope.launch(Dispatchers.IO) {
+                // TODO place app finish
+                /*lifecycleScope.launch(Dispatchers.IO) {
                     delay(AppConfig.LAUNCH_DELAY_TIME)
                     this@MainActivity.finishProcess()
-                }
+                }*/
             }
         }
 

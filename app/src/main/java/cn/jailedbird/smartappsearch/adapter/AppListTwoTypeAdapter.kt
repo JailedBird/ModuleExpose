@@ -5,13 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.databinding.DataBindingUtil
+import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import cn.jailedbird.smartappsearch.R
 import cn.jailedbird.smartappsearch.data.entity.AppModel
-import cn.jailedbird.smartappsearch.databinding.ItemAppListBinding
-import cn.jailedbird.smartappsearch.databinding.ItemAppListFirstBinding
 import cn.jailedbird.smartappsearch.dialog.AppListPopWindow
 import cn.jailedbird.smartappsearch.utils.DebouncingUtils
 import cn.jailedbird.smartappsearch.utils.hideKeyboard
@@ -19,73 +17,41 @@ import cn.jailedbird.smartappsearch.utils.log
 import coil.load
 import kotlinx.coroutines.*
 
-
 class AppListTwoTypeAdapter :
     ListAdapter<AppModel, AppListTwoTypeAdapter.ViewHolder>(AppModel.Diff()) {
 
-    class ViewHolder(private val view: View, private val viewType: Int) :
+    class ViewHolder(private val view: View) :
         RecyclerView.ViewHolder(view) {
+        val ivIcon: ImageView = view.findViewById(R.id.ivIcon)
+        private val ivMore: ImageView = view.findViewById(R.id.ivMore)
+        val tvContent: TextView = view.findViewById(R.id.tvContent)
 
-        private val bindingFirst: ItemAppListFirstBinding by lazy(LazyThreadSafetyMode.NONE) {
-            DataBindingUtil.bind(view)!!
-        }
-        private val bindingNotFirst: ItemAppListBinding by lazy(LazyThreadSafetyMode.NONE) {
-            DataBindingUtil.bind(view)!!
-        }
-
-        val holderIcon: ImageView
-            get() = if (viewType == R.layout.item_app_list_first) {
-                bindingFirst.ivIcon
-            } else {
-                bindingNotFirst.ivIcon
+        init {
+            view.setOnClickListener {
+                if (DebouncingUtils.isValid(it)) {
+                    view.context.hideKeyboard()
+                    bean?.launch(view.context)
+                }
             }
-        val holderMore: ImageView
-            get() = if (viewType == R.layout.item_app_list_first) {
-                bindingFirst.ivMore
-            } else {
-                bindingNotFirst.ivMore
+
+            ivMore.setOnClickListener {
+                if (DebouncingUtils.isValid(it)) {
+                    AppListPopWindow.open(view.context, it, bean)
+                }
+            }
+        }
+
+        var job: Job?
+            get() = view.getTag(R.id.tag_job) as? Job
+            set(value) {
+                view.setTag(R.id.tag_job, value)
             }
 
         var bean: AppModel?
-            get() {
-                return if (viewType == R.layout.item_app_list_first) {
-                    bindingFirst.bean
-                } else {
-                    bindingNotFirst.bean
-                }
-            }
+            get() = view.getTag(R.id.tag_bean) as? AppModel
             set(value) {
-                if (viewType == R.layout.item_app_list_first) {
-                    bindingFirst.bean = value
-                } else {
-                    bindingNotFirst.bean = value
-                }
+                view.setTag(R.id.tag_bean, value)
             }
-
-        var job: Job?
-            get() {
-                return if (viewType == R.layout.item_app_list_first) {
-                    bindingFirst.job
-                } else {
-                    bindingNotFirst.job
-                }
-            }
-            set(value) {
-                if (viewType == R.layout.item_app_list_first) {
-                    bindingFirst.job = value
-                } else {
-                    bindingNotFirst.job = value
-                }
-            }
-
-
-        fun executeBind() {
-            if (viewType == R.layout.item_app_list_first) {
-                bindingFirst.executePendingBindings()
-            } else {
-                bindingNotFirst.executePendingBindings()
-            }
-        }
     }
 
     private lateinit var context: Context
@@ -115,41 +81,29 @@ class AppListTwoTypeAdapter :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(viewType, parent, false)
-        return ViewHolder(view, viewType).apply {
-            view.setOnClickListener {
-                if (DebouncingUtils.isValid(it)) {
-                    context.hideKeyboard()
-                    bean?.launch(context)
-                }
-            }
-
-            holderMore.setOnClickListener {
-                if (DebouncingUtils.isValid(it)) {
-                    AppListPopWindow.open(context, it, bean)
-                }
-            }
-        }
+        @Suppress("UnnecessaryVariable")
+        val layoutRes = viewType
+        val view = LayoutInflater.from(context).inflate(layoutRes, parent, false)
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val bean = getItem(position)
+        val bean = getItem(position) ?: return
+        holder.tvContent.text = bean.appName
         holder.bean = bean
-        bean?.let {
-            holder.job?.cancel()
-            val job = scope.launch(Dispatchers.IO) {
-                // Spend time function, place it in IO
-                // Make spend function getApplicationIcon can response cancel
-                val drawable = runInterruptible {
-                    context.packageManager.getApplicationIcon(it.appPackageName)
-                }
-                holder.holderIcon.load(drawable) {
-                    placeholder(R.drawable.ic_android)
-                    error(R.drawable.ic_android)
-                }
+        holder.job?.cancel()
+        // Spend time function, place it in IO
+        // Notes: Please cancel the last job to avoid the removal task being out of order;
+        // also can ensure performance
+        holder.job = scope.launch(Dispatchers.IO) {
+            // Make spend function getApplicationIcon can response coroutine cancel
+            val drawable = runInterruptible {
+                context.packageManager.getApplicationIcon(bean.appPackageName)
             }
-            holder.job = job
+            holder.ivIcon.load(drawable) {
+                placeholder(R.drawable.ic_android)
+                error(R.drawable.ic_android)
+            }
         }
-        holder.executeBind()
     }
 }
