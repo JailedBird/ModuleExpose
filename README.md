@@ -2,6 +2,20 @@
 
 SmartAppSearch is a simple and smart app launcher
 
+
+
+Bug & Confuse
+
+1、 elevation阴影失效
+
+解决方案：为View添加非透明的背景色
+
+方案来源：[Android "elevation" not showing a shadow](https://stackoverflow.com/questions/27477371/android-elevation-not-showing-a-shadow)
+
+
+
+2、 
+
 ## TODO
 
 - 添加匹配规则，使用首字符匹配or非首字母按顺序匹配

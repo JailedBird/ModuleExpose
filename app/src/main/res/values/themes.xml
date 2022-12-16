@@ -10,8 +10,6 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.SmartAppSearch.Material" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
-
     <!-- Base application theme. -->
     <style name="Base.AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
@@ -21,10 +19,6 @@
         <item name="colorOnSecondary">@color/color_on_secondary</item>
         <item name="colorControlLight">@color/color_control_light</item>
         <item name="colorSurfaceSecondary">@color/color_surface_secondary</item>
-
-        <!-- Window decor -->
-        <item name="android:statusBarColor">@color/transparent</item>
-        <item name="android:navigationBarColor">@color/nav_bar_scrim</item>
 
         <!-- Widget styles -->
         <item name="toolbarStyle">@style/Widget.IOSched.Toolbar</item>

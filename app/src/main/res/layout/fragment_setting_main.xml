@@ -15,11 +15,8 @@
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_ios_24"
             app:title="Settings" />
     </FrameLayout>
-
-
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>
