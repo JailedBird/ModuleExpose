@@ -1,5 +1,6 @@
 package cn.jailedbird.smartappsearch.data.entity
 
+import android.app.Activity
 import android.content.Context
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Entity
@@ -20,7 +21,9 @@ data class AppModel(
             @OptIn(DelicateCoroutinesApi::class)
             GlobalScope.launch(Dispatchers.IO) {
                 delay(AppConfig.LAUNCH_DELAY_TIME)
-                context.finishProcess()
+                if (context is Activity) {
+                    context.finish()
+                }
             }
         }
     }

@@ -77,7 +77,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initView()
         initEvent()
-        initObserver()/* quickDebug()*/
+        initObserver()
+        /* quickDebug()*/
     }
 
     private fun quickDebug() {
@@ -99,10 +100,9 @@ class MainActivity : AppCompatActivity() {
         initSearch(binding.search) {
             if (adapter.itemCount > 0) {
                 adapter.currentList[0].launch(this@MainActivity)
-                // TODO place app finish
                 lifecycleScope.launch(Dispatchers.IO) {
                     delay(AppConfig.LAUNCH_DELAY_TIME)
-                    this@MainActivity.finishProcess()
+                    finish()
                 }
             }
         }
