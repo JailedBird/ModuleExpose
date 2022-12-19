@@ -6,58 +6,12 @@ import cn.jailedbird.smartappsearch.R
 import com.tencent.mmkv.MMKV
 import java.net.Proxy
 
-object Preferences /*: MMKVContentChangeNotification*/ {
+object Preferences  {
     private lateinit var kv: MMKV
-
-    /*private val mutableSubject = MutableSharedFlow<Key<*>>()
-    val subject = mutableSubject.asSharedFlow()*/
-
-    private val keys = sequenceOf(
-        Key.Language,
-        Key.AutoSync,
-        Key.AutoSyncInterval,
-        Key.ReleasesCacheRetention,
-        Key.ImagesCacheRetention,
-        Key.InstallAfterSync,
-        Key.IncompatibleVersions,
-        Key.ShowScreenshots,
-        Key.UpdatedApps,
-        Key.NewApps,
-        Key.ProxyHost,
-        Key.ProxyPort,
-        Key.ProxyType,
-        Key.RootSessionInstaller,
-        Key.SortOrderAscendingExplore,
-        Key.SortOrderAscendingLatest,
-        Key.SortOrderAscendingInstalled,
-        Key.ReposFilterExplore,
-        Key.ReposFilterLatest,
-        Key.ReposFilterInstalled,
-        Key.CategoriesFilterExplore,
-        Key.CategoriesFilterLatest,
-        Key.CategoriesFilterInstalled,
-        Key.Theme,
-        Key.UpdateNotify,
-        Key.UpdateUnstable,
-        Key.IgnoreIgnoreBatteryOptimization,
-        // New
-        Key.ImeAutoPop,
-        Key.LaunchDirect,
-    ).map { Pair(it.name, it) }.toMap()
 
     fun init(context: Context) {
         kv = MMKV.mmkvWithID("${context.packageName}_settings")
-        // kv.registerOnSharedPreferenceChangeListener(this)
     }
-
-    /*override fun onContentChangedByOuterProcess(key: String?) {
-        key ?: return
-        CoroutineScope(Dispatchers.Default).launch {
-            keys[key]?.let {
-                mutableSubject.emit(it)
-            }
-        }
-    }*/
 
     sealed class Value<T> {
         abstract val value: T
@@ -289,7 +243,7 @@ object Preferences /*: MMKVContentChangeNotification*/ {
         return key.default.get(kv, key.name, key.default)
     }
 
-    operator fun <T> set(key: Key<T>, @Suppress("SpellCheckingInspection") value: T) {
+    operator fun <T> set(key: Key<T>, value: T) {
         key.default.set(kv, key.name, value)
     }
 
