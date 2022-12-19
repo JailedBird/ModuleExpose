@@ -42,22 +42,32 @@
                 android:text="@string/settings_theme_title" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swCenterMatch"
                 style="@style/Widget.IOSched.Settings.Switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/enable_infix_match" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swInIng"
                 style="@style/Widget.IOSched.Settings.Switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/enable_confuse_ing" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swDirectLaunch"
                 style="@style/Widget.IOSched.Settings.Switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/enable_auto_open_app" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swAutoPopIme"
+                style="@style/Widget.IOSched.Settings.Switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/enable_auto_pop_ime" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.core.widget.NestedScrollView>

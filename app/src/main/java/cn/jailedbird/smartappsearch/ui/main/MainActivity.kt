@@ -16,6 +16,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import cn.jailedbird.smartappsearch.BuildConfig
 import cn.jailedbird.smartappsearch.adapter.AppListTwoTypeAdapter
+import cn.jailedbird.smartappsearch.config.Preferences
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
 import cn.jailedbird.smartappsearch.model.AppConfig
@@ -30,7 +31,13 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val config = AppConfig()
+    private val autoPopIme by lazy(LazyThreadSafetyMode.NONE) {
+        Preferences[Preferences.Key.ImeAutoPop]
+    }
+
+    private val autoLaunchApp by lazy(LazyThreadSafetyMode.NONE) {
+        Preferences[Preferences.Key.LaunchDirect]
+    }
 
     private val adapter = AppListTwoTypeAdapter()
     private val viewModel by viewModels<MainViewModel>()
@@ -55,7 +62,6 @@ class MainActivity : AppCompatActivity() {
         override fun settings() {
             SettingsActivity.start(this@MainActivity)
         }
-
     }
 
 
@@ -71,8 +77,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initView()
         initEvent()
-        initObserver()
-        quickDebug()
+        initObserver()/* quickDebug()*/
     }
 
     private fun quickDebug() {
@@ -114,10 +119,12 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.list.collectLatest {
                 adapter.submitList(it)
+                if (it.size == 1 && autoLaunchApp) {
+                    adapter.currentList[0].launch(this@MainActivity)
+                }
             }
         }
     }
-
 
     private fun initWindowStyle(activity: Activity) {
         val window = activity.window
@@ -128,9 +135,7 @@ class MainActivity : AppCompatActivity() {
         val heightPercent = 0.55f
         window.setLayout((width * widthPercent).toInt(), (height * heightPercent).toInt())
         activity.setFinishOnTouchOutside(true)
-        if (config.popImeWhenStart) {
-            activity.showKeyboard()
-        }
+
         window.decorView.background = GradientDrawable().apply {
             cornerRadius = 8.toPx()
             shape = GradientDrawable.RECTANGLE
@@ -155,6 +160,15 @@ class MainActivity : AppCompatActivity() {
             } else {
                 false
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (autoPopIme) {
+            showKeyboard()
+        } else { // Avoid ime pop due to other reason
+            hideKeyboard()
         }
     }
 

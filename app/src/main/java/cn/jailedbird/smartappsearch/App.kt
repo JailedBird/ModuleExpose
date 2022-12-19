@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import cn.jailedbird.smartappsearch.config.Preferences
 
 
 @HiltAndroidApp
@@ -29,6 +30,7 @@ class App : Application() {
         super.onCreate()
         _applicationContext = this
         listenApkChange()
+        Preferences.init(this)
     }
 
     @Inject
