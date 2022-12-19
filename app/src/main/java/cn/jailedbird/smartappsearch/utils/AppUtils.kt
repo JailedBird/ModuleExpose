@@ -37,7 +37,7 @@ object AppUtils {
                 item.toString().log()
                 res.add(item)
             }
-            startTime.timer("getAppsFromPackageManager", true)
+            startTime.timer("getAppsFromPackageManager", false)
             return@withContext res
         }
 
