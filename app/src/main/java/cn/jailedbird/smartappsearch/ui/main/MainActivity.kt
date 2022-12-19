@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
             viewModel.list.collectLatest {
                 adapter.submitList(it)
                 if (it.size == 1 && autoLaunchApp) {
-                    adapter.currentList[0].launch(this@MainActivity)
+                    it[0].launch(this@MainActivity)
                 }
             }
         }
