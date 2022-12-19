@@ -33,11 +33,15 @@ abstract class BaseSimplePopUp(context: Context) : PopupWindow() {
         height = ViewGroup.LayoutParams.WRAP_CONTENT
         width = ViewGroup.LayoutParams.WRAP_CONTENT
         isOutsideTouchable = true
+        /**
+         *  Avoid touch-event transparent to bottom view
+         *  [解决PopupWindow点击外部区域消失后事件透传](https://www.jianshu.com/p/6a65107b19a1)
+         */
+        isFocusable = true
         setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         @SuppressLint("InflateParams")
         val contentView: View = LayoutInflater.from(context).inflate(
-            getLayout(),
-            null, false
+            getLayout(), null, false
         )
         setContentView(contentView)
         initView(contentView)
