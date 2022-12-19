@@ -37,7 +37,7 @@ abstract class BaseSimplePopUp(context: Context) : PopupWindow() {
          *  Avoid touch-event transparent to bottom view
          *  [解决PopupWindow点击外部区域消失后事件透传](https://www.jianshu.com/p/6a65107b19a1)
          */
-        isFocusable = true
+        // isFocusable = true // TODO 这种方式会导致输入框失去焦点 键盘闪烁
         setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         @SuppressLint("InflateParams")
         val contentView: View = LayoutInflater.from(context).inflate(

@@ -31,13 +31,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val autoPopIme by lazy(LazyThreadSafetyMode.NONE) {
-        Preferences[Preferences.Key.ImeAutoPop]
-    }
-
-    private val autoLaunchApp by lazy(LazyThreadSafetyMode.NONE) {
-        Preferences[Preferences.Key.LaunchDirect]
-    }
 
     private val adapter = AppListTwoTypeAdapter()
     private val viewModel by viewModels<MainViewModel>()
@@ -119,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.list.collectLatest {
                 adapter.submitList(it)
-                if (it.size == 1 && autoLaunchApp) {
+                if (it.size == 1 && Preferences[Preferences.Key.LaunchDirect]) {
                     it[0].launch(this@MainActivity)
                 }
             }
@@ -165,7 +158,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (autoPopIme) {
+        if (Preferences[Preferences.Key.ImeAutoPop]) {
             showKeyboard()
         } else { // Avoid ime pop due to other reason
             hideKeyboard()
