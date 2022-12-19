@@ -1,22 +1,16 @@
 package cn.jailedbird.smartappsearch.config
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.appcompat.app.AppCompatDelegate
 import cn.jailedbird.smartappsearch.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import com.tencent.mmkv.MMKV
 import java.net.Proxy
 
-object Preferences : OnSharedPreferenceChangeListener {
-    private lateinit var preferences: SharedPreferences
+object Preferences /*: MMKVContentChangeNotification*/ {
+    private lateinit var kv: MMKV
 
-    private val mutableSubject = MutableSharedFlow<Key<*>>()
-    val subject = mutableSubject.asSharedFlow()
+    /*private val mutableSubject = MutableSharedFlow<Key<*>>()
+    val subject = mutableSubject.asSharedFlow()*/
 
     private val keys = sequenceOf(
         Key.Language,
@@ -52,90 +46,89 @@ object Preferences : OnSharedPreferenceChangeListener {
     ).map { Pair(it.name, it) }.toMap()
 
     fun init(context: Context) {
-        preferences = context.getSharedPreferences(
-            "${context.packageName}_preferences", Context.MODE_PRIVATE
-        )
-        preferences.registerOnSharedPreferenceChangeListener(this)
+        kv = MMKV.mmkvWithID("${context.packageName}_settings")
+        // kv.registerOnSharedPreferenceChangeListener(this)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    /*override fun onContentChangedByOuterProcess(key: String?) {
+        key ?: return
         CoroutineScope(Dispatchers.Default).launch {
             keys[key]?.let {
                 mutableSubject.emit(it)
             }
         }
-    }
+    }*/
 
     sealed class Value<T> {
         abstract val value: T
 
         internal abstract fun get(
-            preferences: SharedPreferences,
+            preferences: MMKV,
             key: String,
             defaultValue: Value<T>,
         ): T
 
-        internal abstract fun set(preferences: SharedPreferences, key: String, value: T)
+        internal abstract fun set(preferences: MMKV, key: String, value: T)
 
         class BooleanValue(override val value: Boolean) : Value<Boolean>() {
             override fun get(
-                preferences: SharedPreferences,
+                preferences: MMKV,
                 key: String,
                 defaultValue: Value<Boolean>,
             ): Boolean {
                 return preferences.getBoolean(key, defaultValue.value)
             }
 
-            override fun set(preferences: SharedPreferences, key: String, value: Boolean) {
+            override fun set(preferences: MMKV, key: String, value: Boolean) {
                 preferences.edit().putBoolean(key, value).apply()
             }
         }
 
         class IntValue(override val value: Int) : Value<Int>() {
             override fun get(
-                preferences: SharedPreferences,
+                preferences: MMKV,
                 key: String,
                 defaultValue: Value<Int>,
             ): Int {
                 return preferences.getInt(key, defaultValue.value)
             }
 
-            override fun set(preferences: SharedPreferences, key: String, value: Int) {
+            override fun set(preferences: MMKV, key: String, value: Int) {
                 preferences.edit().putInt(key, value).apply()
             }
         }
 
         class StringSetValue(override val value: Set<String>) : Value<Set<String>>() {
             override fun get(
-                preferences: SharedPreferences,
+                preferences: MMKV,
                 key: String,
                 defaultValue: Value<Set<String>>,
             ): Set<String> {
                 return preferences.getStringSet(key, defaultValue.value) ?: emptySet()
             }
 
-            override fun set(preferences: SharedPreferences, key: String, value: Set<String>) {
+            override fun set(preferences: MMKV, key: String, value: Set<String>) {
                 preferences.edit().putStringSet(key, value).apply()
             }
         }
 
         class StringValue(override val value: String) : Value<String>() {
             override fun get(
-                preferences: SharedPreferences,
+                preferences: MMKV,
                 key: String,
                 defaultValue: Value<String>,
             ): String {
                 return preferences.getString(key, defaultValue.value) ?: defaultValue.value
             }
 
-            override fun set(preferences: SharedPreferences, key: String, value: String) {
+            override fun set(preferences: MMKV, key: String, value: String) {
                 preferences.edit().putString(key, value).apply()
             }
         }
 
         class EnumerationValue<T : Enumeration<T>>(override val value: T) : Value<T>() {
             override fun get(
-                preferences: SharedPreferences,
+                preferences: MMKV,
                 key: String,
                 defaultValue: Value<T>,
             ): T {
@@ -144,7 +137,7 @@ object Preferences : OnSharedPreferenceChangeListener {
                     ?: defaultValue.value
             }
 
-            override fun set(preferences: SharedPreferences, key: String, value: T) {
+            override fun set(preferences: MMKV, key: String, value: T) {
                 preferences.edit().putString(key, value.valueString).apply()
             }
         }
@@ -293,10 +286,11 @@ object Preferences : OnSharedPreferenceChangeListener {
     }
 
     operator fun <T> get(key: Key<T>): T {
-        return key.default.get(preferences, key.name, key.default)
+        return key.default.get(kv, key.name, key.default)
     }
 
-    operator fun <T> set(key: Key<T>, value: T) {
-        key.default.set(preferences, key.name, value)
+    operator fun <T> set(key: Key<T>, @Suppress("SpellCheckingInspection") value: T) {
+        key.default.set(kv, key.name, value)
     }
+
 }

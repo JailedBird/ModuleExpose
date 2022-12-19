@@ -14,6 +14,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import cn.jailedbird.smartappsearch.config.Preferences
+import com.tencent.mmkv.MMKV
 
 
 @HiltAndroidApp
@@ -30,6 +31,7 @@ class App : Application() {
         super.onCreate()
         _applicationContext = this
         listenApkChange()
+        MMKV.initialize(this)
         Preferences.init(this)
     }
 
