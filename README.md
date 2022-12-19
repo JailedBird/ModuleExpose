@@ -14,7 +14,11 @@ Bug & Confuse
 
 
 
-2、 
+2、 Hilt注入运行时参数
+
+特别是针对Hilt的方案
+
+解决方案
 
 ## TODO
 

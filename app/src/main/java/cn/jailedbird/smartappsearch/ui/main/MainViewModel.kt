@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.jailedbird.smartappsearch.config.Preferences
 import cn.jailedbird.smartappsearch.data.AppRepository
 import cn.jailedbird.smartappsearch.data.entity.AppModel
 import cn.jailedbird.smartappsearch.utils.AppUtils
@@ -33,6 +34,9 @@ class MainViewModel @Inject constructor(
     }
 
     private var keyword = EMPTY
+    private val matchCenter: Boolean by lazy {
+        Preferences[Preferences.Key.MatchCenter]
+    }
 
     // Latest memory cache for all apk
     private var apps = emptyList<AppModel>()
@@ -76,7 +80,7 @@ class MainViewModel @Inject constructor(
         job = viewModelScope.launch((Dispatchers.IO)) {
             val res = mutableListOf<AppModel>()
             apps.forEach {
-                if (it.match(key)) {
+                if (it.match(key, matchCenter)) {
                     res.add(it)
                 }
             }

@@ -59,8 +59,9 @@ dependencies {
     implementation project(":lib")
     implementation("com.github.JailedBird:EdgeUtils:0.0.1-beta06")
     // Hilt https://developer.android.com/training/dependency-injection/hilt-android
-    implementation "com.google.dagger:hilt-android:2.44"
-    kapt "com.google.dagger:hilt-compiler:2.44"
+    def hilt = "2.44"
+    implementation "com.google.dagger:hilt-android:$hilt"
+    kapt "com.google.dagger:hilt-compiler:$hilt"
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
 

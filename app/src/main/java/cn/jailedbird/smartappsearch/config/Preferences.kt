@@ -45,7 +45,10 @@ object Preferences : OnSharedPreferenceChangeListener {
         Key.Theme,
         Key.UpdateNotify,
         Key.UpdateUnstable,
-        Key.IgnoreIgnoreBatteryOptimization
+        Key.IgnoreIgnoreBatteryOptimization,
+        // New
+        Key.ImeAutoPop,
+        Key.LaunchDirect,
     ).map { Pair(it.name, it) }.toMap()
 
     fun init(context: Context) {
@@ -177,6 +180,9 @@ object Preferences : OnSharedPreferenceChangeListener {
         object ImeAutoPop : Key<Boolean>("ime_auto_pop", Value.BooleanValue(true))
         object LaunchDirect :
             Key<Boolean>("launch_directly_when_only_one_choose", Value.BooleanValue(false))
+
+        object MatchCenter :
+            Key<Boolean>("string_match_center", Value.BooleanValue(false))
 
         object UpdatedApps : Key<Int>("updated_apps", Value.IntValue(100))
         object NewApps : Key<Int>("new_apps", Value.IntValue(20))

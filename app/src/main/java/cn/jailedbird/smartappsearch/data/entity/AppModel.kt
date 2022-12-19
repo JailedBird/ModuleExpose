@@ -28,12 +28,18 @@ data class AppModel(
         }
     }
 
-    fun match(key: String?): Boolean {
+    fun match(key: String?, matchCenter: Boolean = false): Boolean {
         return if (key.isNullOrEmpty()) {
             true
         } else {
-            appName.startsWith(key, ignoreCase = true) ||
-                    (!appNamePinyin.isNullOrEmpty() && appNamePinyin.startsWith(key))
+            if (matchCenter) {
+                appName.indexOf(key, ignoreCase = true) != -1 ||
+                        (!appNamePinyin.isNullOrEmpty() &&
+                                appNamePinyin.indexOf(key, ignoreCase = true) != -1)
+            } else {
+                appName.startsWith(key, ignoreCase = true) ||
+                        (!appNamePinyin.isNullOrEmpty() && appNamePinyin.startsWith(key))
+            }
         }
     }
 
