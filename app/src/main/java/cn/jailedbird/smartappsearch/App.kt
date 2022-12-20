@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import cn.jailedbird.smartappsearch.config.Preferences
+import cn.jailedbird.smartappsearch.config.Settings
 import com.tencent.mmkv.MMKV
 
 
@@ -32,7 +32,7 @@ class App : Application() {
         _applicationContext = this
         listenApkChange()
         MMKV.initialize(this)
-        Preferences.init(this)
+        Settings.init(this)
     }
 
     @Inject

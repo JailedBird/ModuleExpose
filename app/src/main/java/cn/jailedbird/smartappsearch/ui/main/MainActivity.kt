@@ -16,7 +16,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import cn.jailedbird.smartappsearch.BuildConfig
 import cn.jailedbird.smartappsearch.adapter.AppListTwoTypeAdapter
-import cn.jailedbird.smartappsearch.config.Preferences
+import cn.jailedbird.smartappsearch.config.Settings
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
 import cn.jailedbird.smartappsearch.model.AppConfig
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.list.collectLatest {
                 adapter.submitList(it)
-                if (it.size == 1 && Preferences[Preferences.Key.LaunchDirect]) {
+                if (it.size == 1 && Settings[Settings.Key.LaunchDirect]) {
                     it[0].launch(this@MainActivity)
                 }
             }
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (Preferences[Preferences.Key.ImeAutoPop]) {
+        if (Settings[Settings.Key.ImeAutoPop]) {
             showKeyboard()
         } else { // Avoid ime pop due to other reason
             hideKeyboard()

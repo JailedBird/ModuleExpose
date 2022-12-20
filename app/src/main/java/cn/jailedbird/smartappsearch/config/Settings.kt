@@ -6,7 +6,7 @@ import cn.jailedbird.smartappsearch.R
 import com.tencent.mmkv.MMKV
 import java.net.Proxy
 
-object Preferences  {
+object Settings  {
     private lateinit var kv: MMKV
 
     fun init(context: Context) {
@@ -106,8 +106,8 @@ object Preferences  {
         object Null : Key<Int>("", Value.IntValue(0))
 
         object Language : Key<String>("languages", Value.StringValue("system"))
-        object AutoSync : Key<Preferences.AutoSync>(
-            "auto_sync", Value.EnumerationValue(Preferences.AutoSync.Wifi)
+        object AutoSync : Key<Settings.AutoSync>(
+            "auto_sync", Value.EnumerationValue(Settings.AutoSync.Wifi)
         )
 
         object ReleasesCacheRetention : Key<Int>("releases_cache_retention", Value.IntValue(1))
@@ -136,8 +136,8 @@ object Preferences  {
 
         object ProxyHost : Key<String>("proxy_host", Value.StringValue("localhost"))
         object ProxyPort : Key<Int>("proxy_port", Value.IntValue(9050))
-        object ProxyType : Key<Preferences.ProxyType>(
-            "proxy_type", Value.EnumerationValue(Preferences.ProxyType.Direct)
+        object ProxyType : Key<Settings.ProxyType>(
+            "proxy_type", Value.EnumerationValue(Settings.ProxyType.Direct)
         )
 
         object RootSessionInstaller :
@@ -176,8 +176,8 @@ object Preferences  {
             "categories_filter_installed", Value.StringSetValue(emptySet())
         )
 
-        object Theme : Key<Preferences.Theme>(
-            "theme", Value.EnumerationValue(Preferences.Theme.System)
+        object Theme : Key<Settings.Theme>(
+            "theme", Value.EnumerationValue(Settings.Theme.System)
         )
 
         object UpdateNotify : Key<Boolean>("update_notify", Value.BooleanValue(true))
