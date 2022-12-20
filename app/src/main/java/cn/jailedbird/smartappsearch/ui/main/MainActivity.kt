@@ -104,6 +104,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initEvent() {
         binding.ivMore.setDebouncedClick {
+            hideKeyboard()
             AppSettingsPopWindow.open(this, it, listener)
         }
     }

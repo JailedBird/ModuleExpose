@@ -36,6 +36,7 @@ class AppListTwoTypeAdapter :
 
             ivMore.setOnClickListener {
                 if (DebouncingUtils.isValid(it)) {
+                    it.context.hideKeyboard()
                     AppListPopWindow.open(view.context, it, bean)
                 }
             }
