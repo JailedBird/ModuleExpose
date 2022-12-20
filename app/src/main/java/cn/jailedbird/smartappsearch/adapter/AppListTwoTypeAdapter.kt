@@ -20,38 +20,38 @@ import kotlinx.coroutines.*
 class AppListTwoTypeAdapter :
     ListAdapter<AppModel, AppListTwoTypeAdapter.ViewHolder>(AppModel.Diff()) {
 
-    class ViewHolder(private val view: View) :
-        RecyclerView.ViewHolder(view) {
-        val ivIcon: ImageView = view.findViewById(R.id.ivIcon)
-        private val ivMore: ImageView = view.findViewById(R.id.ivMore)
-        val tvContent: TextView = view.findViewById(R.id.tvContent)
+    class ViewHolder(private val root: View) :
+        RecyclerView.ViewHolder(root) {
+        val ivIcon: ImageView = root.findViewById(R.id.ivIcon)
+        private val ivMore: ImageView = root.findViewById(R.id.ivMore)
+        val tvContent: TextView = root.findViewById(R.id.tvContent)
 
         init {
-            view.setOnClickListener {
+            root.setOnClickListener {
                 if (DebouncingUtils.isValid(it)) {
-                    view.context.hideKeyboard()
-                    bean?.launch(view.context)
+                    root.context.hideKeyboard()
+                    bean?.launch(root.context)
                 }
             }
 
             ivMore.setOnClickListener {
                 if (DebouncingUtils.isValid(it)) {
                     it.context.hideKeyboard()
-                    AppListPopWindow.open(view.context, it, bean)
+                    AppListPopWindow.open(root.context, it, bean)
                 }
             }
         }
 
         var job: Job?
-            get() = view.getTag(R.id.tag_job) as? Job
+            get() = root.getTag(R.id.tag_job) as? Job
             set(value) {
-                view.setTag(R.id.tag_job, value)
+                root.setTag(R.id.tag_job, value)
             }
 
         var bean: AppModel?
-            get() = view.getTag(R.id.tag_bean) as? AppModel
+            get() = root.getTag(R.id.tag_bean) as? AppModel
             set(value) {
-                view.setTag(R.id.tag_bean, value)
+                root.setTag(R.id.tag_bean, value)
             }
     }
 
