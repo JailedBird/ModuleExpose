@@ -32,7 +32,6 @@ class App : Application() {
         _applicationContext = this
         listenApkChange()
         MMKV.initialize(this)
-        Settings.init(this)
     }
 
     @Inject

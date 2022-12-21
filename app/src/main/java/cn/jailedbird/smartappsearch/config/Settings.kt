@@ -1,98 +1,93 @@
 package cn.jailedbird.smartappsearch.config
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import cn.jailedbird.smartappsearch.R
 import com.tencent.mmkv.MMKV
 import java.net.Proxy
 
-object Settings  {
-    private lateinit var kv: MMKV
-
-    fun init(context: Context) {
-        kv = MMKV.mmkvWithID("${context.packageName}_settings")
-    }
+object Settings {
+    private val kv = MMKV.mmkvWithID("app_settings")
 
     sealed class Value<T> {
         abstract val value: T
 
         internal abstract fun get(
-            preferences: MMKV,
+            kv: MMKV,
             key: String,
             defaultValue: Value<T>,
         ): T
 
-        internal abstract fun set(preferences: MMKV, key: String, value: T)
+        internal abstract fun set(kv: MMKV, key: String, value: T)
 
         class BooleanValue(override val value: Boolean) : Value<Boolean>() {
             override fun get(
-                preferences: MMKV,
+                kv: MMKV,
                 key: String,
                 defaultValue: Value<Boolean>,
             ): Boolean {
-                return preferences.getBoolean(key, defaultValue.value)
+                return kv.getBoolean(key, defaultValue.value)
             }
 
-            override fun set(preferences: MMKV, key: String, value: Boolean) {
-                preferences.edit().putBoolean(key, value).apply()
+            override fun set(kv: MMKV, key: String, value: Boolean) {
+                kv.putBoolean(key, value)
             }
         }
 
         class IntValue(override val value: Int) : Value<Int>() {
             override fun get(
-                preferences: MMKV,
+                kv: MMKV,
                 key: String,
                 defaultValue: Value<Int>,
             ): Int {
-                return preferences.getInt(key, defaultValue.value)
+                return kv.getInt(key, defaultValue.value)
             }
 
-            override fun set(preferences: MMKV, key: String, value: Int) {
-                preferences.edit().putInt(key, value).apply()
+            override fun set(kv: MMKV, key: String, value: Int) {
+                kv.putInt(key, value)
             }
         }
 
         class StringSetValue(override val value: Set<String>) : Value<Set<String>>() {
             override fun get(
-                preferences: MMKV,
+                kv: MMKV,
                 key: String,
                 defaultValue: Value<Set<String>>,
             ): Set<String> {
-                return preferences.getStringSet(key, defaultValue.value) ?: emptySet()
+                return kv.getStringSet(key, defaultValue.value) ?: emptySet()
             }
 
-            override fun set(preferences: MMKV, key: String, value: Set<String>) {
-                preferences.edit().putStringSet(key, value).apply()
+            override fun set(kv: MMKV, key: String, value: Set<String>) {
+                kv.putStringSet(key, value)
             }
         }
 
         class StringValue(override val value: String) : Value<String>() {
             override fun get(
-                preferences: MMKV,
+                kv: MMKV,
                 key: String,
                 defaultValue: Value<String>,
             ): String {
-                return preferences.getString(key, defaultValue.value) ?: defaultValue.value
+                return kv.getString(key, defaultValue.value) ?: defaultValue.value
             }
 
-            override fun set(preferences: MMKV, key: String, value: String) {
-                preferences.edit().putString(key, value).apply()
+            override fun set(kv: MMKV, key: String, value: String) {
+                kv.putString(key, value)
             }
         }
 
         class EnumerationValue<T : Enumeration<T>>(override val value: T) : Value<T>() {
             override fun get(
-                preferences: MMKV,
+                kv: MMKV,
                 key: String,
                 defaultValue: Value<T>,
             ): T {
-                val value = preferences.getString(key, defaultValue.value.valueString)
+                val value = kv.getString(key, defaultValue.value.valueString)
                 return defaultValue.value.values.find { it.valueString == value }
                     ?: defaultValue.value
             }
 
-            override fun set(preferences: MMKV, key: String, value: T) {
-                preferences.edit().putString(key, value.valueString).apply()
+            override fun set(kv: MMKV, key: String, value: T) {
+                kv.putString(key, value.valueString)
             }
         }
     }
