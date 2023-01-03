@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -43,7 +44,7 @@ class MainViewModel @Inject constructor(
     val list = _list.asStateFlow()
 
     // Search job
-    private var job: Job? = null
+    private var searchJob: Job? = null
 
     // Observable Flow
     private val appsFlow = repository.getAppsFlow().distinctUntilChanged()
@@ -73,11 +74,12 @@ class MainViewModel @Inject constructor(
     }
 
     private fun updateResult(apps: List<AppModel>, key: String) {
-        job?.cancel(CancellationException("New job reach, cancel last job"))
-        job = viewModelScope.launch((Dispatchers.IO)) {
+        searchJob?.cancel(CancellationException("New job reach, cancel last job"))
+        searchJob = viewModelScope.launch((Dispatchers.IO)) {
             val matchCenter = Settings[Settings.Key.MatchCenter]
             val res = mutableListOf<AppModel>()
             apps.forEach {
+                ensureActive()
                 if (it.match(key, matchCenter)) {
                     res.add(it)
                 }
