@@ -23,8 +23,8 @@ class AppListTwoTypeAdapter :
     class ViewHolder(private val root: View) :
         RecyclerView.ViewHolder(root) {
         val ivIcon: ImageView = root.findViewById(R.id.ivIcon)
-        private val ivMore: ImageView = root.findViewById(R.id.ivMore)
         val tvContent: TextView = root.findViewById(R.id.tvContent)
+        private val ivMore: ImageView = root.findViewById(R.id.ivMore)
 
         init {
             root.setOnClickListener {
@@ -97,10 +97,14 @@ class AppListTwoTypeAdapter :
         // Notes: Please cancel the last job to avoid the removal task being out of order;
         // also can ensure performance
         holder.job = scope.launch(Dispatchers.IO) {
+            // cooperative response coroutine cancel
+            // https://developer.android.com/kotlin/coroutines/coroutines-best-practices?hl=zh-cn#coroutine-cancellable
+            // https://medium.com/androiddevelopers/cancellation-in-coroutines-aa6b90163629
+            ensureActive()
             // Make spend function getApplicationIcon can response coroutine cancel
-            val drawable = runInterruptible {
+            val drawable =
                 context.packageManager.getApplicationIcon(bean.appPackageName)
-            }
+            ensureActive()
             holder.ivIcon.load(drawable) {
                 placeholder(R.drawable.ic_android)
                 error(R.drawable.ic_android)
