@@ -21,6 +21,7 @@
         tools:targetApi="31">
         <activity
             android:name=".ui.main.MainActivity"
+            android:excludeFromRecents="true"
             android:exported="true"
             android:theme="@style/Theme.SmartAppSearch.Dialog">
             <intent-filter>
