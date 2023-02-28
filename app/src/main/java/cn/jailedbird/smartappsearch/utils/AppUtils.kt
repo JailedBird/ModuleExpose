@@ -12,7 +12,7 @@ import java.util.*
 
 object AppUtils {
 
-    suspend fun getAppsFromPackageManager(context: Context): List<AppModel> =
+   private suspend fun getAppsFromPackageManager(context: Context): List<AppModel> =
         withContext(Dispatchers.IO) {
             val startTime = System.nanoTime()
             val pm = context.packageManager
@@ -40,6 +40,22 @@ object AppUtils {
             startTime.timer("getAppsFromPackageManager", false)
             return@withContext res
         }
+
+    private fun getDiff(
+        new: List<AppModel>,
+        old: List<AppModel>
+    ): Pair<List<AppModel>, List<AppModel>> {
+        val toAdd = new.minus(old.toSet())
+        val toDelete = old.minus(new.toSet())
+        return Pair(toAdd, toDelete)
+    }
+
+    suspend fun updateMeta(
+        context: Context,
+        old: List<AppModel>
+    ): Pair<List<AppModel>, List<AppModel>> {
+        return getDiff(getAppsFromPackageManager(context), old)
+    }
 
 
 }

@@ -16,10 +16,8 @@ Bug & Confuse
 
 2、 Hilt注入运行时参数
 
-特别是针对Hilt的方案
-
-解决方案
-
+https://www.yuque.com/jailedbird/exkxrk/mxgn49ts511b1622?singleDoc# 《Hilt运行时注入参数》
+https://www.yuque.com/jailedbird/exkxrk/gkyuffo5v76r4r0s?singleDoc# 《在非Android内中注入Hilt对象》
 ## TODO
 
 - 添加匹配规则，使用首字符匹配or非首字母按顺序匹配

@@ -7,14 +7,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import cn.jailedbird.smartappsearch.data.AppRepository
 import cn.jailedbird.smartappsearch.utils.AppUtils
+import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import cn.jailedbird.smartappsearch.config.Settings
-import com.tencent.mmkv.MMKV
 
 
 @HiltAndroidApp
@@ -44,7 +43,7 @@ class App : Application() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 @OptIn(DelicateCoroutinesApi::class)
                 GlobalScope.launch(Dispatchers.IO) {
-                    appRepository.insertAll(AppUtils.getAppsFromPackageManager(this@App))
+                    appRepository.updateRoom(AppUtils.updateMeta(this@App, appRepository.getApps()))
                 }
             }
         }

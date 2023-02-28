@@ -8,13 +8,21 @@ import javax.inject.Singleton
 class AppRepository @Inject constructor(private val appDao: AppDao) {
     fun getAppsFlow() = appDao.getAppsFlow()
 
-    /**
-     * Primary key is random id, not the package name, avoid two same app item,
-     * delete all table content before insert
-     * */
-    suspend fun insertAll(app: List<AppModel>) {
-        // 存在问题 如何删除旧数据? 新数据添加时会被覆盖 但是旧数据删除时 不会清空里面的老数据
-        appDao.deleteAll()
-        appDao.insertAll(app)
+    suspend fun getApps() = appDao.getApps()
+
+
+    suspend fun updateRoom(pair: Pair<List<AppModel>, List<AppModel>>) {
+        updateRoom(pair.first, pair.second)
+    }
+
+    private suspend fun updateRoom(toAdd: List<AppModel>, toDelete: List<AppModel>) {
+        appDao.deleteAppList(toDelete)
+        appDao.insertAppList(toAdd)
+    }
+
+    suspend fun updateAppModelCount(appPackageName: String, appName: String) {
+        appDao.queryAppModel(appPackageName, appName)?.let {
+            appDao.replaceAppModel(appPackageName, appName, it.count + 1)
+        }
     }
 }

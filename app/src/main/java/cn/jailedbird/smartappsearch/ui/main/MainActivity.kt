@@ -92,6 +92,7 @@ class MainActivity : AppCompatActivity() {
 
         initSearch(binding.search) {
             if (adapter.itemCount > 0) {
+                // Don't get first item by RecyclerView, Perhaps RecyclerView not refresh
                 adapter.currentList[0].launch(this@MainActivity)
                 lifecycleScope.launch(Dispatchers.IO) {
                     delay(AppConfig.LAUNCH_DELAY_TIME)
