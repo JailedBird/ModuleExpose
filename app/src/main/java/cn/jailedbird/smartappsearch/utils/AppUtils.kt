@@ -7,12 +7,13 @@ import android.content.pm.ResolveInfo
 import cn.jailedbird.smartappsearch.data.entity.AppModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.System
 import java.util.*
 
 
 object AppUtils {
 
-   private suspend fun getAppsFromPackageManager(context: Context): List<AppModel> =
+    private suspend fun getAppsFromPackageManager(context: Context): List<AppModel> =
         withContext(Dispatchers.IO) {
             val startTime = System.nanoTime()
             val pm = context.packageManager
@@ -41,20 +42,31 @@ object AppUtils {
             return@withContext res
         }
 
-    private fun getDiff(
-        new: List<AppModel>,
-        old: List<AppModel>
-    ): Pair<List<AppModel>, List<AppModel>> {
-        val toAdd = new.minus(old.toSet())
-        val toDelete = old.minus(new.toSet())
-        return Pair(toAdd, toDelete)
-    }
-
     suspend fun updateMeta(
         context: Context,
         old: List<AppModel>
-    ): Pair<List<AppModel>, List<AppModel>> {
-        return getDiff(getAppsFromPackageManager(context), old)
+    ): List<AppModel>{
+        return mergeMemoryWithRoom(getAppsFromPackageManager(context), old)
+    }
+
+    private fun mergeMemoryWithRoom(
+        new: List<AppModel>,
+        old: List<AppModel>
+    ): List<AppModel> {
+        val newSet = new.toMutableSet()
+        val now = System.currentTimeMillis()
+        for (item in newSet) {
+            item.count = 0
+            item.timestamp = now
+        }
+        val mixed = mutableListOf<AppModel>()
+        for (item in old) {
+            if (newSet.remove(item)) {
+                mixed.add(item)
+            }
+        }
+        newSet.addAll(mixed)
+        return newSet.toList()
     }
 
 

@@ -10,8 +10,18 @@ class AppRepository @Inject constructor(private val appDao: AppDao) {
 
     suspend fun getApps() = appDao.getApps()
 
+    suspend fun refreshAppModelTable(table: List<AppModel>) {
+        appDao.deleteAll()
+        appDao.insertAll(table)
+    }
 
-    suspend fun updateRoom(pair: Pair<List<AppModel>, List<AppModel>>) {
+    suspend fun refreshAppModel(appModel: AppModel) {
+        appModel.count++
+        appModel.timestamp = System.currentTimeMillis()
+        appDao.insertAppModel(appModel)
+    }
+
+    /*suspend fun updateRoom(pair: Pair<List<AppModel>, List<AppModel>>) {
         updateRoom(pair.first, pair.second)
     }
 
@@ -24,5 +34,5 @@ class AppRepository @Inject constructor(private val appDao: AppDao) {
         appDao.queryAppModel(appPackageName, appName)?.let {
             appDao.replaceAppModel(appPackageName, appName, it.count + 1)
         }
-    }
+    }*/
 }

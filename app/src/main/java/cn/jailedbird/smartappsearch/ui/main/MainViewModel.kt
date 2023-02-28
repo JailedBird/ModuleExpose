@@ -69,10 +69,11 @@ class MainViewModel @Inject constructor(
 
     fun refreshAppDatabase() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.updateRoom(
+            repository.refreshAppModelTable(
                 AppUtils.updateMeta(
                     context,
-                    apps.ifEmpty { repository.getApps() }))
+                    apps.ifEmpty { repository.getApps() })
+            )
         }
     }
 

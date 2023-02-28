@@ -18,7 +18,6 @@ interface AppDao {
     @Query("UPDATE apps SET count=:count WHERE appName=:appName AND appPackageName=:appPackageName")
     suspend fun replaceAppModel(appPackageName: String, appName: String, count: Int)
 
-
     @Query("DELETE FROM apps")
     suspend fun deleteAll()
 
@@ -30,4 +29,9 @@ interface AppDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(app: List<AppModel>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAppModel(appModel: AppModel)
+
+
 }

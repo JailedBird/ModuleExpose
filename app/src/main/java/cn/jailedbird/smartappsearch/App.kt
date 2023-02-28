@@ -43,7 +43,9 @@ class App : Application() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 @OptIn(DelicateCoroutinesApi::class)
                 GlobalScope.launch(Dispatchers.IO) {
-                    appRepository.updateRoom(AppUtils.updateMeta(this@App, appRepository.getApps()))
+                    appRepository.refreshAppModelTable(
+                        AppUtils.updateMeta(this@App, appRepository.getApps())
+                    )
                 }
             }
         }

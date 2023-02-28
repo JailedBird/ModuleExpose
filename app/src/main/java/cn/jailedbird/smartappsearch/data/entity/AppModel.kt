@@ -12,6 +12,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.*
+import java.sql.Timestamp
 
 @Entity(tableName = "apps", primaryKeys = ["appPackageName", "appName"])
 data class AppModel(
@@ -19,7 +20,8 @@ data class AppModel(
     val appName: String,
     val appNamePinyin: String? = null,
     val activityName: String? = null,
-    val count: Int = 0,
+    var count: Int = 0,
+    var timestamp: Long = 0,
 ) {
     companion object {
         @EntryPoint
@@ -31,11 +33,10 @@ data class AppModel(
 
     fun launch(context: Context) {
         if (context.launchApk(appPackageName, activityName)) {
-            // TODO update frequency
             @OptIn(DelicateCoroutinesApi::class)
             GlobalScope.launch(Dispatchers.IO) {
                 EntryPointAccessors.fromApplication<AppRepositoryEntryPoint>(context.applicationContext)
-                    .appRepository().updateAppModelCount(appPackageName, appName)
+                    .appRepository().refreshAppModel(this@AppModel)
                 delay(AppConfig.LAUNCH_DELAY_TIME)
                 if (context is Activity) {
                     context.finish()
