@@ -12,7 +12,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.*
-import java.sql.Timestamp
 
 @Entity(tableName = "apps", primaryKeys = ["appPackageName", "appName"])
 data class AppModel(

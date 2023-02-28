@@ -12,7 +12,7 @@ class AppSettingsPopWindow(
     context: Context,
     private val listener: Listener
 ) : BaseSimplePopUp(context) {
-    companion object{
+    companion object {
         fun open(
             context: Context,
             anchor: View,

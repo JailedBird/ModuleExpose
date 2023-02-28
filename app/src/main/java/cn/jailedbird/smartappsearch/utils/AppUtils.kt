@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo
 import cn.jailedbird.smartappsearch.data.entity.AppModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.System
 import java.util.*
 
 
@@ -45,7 +44,7 @@ object AppUtils {
     suspend fun updateMeta(
         context: Context,
         old: List<AppModel>
-    ): List<AppModel>{
+    ): List<AppModel> {
         return mergeMemoryWithRoom(getAppsFromPackageManager(context), old)
     }
 
