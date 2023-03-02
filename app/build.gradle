@@ -11,10 +11,10 @@ android {
 
     defaultConfig {
         applicationId "cn.jailedbird.smartappsearch"
-        minSdk 23
+        minSdk 24
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 101
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
