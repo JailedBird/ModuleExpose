@@ -30,7 +30,6 @@ class App : Application() {
         super.onCreate()
         _applicationContext = this
         listenApkChange()
-        // MMKV.initialize(this)
         Settings.init(this)
     }
 

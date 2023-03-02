@@ -69,7 +69,7 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
     // replace SharedPreference:https://github.com/Tencent/MMKV
-    implementation 'com.tencent:mmkv:1.2.14'
+    // implementation 'com.tencent:mmkv:1.2.14'
 
 
     // https://square.github.io/leakcanary/getting_started/
