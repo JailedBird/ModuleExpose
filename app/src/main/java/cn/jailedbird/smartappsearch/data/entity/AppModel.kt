@@ -28,6 +28,13 @@ data class AppModel(
         interface AppRepositoryEntryPoint {
             fun appRepository(): AppRepository
         }
+
+        /**
+         *  3 days if not open start reduce count (equal days)
+         * */
+        const val PITCH_ADD_COUNT = 10
+        const val ONE_DAY_MILS = 1000 * 60 * 60 * 24
+        const val REDUCE_GAP = 3
     }
 
     fun launch(context: Context) {
@@ -41,6 +48,26 @@ data class AppModel(
                     context.finish()
                 }
             }
+        }
+    }
+
+    fun onItemClick() {
+        this.count += PITCH_ADD_COUNT
+        this.timestamp = System.currentTimeMillis()
+    }
+
+    fun reduce() {
+        if (this.timestamp == 0L) {
+            return
+        }
+        val currentMils = System.currentTimeMillis()
+        val dis = currentMils - this.timestamp
+        if (dis <= 0) {
+            return
+        }
+        val days = dis / ONE_DAY_MILS
+        if (days >= REDUCE_GAP) {
+            this.count = (this.count - ONE_DAY_MILS).coerceAtLeast(0)
         }
     }
 
@@ -81,9 +108,4 @@ data class AppModel(
         result = 31 * result + appName.hashCode()
         return result
     }
-
-
-    /*override fun hashCode(): Int {
-        return super.hashCode()
-    }*/
 }

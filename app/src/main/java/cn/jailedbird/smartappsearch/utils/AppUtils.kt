@@ -43,14 +43,16 @@ object AppUtils {
 
     suspend fun updateMeta(
         context: Context,
-        old: List<AppModel>
+        old: List<AppModel>,
+        withReduce: Boolean = false
     ): List<AppModel> {
         return mergeMemoryWithRoom(getAppsFromPackageManager(context), old)
     }
 
     private fun mergeMemoryWithRoom(
         new: List<AppModel>,
-        old: List<AppModel>
+        old: List<AppModel>,
+        withReduce: Boolean = false
     ): List<AppModel> {
         val newSet = new.toMutableSet()
         val now = System.currentTimeMillis()
@@ -65,8 +67,12 @@ object AppUtils {
             }
         }
         newSet.addAll(mixed)
+        if (withReduce) {
+            for (it in newSet) {
+                it.reduce()
+            }
+        }
         return newSet.toList()
     }
-
 
 }

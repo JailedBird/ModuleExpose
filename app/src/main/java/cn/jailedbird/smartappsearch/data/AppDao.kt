@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AppDao {
-    @Query("SELECT * FROM apps ORDER BY count DESC, appName,appNamePinyin")
+    @Query("SELECT * FROM apps ORDER BY count DESC,timestamp DESC, appName, appNamePinyin")
     fun getAppsFlow(): Flow<List<AppModel>>
 
     @Query("SELECT * FROM apps")

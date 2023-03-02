@@ -72,7 +72,9 @@ class MainViewModel @Inject constructor(
             repository.refreshAppModelTable(
                 AppUtils.updateMeta(
                     context,
-                    apps.ifEmpty { repository.getApps() })
+                    apps.ifEmpty { repository.getApps() },
+                    withReduce = true
+                )
             )
         }
     }

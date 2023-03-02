@@ -5,9 +5,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import cn.jailedbird.smartappsearch.config.Settings
 import cn.jailedbird.smartappsearch.data.AppRepository
 import cn.jailedbird.smartappsearch.utils.AppUtils
-import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +30,8 @@ class App : Application() {
         super.onCreate()
         _applicationContext = this
         listenApkChange()
-        MMKV.initialize(this)
+        // MMKV.initialize(this)
+        Settings.init(this)
     }
 
     @Inject

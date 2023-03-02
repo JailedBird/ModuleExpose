@@ -1,93 +1,150 @@
 package cn.jailedbird.smartappsearch.config
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.appcompat.app.AppCompatDelegate
 import cn.jailedbird.smartappsearch.R
-import com.tencent.mmkv.MMKV
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import java.net.Proxy
+/**
+ * Best way to implement App settings, code from [Neo Store](https://github.com/NeoApplications/Neo-Store)
+ * */
+object Settings : OnSharedPreferenceChangeListener {
+    private lateinit var preferences: SharedPreferences
 
-object Settings {
-    private val kv = MMKV.mmkvWithID("app_settings")
+    private val mutableSubject = MutableSharedFlow<Key<*>>()
+    val subject = mutableSubject.asSharedFlow()
+
+    private val keys = sequenceOf(
+        Key.Language,
+        Key.AutoSync,
+        Key.AutoSyncInterval,
+        Key.ReleasesCacheRetention,
+        Key.ImagesCacheRetention,
+        Key.InstallAfterSync,
+        Key.IncompatibleVersions,
+        Key.ShowScreenshots,
+        Key.UpdatedApps,
+        Key.NewApps,
+        Key.ProxyHost,
+        Key.ProxyPort,
+        Key.ProxyType,
+        Key.RootSessionInstaller,
+        Key.SortOrderAscendingExplore,
+        Key.SortOrderAscendingLatest,
+        Key.SortOrderAscendingInstalled,
+        Key.ReposFilterExplore,
+        Key.ReposFilterLatest,
+        Key.ReposFilterInstalled,
+        Key.CategoriesFilterExplore,
+        Key.CategoriesFilterLatest,
+        Key.CategoriesFilterInstalled,
+        Key.Theme,
+        Key.UpdateNotify,
+        Key.UpdateUnstable,
+        Key.IgnoreIgnoreBatteryOptimization
+    ).map { Pair(it.name, it) }.toMap()
+
+    fun init(context: Context) {
+        preferences = context.getSharedPreferences(
+            "${context.packageName}_preferences", Context.MODE_PRIVATE
+        )
+        preferences.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        CoroutineScope(Dispatchers.Default).launch {
+            keys[key]?.let {
+                mutableSubject.emit(it)
+            }
+        }
+    }
 
     sealed class Value<T> {
         abstract val value: T
 
         internal abstract fun get(
-            kv: MMKV,
+            preferences: SharedPreferences,
             key: String,
             defaultValue: Value<T>,
         ): T
 
-        internal abstract fun set(kv: MMKV, key: String, value: T)
+        internal abstract fun set(preferences: SharedPreferences, key: String, value: T)
 
         class BooleanValue(override val value: Boolean) : Value<Boolean>() {
             override fun get(
-                kv: MMKV,
+                preferences: SharedPreferences,
                 key: String,
                 defaultValue: Value<Boolean>,
             ): Boolean {
-                return kv.getBoolean(key, defaultValue.value)
+                return preferences.getBoolean(key, defaultValue.value)
             }
 
-            override fun set(kv: MMKV, key: String, value: Boolean) {
-                kv.putBoolean(key, value)
+            override fun set(preferences: SharedPreferences, key: String, value: Boolean) {
+                preferences.edit().putBoolean(key, value).apply()
             }
         }
 
         class IntValue(override val value: Int) : Value<Int>() {
             override fun get(
-                kv: MMKV,
+                preferences: SharedPreferences,
                 key: String,
                 defaultValue: Value<Int>,
             ): Int {
-                return kv.getInt(key, defaultValue.value)
+                return preferences.getInt(key, defaultValue.value)
             }
 
-            override fun set(kv: MMKV, key: String, value: Int) {
-                kv.putInt(key, value)
+            override fun set(preferences: SharedPreferences, key: String, value: Int) {
+                preferences.edit().putInt(key, value).apply()
             }
         }
 
         class StringSetValue(override val value: Set<String>) : Value<Set<String>>() {
             override fun get(
-                kv: MMKV,
+                preferences: SharedPreferences,
                 key: String,
                 defaultValue: Value<Set<String>>,
             ): Set<String> {
-                return kv.getStringSet(key, defaultValue.value) ?: emptySet()
+                return preferences.getStringSet(key, defaultValue.value) ?: emptySet()
             }
 
-            override fun set(kv: MMKV, key: String, value: Set<String>) {
-                kv.putStringSet(key, value)
+            override fun set(preferences: SharedPreferences, key: String, value: Set<String>) {
+                preferences.edit().putStringSet(key, value).apply()
             }
         }
 
         class StringValue(override val value: String) : Value<String>() {
             override fun get(
-                kv: MMKV,
+                preferences: SharedPreferences,
                 key: String,
                 defaultValue: Value<String>,
             ): String {
-                return kv.getString(key, defaultValue.value) ?: defaultValue.value
+                return preferences.getString(key, defaultValue.value) ?: defaultValue.value
             }
 
-            override fun set(kv: MMKV, key: String, value: String) {
-                kv.putString(key, value)
+            override fun set(preferences: SharedPreferences, key: String, value: String) {
+                preferences.edit().putString(key, value).apply()
             }
         }
 
         class EnumerationValue<T : Enumeration<T>>(override val value: T) : Value<T>() {
             override fun get(
-                kv: MMKV,
+                preferences: SharedPreferences,
                 key: String,
                 defaultValue: Value<T>,
             ): T {
-                val value = kv.getString(key, defaultValue.value.valueString)
+                val value = preferences.getString(key, defaultValue.value.valueString)
                 return defaultValue.value.values.find { it.valueString == value }
                     ?: defaultValue.value
             }
 
-            override fun set(kv: MMKV, key: String, value: T) {
-                kv.putString(key, value.valueString)
+            override fun set(preferences: SharedPreferences, key: String, value: T) {
+                preferences.edit().putString(key, value.valueString).apply()
             }
         }
     }
@@ -99,6 +156,8 @@ object Settings {
 
     sealed class Key<T>(val name: String, val default: Value<T>) {
         object Null : Key<Int>("", Value.IntValue(0))
+
+        object MatchCenter : Key<Boolean>("matcher_center", Value.BooleanValue(true))
 
         object Language : Key<String>("languages", Value.StringValue("system"))
         object AutoSync : Key<Settings.AutoSync>(
@@ -122,9 +181,6 @@ object Settings {
         object ImeAutoPop : Key<Boolean>("ime_auto_pop", Value.BooleanValue(true))
         object LaunchDirect :
             Key<Boolean>("launch_directly_when_only_one_choose", Value.BooleanValue(false))
-
-        object MatchCenter :
-            Key<Boolean>("string_match_center", Value.BooleanValue(false))
 
         object UpdatedApps : Key<Int>("updated_apps", Value.IntValue(100))
         object NewApps : Key<Int>("new_apps", Value.IntValue(20))
@@ -235,11 +291,10 @@ object Settings {
     }
 
     operator fun <T> get(key: Key<T>): T {
-        return key.default.get(kv, key.name, key.default)
+        return key.default.get(preferences, key.name, key.default)
     }
 
     operator fun <T> set(key: Key<T>, value: T) {
-        key.default.set(kv, key.name, value)
+        key.default.set(preferences, key.name, value)
     }
-
 }
