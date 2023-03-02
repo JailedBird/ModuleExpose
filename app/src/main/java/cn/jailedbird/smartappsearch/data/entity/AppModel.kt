@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Entity
 import cn.jailedbird.smartappsearch.data.AppRepository
 import cn.jailedbird.smartappsearch.model.AppConfig
+import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.launchApk
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -45,7 +46,7 @@ data class AppModel(
                     .appRepository().refreshAppModel(this@AppModel)
                 delay(AppConfig.LAUNCH_DELAY_TIME)
                 if (context is Activity) {
-                    context.finish()
+                    context.finishProcess()
                 }
             }
         }

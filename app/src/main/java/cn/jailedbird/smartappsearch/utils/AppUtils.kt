@@ -46,7 +46,7 @@ object AppUtils {
         old: List<AppModel>,
         withReduce: Boolean = false
     ): List<AppModel> {
-        return mergeMemoryWithRoom(getAppsFromPackageManager(context), old)
+        return mergeMemoryWithRoom(getAppsFromPackageManager(context), old, withReduce)
     }
 
     private fun mergeMemoryWithRoom(
