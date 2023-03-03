@@ -4,12 +4,15 @@ import android.content.Context
 import android.view.Gravity
 import android.view.View
 import androidx.core.widget.PopupWindowCompat
+import cn.jailedbird.smartappsearch.BuildConfig
 import cn.jailedbird.smartappsearch.R
 import cn.jailedbird.smartappsearch.data.entity.AppModel
 import cn.jailedbird.smartappsearch.databinding.PopUpAppListBinding
 import cn.jailedbird.smartappsearch.utils.gotoApkSettings
-import cn.jailedbird.smartappsearch.utils.setDebouncedClick
+import cn.jailedbird.smartappsearch.utils.setDebouncingClick
+import cn.jailedbird.smartappsearch.utils.toast
 import cn.jailedbird.smartappsearch.utils.uninstallApk
+import java.util.*
 
 
 class AppListPopWindow(
@@ -37,12 +40,16 @@ class AppListPopWindow(
     private lateinit var binding: PopUpAppListBinding
 
     private val listener = object : Listener {
-        override fun showInfo(appModel: AppModel?) {
-            context.gotoApkSettings(appModel?.appPackageName)
+        override fun showInfo(appModel: AppModel) {
+            context.gotoApkSettings(appModel.appPackageName)
         }
 
-        override fun unInstall(appModel: AppModel?) {
-            context.uninstallApk(appModel?.appPackageName)
+        override fun unInstall(appModel: AppModel) {
+            context.uninstallApk(appModel.appPackageName)
+        }
+
+        override fun showDebugInfo(appModel: AppModel) {
+            "count is ${appModel.count} ; timestamp is ${Date(appModel.timestamp)}".toast()
         }
     }
 
@@ -55,20 +62,36 @@ class AppListPopWindow(
     }
 
     override fun initEvent(root: View) {
-        binding.tvInfo.setDebouncedClick {
-            listener.showInfo(appModel)
+        binding.tvInfo.setDebouncingClick {
+            appModel?.let {
+                listener.showInfo(it)
+            }
             dismiss()
         }
-        binding.tvUnInstall.setDebouncedClick {
-            listener.unInstall(appModel)
+
+        binding.tvUnInstall.setDebouncingClick {
+            appModel?.let {
+                listener.unInstall(it)
+            }
             dismiss()
         }
+
+        if (BuildConfig.DEBUG) {
+            binding.tvDebug.visibility = View.VISIBLE
+            binding.tvDebug.setDebouncingClick {
+                appModel?.let {
+                    listener.showDebugInfo(it)
+                }
+                dismiss()
+            }
+        }
+
     }
 
     interface Listener {
-        fun showInfo(appModel: AppModel?)
-        fun unInstall(appModel: AppModel?)
+        fun showInfo(appModel: AppModel)
+        fun unInstall(appModel: AppModel)
+        fun showDebugInfo(appModel: AppModel)
     }
-
 
 }

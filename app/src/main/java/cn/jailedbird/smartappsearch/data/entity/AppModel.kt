@@ -5,9 +5,10 @@ import android.content.Context
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Entity
 import cn.jailedbird.smartappsearch.data.AppRepository
-import cn.jailedbird.smartappsearch.model.AppConfig
+import cn.jailedbird.smartappsearch.utils.LAUNCH_DELAY_TIME
 import cn.jailedbird.smartappsearch.utils.finishProcess
 import cn.jailedbird.smartappsearch.utils.launchApk
+import cn.jailedbird.smartappsearch.utils.packageManagerAppList
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -36,6 +37,35 @@ data class AppModel(
         const val PITCH_ADD_COUNT = 10
         const val ONE_DAY_MILS = 1000 * 60 * 60 * 24
         const val REDUCE_GAP = 3
+
+        suspend fun updateMeta(
+            context: Context,
+            old: List<AppModel>,
+            withReduce: Boolean = false
+        ): List<AppModel> {
+            return mergeMemoryWithRoom(context.packageManagerAppList(), old, withReduce)
+        }
+
+        private fun mergeMemoryWithRoom(
+            new: List<AppModel>,
+            old: List<AppModel>,
+            withReduce: Boolean = false
+        ): List<AppModel> {
+            val newSet = new.toMutableSet()
+            val mixed = mutableListOf<AppModel>()
+            for (item in old) {
+                if (newSet.remove(item)) {
+                    mixed.add(item)
+                }
+            }
+            newSet.addAll(mixed)
+            if (withReduce) {
+                for (it in newSet) {
+                    it.reduce()
+                }
+            }
+            return newSet.toList()
+        }
     }
 
     fun launch(context: Context) {
@@ -44,7 +74,7 @@ data class AppModel(
             GlobalScope.launch(Dispatchers.IO) {
                 EntryPointAccessors.fromApplication<AppRepositoryEntryPoint>(context.applicationContext)
                     .appRepository().refreshAppModel(this@AppModel)
-                delay(AppConfig.LAUNCH_DELAY_TIME)
+                delay(LAUNCH_DELAY_TIME)
                 if (context is Activity) {
                     context.finishProcess()
                 }

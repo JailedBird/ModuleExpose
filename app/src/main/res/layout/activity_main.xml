@@ -10,9 +10,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:layout_height="48dp"
         android:paddingStart="12dp"
-        android:paddingEnd="8dp"
-        android:layout_height="48dp">
+        android:paddingEnd="8dp">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivSearch"
@@ -28,15 +28,15 @@
             android:id="@+id/search"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:layout_marginHorizontal="12dp"
             android:background="@null"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:hint="Type app name"
             android:imeOptions="actionSearch"
             android:importantForAutofill="no"
-            android:singleLine="true"
             android:nextFocusDown="@id/search"
+            android:singleLine="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivMore"
             app:layout_constraintStart_toEndOf="@+id/ivSearch"

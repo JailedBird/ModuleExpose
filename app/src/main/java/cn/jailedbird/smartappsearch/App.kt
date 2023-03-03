@@ -5,9 +5,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import cn.jailedbird.smartappsearch.config.Settings
 import cn.jailedbird.smartappsearch.data.AppRepository
-import cn.jailedbird.smartappsearch.utils.AppUtils
+import cn.jailedbird.smartappsearch.data.entity.AppModel
+import cn.jailedbird.smartappsearch.settings.Settings
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -36,15 +36,15 @@ class App : Application() {
     @Inject
     lateinit var appRepository: AppRepository
 
+    /** Dynamic broadcast for apk install and uninstall
+     * [StackOverflow](https://stackoverflow.com/questions/7470314/receiving-package-install-and-uninstall-events)*/
     private fun listenApkChange() {
-        /** Dynamic broadcast for apk install and uninstall
-         * [StackOverflow](https://stackoverflow.com/questions/7470314/receiving-package-install-and-uninstall-events)*/
         val broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 @OptIn(DelicateCoroutinesApi::class)
                 GlobalScope.launch(Dispatchers.IO) {
                     appRepository.refreshAppModelTable(
-                        AppUtils.updateMeta(this@App, appRepository.getApps())
+                        AppModel.updateMeta(this@App, appRepository.getApps())
                     )
                 }
             }

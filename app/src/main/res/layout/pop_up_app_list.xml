@@ -30,4 +30,17 @@
         android:text="Uninstalled"
         android:textColor="@android:color/white" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDebug"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="?android:selectableItemBackground"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:text="Debug info"
+        android:textColor="@android:color/white"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+
 </androidx.appcompat.widget.LinearLayoutCompat>

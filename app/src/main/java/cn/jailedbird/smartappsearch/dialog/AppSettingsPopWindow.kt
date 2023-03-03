@@ -6,7 +6,7 @@ import android.view.View
 import androidx.core.widget.PopupWindowCompat
 import cn.jailedbird.smartappsearch.R
 import cn.jailedbird.smartappsearch.databinding.PopUpAppSettingBinding
-import cn.jailedbird.smartappsearch.utils.setDebouncedClick
+import cn.jailedbird.smartappsearch.utils.setDebouncingClick
 
 class AppSettingsPopWindow(
     context: Context,
@@ -41,23 +41,23 @@ class AppSettingsPopWindow(
     }
 
     override fun initEvent(root: View) {
-        binding.tvRefreshApp.setDebouncedClick {
+        binding.tvRefreshApp.setDebouncingClick {
             listener.refreshApp()
             dismiss()
         }
-        binding.tvRate.setDebouncedClick {
+        binding.tvRate.setDebouncingClick {
             listener.rate()
             dismiss()
         }
-        binding.tvShare.setDebouncedClick {
+        binding.tvShare.setDebouncingClick {
             listener.share()
             dismiss()
         }
-        binding.tvClearHistory.setDebouncedClick {
+        binding.tvClearHistory.setDebouncingClick {
             listener.clearHistory()
             dismiss()
         }
-        binding.tvSettings.setDebouncedClick {
+        binding.tvSettings.setDebouncingClick {
             listener.settings()
             dismiss()
         }

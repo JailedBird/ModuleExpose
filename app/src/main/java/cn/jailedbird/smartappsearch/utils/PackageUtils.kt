@@ -3,8 +3,14 @@ package cn.jailedbird.smartappsearch.utils
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.provider.Settings
+import cn.jailedbird.smartappsearch.data.entity.AppModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.*
 
 /**
  * launch via package name
@@ -76,4 +82,33 @@ internal fun Context.uninstallApk(packageName: String?) {
     }
 }
 
-
+internal suspend fun Context.packageManagerAppList(): List<AppModel> =
+    withContext(Dispatchers.IO) {
+        val startTime = System.nanoTime()
+        val pm = this@packageManagerAppList.packageManager
+        val mainIntent = Intent(Intent.ACTION_MAIN, null)
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+        @Suppress("DEPRECATION")
+        val resolveInfoList: List<ResolveInfo> =
+            pm.queryIntentActivities(mainIntent, PackageManager.MATCH_ALL)
+        Collections.sort(resolveInfoList, ResolveInfo.DisplayNameComparator(pm))
+        val res = mutableListOf<AppModel>()
+        val now = System.currentTimeMillis()
+        resolveInfoList.forEach { reInfo ->
+            val activityName = reInfo.activityInfo.name
+            val pkgName = reInfo.activityInfo.packageName
+            val appLabel = reInfo.loadLabel(pm) as String
+            val item = AppModel(
+                appPackageName = pkgName,
+                appName = appLabel,
+                appNamePinyin = appLabel.toPinyin()?.lowercase(Locale.ENGLISH),
+                activityName = activityName,
+                count = 0,
+                timestamp = now,
+            )
+            item.toString().log()
+            res.add(item)
+        }
+        startTime.timer("getAppsFromPackageManager", false)
+        return@withContext res
+    }

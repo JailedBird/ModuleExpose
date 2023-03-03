@@ -16,10 +16,9 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import cn.jailedbird.smartappsearch.BuildConfig
 import cn.jailedbird.smartappsearch.adapter.AppListTwoTypeAdapter
-import cn.jailedbird.smartappsearch.config.Settings
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
-import cn.jailedbird.smartappsearch.model.AppConfig
+import cn.jailedbird.smartappsearch.settings.Settings
 import cn.jailedbird.smartappsearch.ui.setting.SettingsActivity
 import cn.jailedbird.smartappsearch.utils.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun clearHistory() {
-            "clearHistory".toast()
+            viewModel.clearRoomHistory()
         }
 
         override fun settings() {
@@ -74,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         /* quickDebug()*/
     }
 
+    @Suppress("unused")
     private fun quickDebug() {
         if (BuildConfig.DEBUG) {
             startActivity(Intent(this, SettingsActivity::class.java))
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                 // Don't get first item by RecyclerView, Perhaps RecyclerView not refresh
                 adapter.currentList[0].launch(this@MainActivity)
                 lifecycleScope.launch(Dispatchers.IO) {
-                    delay(AppConfig.LAUNCH_DELAY_TIME)
+                    delay(LAUNCH_DELAY_TIME)
                     finish()
                 }
             }
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initEvent() {
-        binding.ivMore.setDebouncedClick {
+        binding.ivMore.setDebouncingClick {
             hideKeyboard()
             AppSettingsPopWindow.open(this, it, listener)
         }

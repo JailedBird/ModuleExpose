@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import cn.jailedbird.edgeutils.paddingTopSystemWindowInsets
 import cn.jailedbird.smartappsearch.base.BaseVBFragment
-import cn.jailedbird.smartappsearch.config.Settings
 import cn.jailedbird.smartappsearch.databinding.FragmentSettingMainBinding
+import cn.jailedbird.smartappsearch.settings.Settings
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingFragment : BaseVBFragment<FragmentSettingMainBinding>() {

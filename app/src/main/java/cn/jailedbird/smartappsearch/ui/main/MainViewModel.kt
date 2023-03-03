@@ -5,11 +5,11 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cn.jailedbird.smartappsearch.config.Settings
 import cn.jailedbird.smartappsearch.data.AppRepository
 import cn.jailedbird.smartappsearch.data.entity.AppModel
-import cn.jailedbird.smartappsearch.utils.AppUtils
+import cn.jailedbird.smartappsearch.settings.Settings
 import cn.jailedbird.smartappsearch.utils.EMPTY
+import cn.jailedbird.smartappsearch.utils.packageManagerAppList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -67,10 +67,16 @@ class MainViewModel @Inject constructor(
         refreshAppDatabase()
     }
 
+    fun clearRoomHistory() {
+        viewModelScope.launch {
+            repository.refreshAppModelTable(context.packageManagerAppList())
+        }
+    }
+
     fun refreshAppDatabase() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.refreshAppModelTable(
-                AppUtils.updateMeta(
+                AppModel.updateMeta(
                     context,
                     apps.ifEmpty { repository.getApps() },
                     withReduce = true

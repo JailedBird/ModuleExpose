@@ -1,4 +1,6 @@
-package cn.jailedbird.smartappsearch.config
+@file:Suppress("unused")
+
+package cn.jailedbird.smartappsearch.settings
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -11,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.net.Proxy
+
 /**
  * Best way to implement App settings, code from [Neo Store](https://github.com/NeoApplications/Neo-Store)
  * */

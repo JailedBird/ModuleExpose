@@ -63,14 +63,6 @@ internal fun String?.toPinyin(): String? {
     }
 }
 
-/*@Deprecated(
-    "通过这种方式不能将应用程序完全杀死，并且他不会把当前应用应用的Activity的task任务栈清空",
-    ReplaceWith(
-        "android.os.Process.killProcess(android.os.Process.myPid())",
-        "android",
-        "android"
-    )
-)*/
 internal fun Context.finishProcess() {
     android.os.Process.killProcess(android.os.Process.myPid())
 }
@@ -84,7 +76,7 @@ internal fun Int.toPx(): Float {
 /**
  * Avoid view's fast-click
  * */
-internal inline fun View.setDebouncedClick(
+internal inline fun View.setDebouncingClick(
     @Suppress("UNUSED_PARAMETER") duration: Long = 1000L,
     crossinline block: (view: View) -> Unit
 ) {
@@ -146,3 +138,5 @@ internal fun Long.timer(label: String, withToast: Boolean = false): Long {
     }
     return spend
 }
+
+
