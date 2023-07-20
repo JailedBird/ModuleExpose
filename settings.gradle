@@ -17,4 +17,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "SmartAppSearch"
 include ':app'
-include ':lib'
+//include ':lib'
