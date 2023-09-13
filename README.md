@@ -19,7 +19,8 @@ Bug & Confuse
 https://www.yuque.com/jailedbird/exkxrk/mxgn49ts511b1622?singleDoc# 《Hilt运行时注入参数》
 https://www.yuque.com/jailedbird/exkxrk/gkyuffo5v76r4r0s?singleDoc# 《在非Android内中注入Hilt对象》
 ## TODO
-
+- 集成Now in Android脚本处理方案
+- 深度集成基于Hilt的组件化方案
 - 添加匹配规则，使用首字符匹配or非首字母按顺序匹配
 - 启动App时检查 or try catch异常
 - ~~卸载功能需要完善和优化 or 禁用~~
