@@ -1,13 +1,15 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp'
-    id 'kotlin-kapt'
-    id 'com.google.dagger.hilt.android'
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "com.google.devtools.ksp"
+    id "kotlin-kapt"
+    id "com.google.dagger.hilt.android"
 }
 
 android {
+
     compileSdk 33
+    namespace "cn.jailedbird.smartappsearch"
 
     defaultConfig {
         applicationId "cn.jailedbird.smartappsearch"
@@ -29,12 +31,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+//    tasks.withType(KotlinCompile::class.java) {
+//        kotlinOptions {
+//            jvmTarget = JavaVersion.VERSION_17.toString()
+//        }
+//    }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     buildFeatures {
@@ -45,11 +54,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation libs.core.ktx
-    implementation libs.appcompat
-    implementation libs.constraintlayout
-    implementation libs.recyclerview
-    implementation libs.activity.ktx
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
+    implementation(libs.activity.ktx)
     implementation(libs.coil)
     implementation(libs.material)
 
@@ -66,17 +75,17 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hilt"
     kapt "com.google.dagger:hilt-compiler:$hilt"
 
-    implementation libs.lifecycle.viewmodel.ktx
+    implementation(libs.lifecycle.viewmodel.ktx)
     // replace SharedPreference:https://github.com/Tencent/MMKV
     // implementation 'com.tencent:mmkv:1.2.14'
 
 
     // https://square.github.io/leakcanary/getting_started/
-    debugImplementation libs.leakcanary
+    debugImplementation(libs.leakcanary)
 
-    testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 }
 
 kapt {
