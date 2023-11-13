@@ -45,40 +45,38 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.activity:activity-ktx:1.6.1'
-    implementation("io.coil-kt:coil:2.2.2")
-    implementation("com.google.android.material:material:1.4.0")
-    // Room
-    def room_version = "2.4.3"
-    implementation("androidx.room:room-runtime:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
-    def nav_version = "2.5.3"
-    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
-    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+    implementation libs.core.ktx
+    implementation libs.appcompat
+    implementation libs.constraintlayout
+    implementation libs.recyclerview
+    implementation libs.activity.ktx
+    implementation(libs.coil)
+    implementation(libs.material)
 
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
+    def room_version = "2.4.3"
     ksp("androidx.room:room-compiler:$room_version")
     // implementation project(":lib")
-    implementation("com.github.JailedBird:EdgeUtils:0.0.1-beta06")
+    implementation(libs.edgeutils)
     // Hilt https://developer.android.com/training/dependency-injection/hilt-android
     def hilt = "2.44"
     implementation "com.google.dagger:hilt-android:$hilt"
     kapt "com.google.dagger:hilt-compiler:$hilt"
 
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
+    implementation libs.lifecycle.viewmodel.ktx
     // replace SharedPreference:https://github.com/Tencent/MMKV
     // implementation 'com.tencent:mmkv:1.2.14'
 
 
     // https://square.github.io/leakcanary/getting_started/
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
+    debugImplementation libs.leakcanary
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
 }
 
 kapt {
