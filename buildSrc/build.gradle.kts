@@ -13,6 +13,7 @@ repositories {
 dependencies {
     implementation(libs.gradlePlugin.android)
     implementation(libs.gradlePlugin.kotlin)
+    implementation("com.squareup:javapoet:1.13.0")
 }
 
 // Target JVM 17.
