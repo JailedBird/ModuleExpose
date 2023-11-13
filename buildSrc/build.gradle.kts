@@ -7,6 +7,7 @@ repositories {
     maven { url = uri("https://maven.aliyun.com/repository/public") }
     google()
     mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {
@@ -14,7 +15,7 @@ dependencies {
     implementation(libs.gradlePlugin.kotlin)
 }
 
-// Target JVM 8.
+// Target JVM 17.
 tasks.withType<JavaCompile>().configureEach {
     sourceCompatibility = JavaVersion.VERSION_17.toString()
     targetCompatibility = JavaVersion.VERSION_17.toString()
@@ -32,3 +33,4 @@ tasks.withType<JavaCompile>().configureEach {
 // tasks.withType<KotlinJvmCompile>().configureEach {
 //     compilerOptions.jvmTarget.set(org.jetbrains.kotlin.config.JvmTarget.JVM_1_8)
 // }
+

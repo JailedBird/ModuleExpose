@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltAndroidApp
 class App : Application() {
     companion object {
-        @Suppress("ObjectPropertyName")
         private var _applicationContext: Context? = null
         val applicationContext: Context
             get() = _applicationContext!!

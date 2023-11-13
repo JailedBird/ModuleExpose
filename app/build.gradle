@@ -71,7 +71,7 @@ dependencies {
     // implementation project(":lib")
     implementation(libs.edgeutils)
     // Hilt https://developer.android.com/training/dependency-injection/hilt-android
-    def hilt = "2.46"
+    def hilt = "2.48.1"
     implementation "com.google.dagger:hilt-android:$hilt"
     kapt "com.google.dagger:hilt-compiler:$hilt"
 
@@ -90,4 +90,9 @@ dependencies {
 
 kapt {
     correctErrorTypes true
+}
+
+
+hilt {
+    enableAggregatingTask = false
 }
