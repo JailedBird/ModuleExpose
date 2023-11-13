@@ -27,7 +27,7 @@ appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat"
 coil = "io.coil-kt:coil:2.4.0"
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
-edgeutils = "com.github.JailedBird:EdgeUtils:0.0.1-beta06"
+edgeutils = "com.github.JailedBird:EdgeUtils:1.0.0"
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
 junit = { module = "junit:junit", version.ref = "junit" }
