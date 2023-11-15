@@ -2,14 +2,12 @@ package com.yeahka.android.sgpos
 
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.Lint
-import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 
 fun Project.setupLibraryModule(
@@ -42,13 +40,13 @@ fun LibraryExtension.enableViewBinding() {
     }
 }
 
-//fun LibraryExtension.enableDataBinding() {
-//    buildFeatures {
-//        dataBinding {
-//            enable = true
-//        }
-//    }
-//}
+fun LibraryExtension.enableDataBinding() {
+    buildFeatures {
+        dataBinding {
+            enable = true
+        }
+    }
+}
 
 
 fun Project.setupAppModule(
@@ -120,12 +118,12 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(
     //         "META-INF/*kotlin_module",
     //     )
     // }
-    // testOptions {
-    //     unitTests.isIncludeAndroidResources = true
-    // }
-//    lint {
-//        disable += arrayOf("MissingClass")
-//    }
+     testOptions {
+         unitTests.isIncludeAndroidResources = true
+     }
+    lint {
+        disable += arrayOf("MissingClass")
+    }
     block()
 }
 
@@ -133,6 +131,6 @@ private fun BaseExtension.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
     (this as ExtensionAware).extensions.configure("kotlinOptions", block)
 }
 
-//private fun BaseExtension.lint(block: Lint.() -> Unit) {
-//    (this as CommonExtension<*, *, *, *>).lint(block)
-//}
+private fun BaseExtension.lint(block: Lint.() -> Unit) {
+    (this as CommonExtension<*, *, *, *, *>).lint(block)
+}
