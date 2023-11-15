@@ -34,11 +34,6 @@ fun Project.setupLibraryModule(
     block()
 }
 
-fun LibraryExtension.enableViewBinding() {
-    buildFeatures {
-        viewBinding = true
-    }
-}
 
 fun LibraryExtension.enableDataBinding() {
     buildFeatures {
@@ -48,6 +43,25 @@ fun LibraryExtension.enableDataBinding() {
     }
 }
 
+fun LibraryExtension.enableViewBinding() {
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+fun BaseAppModuleExtension.enableDataBinding() {
+    buildFeatures {
+        dataBinding {
+            enable = true
+        }
+    }
+}
+
+fun BaseAppModuleExtension.enableViewBinding() {
+    buildFeatures {
+        viewBinding = true
+    }
+}
 
 fun Project.setupAppModule(
     resourcePrefix: String? = null,
@@ -118,9 +132,9 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(
     //         "META-INF/*kotlin_module",
     //     )
     // }
-     testOptions {
-         unitTests.isIncludeAndroidResources = true
-     }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
     lint {
         disable += arrayOf("MissingClass")
     }
