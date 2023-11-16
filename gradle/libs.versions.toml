@@ -6,6 +6,7 @@ applicationId = "cn.jailedbird.smartappsearch"
 constraintlayout = "2.1.4"
 coreKtx = "1.9.0"
 espressoCore = "3.4.0"
+hilt = "2.48.1"
 junit = "4.13.2"
 agp = "8.1.0"
 lifecycleViewmodelKtx = "2.4.0"
@@ -34,6 +35,8 @@ core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 edgeutils = "com.github.JailedBird:EdgeUtils:1.0.0"
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 junit = { module = "junit:junit", version.ref = "junit" }
 leakcanary = "com.squareup.leakcanary:leakcanary-android:2.12"
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
@@ -41,5 +44,6 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
 navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }

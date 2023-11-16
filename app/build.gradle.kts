@@ -35,14 +35,11 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
-    val room_version = "2.4.3"
-    ksp("androidx.room:room-compiler:$room_version")
-    // implementation project(":lib")
+    ksp(libs.room.compiler)
     implementation(libs.edgeutils)
     // Hilt https://developer.android.com/training/dependency-injection/hilt-android
-    val hilt = "2.48.1"
-    implementation("com.google.dagger:hilt-android:$hilt")
-    ksp("com.google.dagger:hilt-compiler:$hilt")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.lifecycle.viewmodel.ktx)
     // replace SharedPreference:https://github.com/Tencent/MMKV
