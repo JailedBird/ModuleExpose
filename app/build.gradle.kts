@@ -42,7 +42,7 @@ dependencies {
     // Hilt https://developer.android.com/training/dependency-injection/hilt-android
     val hilt = "2.48.1"
     implementation("com.google.dagger:hilt-android:$hilt")
-    kapt("com.google.dagger:hilt-compiler:$hilt")
+    ksp("com.google.dagger:hilt-compiler:$hilt")
 
     implementation(libs.lifecycle.viewmodel.ktx)
     // replace SharedPreference:https://github.com/Tencent/MMKV
