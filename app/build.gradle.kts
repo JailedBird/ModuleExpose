@@ -6,7 +6,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
-    id("kotlin-kapt")
+    // id("kotlin-kapt") // remove kapt
     id("com.google.dagger.hilt.android")
 }
 setupAppModule {
@@ -57,9 +57,9 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 }
 
-kapt {
-    correctErrorTypes = true
-}
+//kapt {
+//    correctErrorTypes = true
+//}
 
 
 hilt {
