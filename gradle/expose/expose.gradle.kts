@@ -39,6 +39,12 @@ fun includeWithApi(
     val moduleProject = project(module)
     val src = moduleProject.projectDir.absolutePath
     val des = "${src}_api"
+    // Ensure des directoy is created, avoid build.gradle create failed!
+    java.io.File(des).let {
+        if (!it.exists()) {
+            it.mkdir()
+        }
+    }
     doSync(src, expose, condition)
     createBuildGradle(
         "${des}${java.io.File.separator}build.gradle.kts",
