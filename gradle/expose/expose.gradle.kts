@@ -17,7 +17,7 @@ extra["includeWithJavaApi"] = { module: String ->
     includeWithApi(module, isJava = true, DEFAULT_EXPOSE_DIR_NAME, DEFAULT_CONDITION)
 }
 
-private val DEFAULT_EXPOSE_DIR_NAME = "test"
+private val DEFAULT_EXPOSE_DIR_NAME = "expose"
 private val SCRIPE_DIR = "$rootDir/gradle/expose/"
 private val BUILD_TEMPLATE_PATH_JAVA = "${SCRIPE_DIR}build_gradle_template_java"
 private val BUILD_TEMPLATE_PATH_ANDROID = "${SCRIPE_DIR}build_gradle_template_android"
