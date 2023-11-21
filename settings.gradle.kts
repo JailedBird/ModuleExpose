@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         maven { url = uri("https://maven.aliyun.com/repository/public") }
         maven { url = uri("https://maven.aliyun.com/repository/google") }
@@ -8,20 +9,21 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven { url = uri("https://maven.aliyun.com/repository/public") }
         maven { url = uri("https://maven.aliyun.com/repository/google") }
-        maven { url = uri("https://jitpack.io") }
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
     }
 }
-apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
-val includeWithApi: (projectPaths: String) -> Unit by extra
-val includeWithJavaApi: (projectPaths: String) -> Unit by extra
+// apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
+// val includeWithApi: (projectPaths: String) -> Unit by extra
+// val includeWithJavaApi: (projectPaths: String) -> Unit by extra
 rootProject.name = "SmartAppSearch"
-//include(":app")
-includeWithApi(":app")
-include(":lib")
+include(":app")
+// includeWithApi(":app")
+// include(":lib")
