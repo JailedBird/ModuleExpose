@@ -27,6 +27,7 @@ extra["includeWithJavaApi"] = { module: String ->
     includeWithApi(module, isJava = true, DEFAULT_EXPOSE_DIR_NAME, DEFAULT_CONDITION)
 }
 
+private val MODULE_EXPOSE_TAG = "expose"
 private val DEFAULT_EXPOSE_DIR_NAME = "expose"
 private val SCRIPT_DIR = "$rootDir/gradle/expose/"
 private val BUILD_TEMPLATE_PATH_JAVA = "${SCRIPT_DIR}build_gradle_template_java"
@@ -52,12 +53,12 @@ fun includeWithApi(
     measure("Expose ${module}", true) {
         val moduleProject = project(module)
         val src = moduleProject.projectDir.absolutePath
-        val des = "${src}_api"
+        val des = "${src}_${MODULE_EXPOSE_TAG}"
         // generate build.gradle.kts
         generateBuildGradle(des, "build.gradle.kts", moduleProject.name, isJava)
         doSync(src, expose, condition)
-        // Add module_api to Project!
-        include("${module}_api")
+        // Add module_expose to Project!
+        include("${module}_${MODULE_EXPOSE_TAG}")
     }
     println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 }
@@ -65,7 +66,7 @@ fun includeWithApi(
 fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
     val start = System.currentTimeMillis()
     val src = "${src0}${File.separator}src${File.separator}main"
-    val des = "${src0}_api${File.separator}src${File.separator}main"
+    val des = "${src0}_${MODULE_EXPOSE_TAG}${File.separator}src${File.separator}main"
     // Do not delete
     val root = File(src)
     val pathList = mutableListOf<String>()
@@ -89,7 +90,7 @@ fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
             deleteEmptyDir(copyTo)
         }
     }
-    debug("Module $src all spend ${(System.currentTimeMillis() - start)} ms\n\n")
+    debug("Module $src all spend ${(System.currentTimeMillis() - start)} ms")
 }
 
 fun measure(tag: String, force: Boolean = false, block: () -> Unit) {
@@ -312,7 +313,7 @@ fun generateBuildGradle(
     selfName: String,
     isJava: Boolean = false
 ) {
-    // Ensure _api directory is created!
+    // Ensure _expose directory is created!
     File(scriptDir).let {
         if (!it.exists()) {
             it.mkdir()
@@ -365,7 +366,7 @@ fun deleteEmptyDir(file: File) {
 fun doSyncByGradleApi(src0: String) {
     val t1 = System.currentTimeMillis()
     val src = "${src0}${File.separator}src${File.separator}main"
-    val des = "${src0}_api${File.separator}src${File.separator}main"
+    val des = "${src0}_${MODULE_EXPOSE_TAG}${File.separator}src${File.separator}main"
     debug("debug $src")
     debug("debug $des")
     delete(des)
