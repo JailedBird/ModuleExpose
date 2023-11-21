@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "cn.jailedbird.core.settings"
+    namespace = "cn.jailedbird.core.resource"
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":core:resource")))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

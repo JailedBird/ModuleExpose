@@ -53,10 +53,10 @@ gradlePlugin {
             id = "nowinandroid.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
         }
-        register("androidJava") {
-            id = "nowinandroid.android.java"
-            implementationClass = "AndroidJavaConventionPlugin"
-        }
+        // register("androidJava") {
+        //     id = "nowinandroid.android.java"
+        //     implementationClass = "AndroidJavaConventionPlugin"
+        // }
         register("androidApplicationJacoco") {
             id = "nowinandroid.android.application.jacoco"
             implementationClass = "AndroidApplicationJacocoConventionPlugin"
