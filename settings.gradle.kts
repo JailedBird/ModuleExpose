@@ -20,15 +20,14 @@ dependencyResolutionManagement {
         maven { url = uri("https://jitpack.io") }
     }
 }
-// apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
-// val includeWithApi: (projectPaths: String) -> Unit by extra
-// val includeWithJavaApi: (projectPaths: String) -> Unit by extra
+apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
+val includeWithApi: (projectPaths: String) -> Unit by extra
+val includeWithJavaApi: (projectPaths: String) -> Unit by extra
 rootProject.name = "SmartAppSearch"
 include(":app")
 // includeWithApi(":app")
 // include(":lib")
 include(":core:settings")
 include(":core:resource")
-include(":feature")
-include(":feature:settings")
+includeWithApi(":feature:settings")
 include(":core:common")

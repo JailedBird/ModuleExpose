@@ -16,7 +16,7 @@ import cn.jailedbird.feature.settings.databinding.ActivitySettingsBinding
 class SettingsActivity : AppCompatActivity() {
     companion object {
         @JvmStatic
-        fun start(context: Context) {
+        internal fun start(context: Context) {
             val starter = Intent(context, SettingsActivity::class.java)
             context.startActivity(starter)
         }

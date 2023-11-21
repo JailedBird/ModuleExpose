@@ -3,5 +3,5 @@ plugins {
 }
 
 android {
-    namespace = "%s"
+    namespace = "cn.jailedbird.module.settings_expose"
 }

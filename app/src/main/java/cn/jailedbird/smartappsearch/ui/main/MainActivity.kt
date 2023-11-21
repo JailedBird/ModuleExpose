@@ -14,21 +14,25 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
+import cn.jailedbird.feature.settings.expose.SettingExpose
 import cn.jailedbird.smartappsearch.BuildConfig
 import cn.jailedbird.smartappsearch.adapter.AppListTwoTypeAdapter
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
-import cn.jailedbird.feature.settings.SettingsActivity
 import cn.jailedbird.smartappsearch.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    @Inject
+    lateinit var settingExpose: SettingExpose
 
     private val adapter = AppListTwoTypeAdapter()
     private val viewModel by viewModels<MainViewModel>()
@@ -51,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun settings() {
-            cn.jailedbird.feature.settings.SettingsActivity.start(this@MainActivity)
+            settingExpose.startSettingActivity(this@MainActivity)
         }
     }
 

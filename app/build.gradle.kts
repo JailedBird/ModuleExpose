@@ -44,6 +44,8 @@ dependencies {
 
     implementation(libs.edgeutils)
     implementation(libs.recyclerview)
+    implementation(project(mapOf("path" to ":feature:settings")))
+    compileOnly(project(mapOf("path" to ":feature:settings_expose")))
 
     // // Hilt https://developer.android.com/training/dependency-injection/hilt-android
 
