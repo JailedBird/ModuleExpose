@@ -1,11 +1,10 @@
-package cn.jailedbird.smartappsearch.ui.setting
+package cn.jailedbird.feature.settings
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import cn.jailedbird.core.common.base.fragment.BaseVBFragment
 import cn.jailedbird.edgeutils.paddingTopSystemWindowInsets
-import cn.jailedbird.smartappsearch.base.BaseVBFragment
-import cn.jailedbird.smartappsearch.databinding.FragmentSettingMainBinding
-import cn.jailedbird.core.settings.Settings
+import cn.jailedbird.feature.settings.databinding.FragmentSettingMainBinding
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingFragment : BaseVBFragment<FragmentSettingMainBinding>() {

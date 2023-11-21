@@ -31,10 +31,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.setting.SettingsActivity"
-            android:exported="false"
-            android:theme="@style/Base.AppTheme" />
     </application>
 
 </manifest>

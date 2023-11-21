@@ -1,4 +1,4 @@
-package cn.jailedbird.smartappsearch.base
+package cn.jailedbird.core.common.base.fragment
 
 import android.content.Context
 import android.os.Bundle
@@ -17,7 +17,7 @@ abstract class BaseVBFragment<T : ViewBinding> : Fragment() {
         private const val LIFECYCLE_TAG = "FragmentLifecycle"
     }
 
-    @Suppress("PropertyName", "PrivatePropertyName")
+    @Suppress("PrivatePropertyName")
     private val TAG by lazy {
         this::class.java.name
     }

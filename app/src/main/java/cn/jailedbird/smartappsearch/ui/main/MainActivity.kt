@@ -18,8 +18,7 @@ import cn.jailedbird.smartappsearch.BuildConfig
 import cn.jailedbird.smartappsearch.adapter.AppListTwoTypeAdapter
 import cn.jailedbird.smartappsearch.databinding.ActivityMainBinding
 import cn.jailedbird.smartappsearch.dialog.AppSettingsPopWindow
-import cn.jailedbird.core.settings.Settings
-import cn.jailedbird.smartappsearch.ui.setting.SettingsActivity
+import cn.jailedbird.feature.settings.SettingsActivity
 import cn.jailedbird.smartappsearch.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun settings() {
-            SettingsActivity.start(this@MainActivity)
+            cn.jailedbird.feature.settings.SettingsActivity.start(this@MainActivity)
         }
     }
 
@@ -76,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     @Suppress("unused")
     private fun quickDebug() {
         if (BuildConfig.DEBUG) {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            startActivity(Intent(this, cn.jailedbird.feature.settings.SettingsActivity::class.java))
         }
     }
 
