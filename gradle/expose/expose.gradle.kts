@@ -59,6 +59,7 @@ fun includeWithApi(
         // Add module_api to Project!
         include("${module}_api")
     }
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 }
 
 fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
