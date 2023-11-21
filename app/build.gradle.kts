@@ -2,11 +2,6 @@ plugins {
     alias(libs.plugins.nowinandroid.android.application)
     alias(libs.plugins.nowinandroid.android.hilt)
     alias(libs.plugins.nowinandroid.android.room)
-    // id("com.android.application")
-    // id("org.jetbrains.kotlin.android")
-    // id("com.google.devtools.ksp")
-    // // id("kotlin-kapt") // remove kapt
-    // id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -22,21 +17,10 @@ android {
     }
 }
 
-// setupAppModule {
-//     defaultConfig {
-//         ndk {
-//             abiFilters.add("arm64-v8a")
-//             // abiFilters.add("armeabi-v7a")
-//         }
-//     }
-//
-//
-//     enableViewBinding()
-//     enableDataBinding()
-// }
 
 dependencies {
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
+    implementation(project(mapOf("path" to ":core:settings")))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.activity)
@@ -59,18 +43,13 @@ dependencies {
 
     implementation(libs.edgeutils)
     implementation(libs.recyclerview)
+
     // // Hilt https://developer.android.com/training/dependency-injection/hilt-android
 
-    //
-    // implementation(libs.lifecycle.viewmodel.ktx)
-    // // replace SharedPreference:https://github.com/Tencent/MMKV
-    // // implementation 'com.tencent:mmkv:1.2.14'
-    //
-    //
     // // https://square.github.io/leakcanary/getting_started/
     debugImplementation(libs.leakcanary)
-    //
-    // testImplementation(libs.junit)
-    // androidTestImplementation(libs.ext.junit)
-    // androidTestImplementation(libs.espresso.core)
+
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
 }

@@ -7,7 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import cn.jailedbird.smartappsearch.data.AppRepository
 import cn.jailedbird.smartappsearch.data.entity.AppModel
-import cn.jailedbird.smartappsearch.settings.Settings
+import cn.jailedbird.core.settings.Settings
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ class App : Application() {
         super.onCreate()
         _applicationContext = this
         listenApkChange()
-        Settings.init(this)
+        cn.jailedbird.core.settings.Settings.init(this)
     }
 
     @Inject

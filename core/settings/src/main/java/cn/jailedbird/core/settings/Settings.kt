@@ -1,12 +1,11 @@
 @file:Suppress("unused")
 
-package cn.jailedbird.smartappsearch.settings
+package cn.jailedbird.core.settings
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.appcompat.app.AppCompatDelegate
-import cn.jailedbird.smartappsearch.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

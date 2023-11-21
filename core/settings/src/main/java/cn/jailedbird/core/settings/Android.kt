@@ -1,4 +1,4 @@
-package cn.jailedbird.smartappsearch.settings
+package cn.jailedbird.core.settings
 
 import android.os.Build
 

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.jailedbird.smartappsearch.data.AppRepository
 import cn.jailedbird.smartappsearch.data.entity.AppModel
-import cn.jailedbird.smartappsearch.settings.Settings
+import cn.jailedbird.core.settings.Settings
 import cn.jailedbird.smartappsearch.utils.EMPTY
 import cn.jailedbird.smartappsearch.utils.packageManagerAppList
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -88,7 +88,7 @@ class MainViewModel @Inject constructor(
     private fun updateResult(apps: List<AppModel>, key: String) {
         searchJob?.cancel(CancellationException("New job reach, cancel last job"))
         searchJob = viewModelScope.launch((Dispatchers.IO)) {
-            val matchCenter = Settings[Settings.Key.MatchCenter]
+            val matchCenter = cn.jailedbird.core.settings.Settings[cn.jailedbird.core.settings.Settings.Key.MatchCenter]
             val res = mutableListOf<AppModel>()
             apps.forEach {
                 ensureActive()

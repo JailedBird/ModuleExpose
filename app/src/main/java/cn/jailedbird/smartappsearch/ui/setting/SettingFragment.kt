@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import cn.jailedbird.edgeutils.paddingTopSystemWindowInsets
 import cn.jailedbird.smartappsearch.base.BaseVBFragment
 import cn.jailedbird.smartappsearch.databinding.FragmentSettingMainBinding
-import cn.jailedbird.smartappsearch.settings.Settings
+import cn.jailedbird.core.settings.Settings
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingFragment : BaseVBFragment<FragmentSettingMainBinding>() {
@@ -14,18 +14,18 @@ class SettingFragment : BaseVBFragment<FragmentSettingMainBinding>() {
 
     override fun initView() {
         binding.appbar.paddingTopSystemWindowInsets()
-        bindPreference(binding.swCenterMatch, Settings.Key.MatchCenter)
-        bindPreference(binding.swAutoPopIme, Settings.Key.ImeAutoPop)
-        bindPreference(binding.swDirectLaunch, Settings.Key.LaunchDirect)
+        bindPreference(binding.swCenterMatch, cn.jailedbird.core.settings.Settings.Key.MatchCenter)
+        bindPreference(binding.swAutoPopIme, cn.jailedbird.core.settings.Settings.Key.ImeAutoPop)
+        bindPreference(binding.swDirectLaunch, cn.jailedbird.core.settings.Settings.Key.LaunchDirect)
     }
 
     override fun initEvent() {
     }
 
-    private fun bindPreference(switch: SwitchMaterial, key: Settings.Key<Boolean>) {
-        switch.isChecked = Settings[key]
+    private fun bindPreference(switch: SwitchMaterial, key: cn.jailedbird.core.settings.Settings.Key<Boolean>) {
+        switch.isChecked = cn.jailedbird.core.settings.Settings[key]
         switch.setOnCheckedChangeListener { _, isChecked ->
-            Settings[key] = isChecked
+            cn.jailedbird.core.settings.Settings[key] = isChecked
         }
     }
 

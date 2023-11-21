@@ -27,3 +27,4 @@ rootProject.name = "SmartAppSearch"
 include(":app")
 // includeWithApi(":app")
 // include(":lib")
+include(":core:settings")
