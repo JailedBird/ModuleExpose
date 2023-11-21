@@ -33,6 +33,7 @@ private val BUILD_TEMPLATE_PATH_JAVA = "${SCRIPT_DIR}build_gradle_template_java"
 private val BUILD_TEMPLATE_PATH_ANDROID = "${SCRIPT_DIR}build_gradle_template_android"
 private val ENABLE_FILE_CONDITION = false
 private val MODULE_NAMESPACE_TEMPLATE = "cn.jailedbird.module.%s_expose"
+private val DEBUG_ENABLE = false
 
 
 private val DEFAULT_CONDITION: (String) -> Boolean = if (ENABLE_FILE_CONDITION) {
@@ -48,18 +49,20 @@ fun includeWithApi(
     condition: (String) -> Boolean
 ) {
     include(module)
-    val moduleProject = project(module)
-    val src = moduleProject.projectDir.absolutePath
-    val des = "${src}_api"
-    // generate build.gradle.kts
-    generateBuildGradle(des, "build.gradle.kts", moduleProject.name, isJava)
-    doSync(src, expose, condition)
-
-    include("${module}_api")
+    measure("Expose ${module}", true) {
+        val moduleProject = project(module)
+        val src = moduleProject.projectDir.absolutePath
+        val des = "${src}_api"
+        // generate build.gradle.kts
+        generateBuildGradle(des, "build.gradle.kts", moduleProject.name, isJava)
+        doSync(src, expose, condition)
+        // Add module_api to Project!
+        include("${module}_api")
+    }
 }
 
 fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
-    val t1 = System.currentTimeMillis()
+    val start = System.currentTimeMillis()
     val src = "${src0}${java.io.File.separator}src${java.io.File.separator}main"
     val des = "${src0}_api${java.io.File.separator}src${java.io.File.separator}main"
     // Do not delete
@@ -85,13 +88,13 @@ fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
             deleteEmptyDir(copyTo)
         }
     }
-    println("Module $src all spend ${(System.currentTimeMillis() - t1)} ms\n\n")
+    debug("Module $src all spend ${(System.currentTimeMillis() - start)} ms\n\n")
 }
 
-fun measure(tag: String, block: () -> Unit) {
+fun measure(tag: String, force: Boolean = false, block: () -> Unit) {
     val t1 = System.currentTimeMillis()
     block.invoke()
-    println("Measure: $tag spend ${System.currentTimeMillis() - t1}ms")
+    debug("Measure: $tag spend ${System.currentTimeMillis() - t1}ms", force)
 }
 
 // @Deprecated(message = "Deprecated because of low performance")
@@ -145,10 +148,10 @@ fun deleteDirectoryByNio(dir: String) {
     try {
         val path = FileSystems.getDefault().getPath(dir)
         if (!Files.exists(path)) { // empty dir to check
-            println("empty path ${path.toAbsolutePath()} to delete")
+            debug("empty path ${path.toAbsolutePath()} to delete")
             return
         }
-        println("to delete path " + path.absolutePathString().toString())
+        debug("to delete path " + path.absolutePathString().toString())
         // Files.delete(path); // can not delete not empty dir
         Files.walkFileTree(
             path,
@@ -157,7 +160,7 @@ fun deleteDirectoryByNio(dir: String) {
                     file: Path,
                     attrs: BasicFileAttributes?
                 ): FileVisitResult {
-                    // println("${file.absolutePathString()} to delete")
+                    // debug("${file.absolutePathString()} to delete")
                     Files.delete(file)
                     return super.visitFile(file, attrs)
                 }
@@ -195,7 +198,7 @@ fun deleteExtraFiles(
             try {
                 if (!Files.isDirectory(path)) { // Skip dir, avoid directory not empty exception
                     Files.delete(path)
-                    println("Deleted extra file: ${destinationDirectory.relativize(path)}")
+                    debug("Deleted extra file: ${destinationDirectory.relativize(path)}")
                 }
             } catch (e: java.io.IOException) {
                 e.printStackTrace()
@@ -224,7 +227,7 @@ fun syncDirectory(
             sourceDirectory
         )
     ) {
-        println("Source directory does not exist or is not a directory.")
+        debug("Source directory does not exist or is not a directory.")
         return
     }
 
@@ -233,7 +236,7 @@ fun syncDirectory(
     if (!Files.exists(destinationDirectory)) {
         try {
             Files.createDirectories(destinationDirectory)
-            println("Created destination directory: $destinationDirectory")
+            debug("Created destination directory: $destinationDirectory")
         } catch (e: java.io.IOException) {
             e.printStackTrace()
             return
@@ -266,7 +269,7 @@ fun syncDirectory(
                         destinationFile,
                         StandardCopyOption.REPLACE_EXISTING
                     )
-                    // println("Copied file: $relativePath")
+                    // debug("Copied file: $relativePath")
                     return FileVisitResult.CONTINUE
                 }
 
@@ -281,7 +284,7 @@ fun syncDirectory(
                     if (!Files.exists(destinationDir)) {
                         try {
                             Files.createDirectories(destinationDir)
-                            // println("Created directory: $relativePath")
+                            // debug("Created directory: $relativePath")
                         } catch (e: java.io.IOException) {
                             e.printStackTrace()
                             return FileVisitResult.TERMINATE
@@ -292,7 +295,7 @@ fun syncDirectory(
                 }
             })
 
-        println("Directory copy completed!")
+        debug("Directory copy completed!")
     } catch (e: java.io.IOException) {
         e.printStackTrace()
     }
@@ -362,8 +365,8 @@ fun doSyncByGradleApi(src0: String) {
     val t1 = System.currentTimeMillis()
     val src = "${src0}${java.io.File.separator}src${java.io.File.separator}main"
     val des = "${src0}_api${java.io.File.separator}src${java.io.File.separator}main"
-    println("debug $src")
-    println("debug $des")
+    debug("debug $src")
+    debug("debug $des")
     delete(des)
     copy {
         from(src)
@@ -376,5 +379,11 @@ fun doSyncByGradleApi(src0: String) {
     }
     // remove empty dirs
     deleteEmptyDir(des)
-    println("Module $src do copy spend ${(System.currentTimeMillis() - t1)} ms")
+    debug("Module $src do copy spend ${(System.currentTimeMillis() - t1)} ms")
+}
+
+fun debug(message: String, force: Boolean = false) {
+    if (force or DEBUG_ENABLE) {
+        println(message)
+    }
 }
