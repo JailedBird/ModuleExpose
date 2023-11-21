@@ -9,7 +9,7 @@ import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.absolutePathString
-
+import java.io.File
 /* [Tutorial documentation]
 1) import this gradle script in setting.gradle.kts, like this:
 apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
@@ -64,10 +64,10 @@ fun includeWithApi(
 
 fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
     val start = System.currentTimeMillis()
-    val src = "${src0}${java.io.File.separator}src${java.io.File.separator}main"
-    val des = "${src0}_api${java.io.File.separator}src${java.io.File.separator}main"
+    val src = "${src0}${File.separator}src${File.separator}main"
+    val des = "${src0}_api${File.separator}src${File.separator}main"
     // Do not delete
-    val root = java.io.File(src)
+    val root = File(src)
     val pathList = mutableListOf<String>()
     if (root.exists() && root.isDirectory) {
         measure("findDirectoryByNio") {
@@ -313,19 +313,19 @@ fun generateBuildGradle(
     isJava: Boolean = false
 ) {
     // Ensure _api directory is created!
-    java.io.File(scriptDir).let {
+    File(scriptDir).let {
         if (!it.exists()) {
             it.mkdir()
         }
     }
-    val scriptPath = "${scriptDir}${java.io.File.separator}${scriptName}"
-    val buildScript = java.io.File(scriptPath)
+    val scriptPath = "${scriptDir}${File.separator}${scriptName}"
+    val buildScript = File(scriptPath)
     val path = if (isJava) {
         BUILD_TEMPLATE_PATH_JAVA
     } else {
         BUILD_TEMPLATE_PATH_ANDROID
     }
-    val templateFile = java.io.File(path)
+    val templateFile = File(path)
 
     if (!templateFile.exists()) {
         throw Exception("Template file ${templateFile.absolutePath} not found!")
@@ -337,11 +337,11 @@ fun generateBuildGradle(
 
 
 fun deleteEmptyDir(path: String) {
-    deleteEmptyDir(java.io.File(path))
+    deleteEmptyDir(File(path))
 }
 
 // A包含A1 A2 A3 AN AN全为空 A不会被删除
-fun deleteEmptyDir(file: java.io.File) {
+fun deleteEmptyDir(file: File) {
     if (file.isDirectory) {
         file.listFiles()?.forEach {
             if (it.isDirectory) {
@@ -364,8 +364,8 @@ fun deleteEmptyDir(file: java.io.File) {
 @Deprecated("Deprecated because of low performance")
 fun doSyncByGradleApi(src0: String) {
     val t1 = System.currentTimeMillis()
-    val src = "${src0}${java.io.File.separator}src${java.io.File.separator}main"
-    val des = "${src0}_api${java.io.File.separator}src${java.io.File.separator}main"
+    val src = "${src0}${File.separator}src${File.separator}main"
+    val des = "${src0}_api${File.separator}src${File.separator}main"
     debug("debug $src")
     debug("debug $des")
     delete(des)
