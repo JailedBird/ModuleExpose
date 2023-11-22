@@ -19,17 +19,6 @@
         android:supportsRtl="true"
         android:theme="@style/Base.AppTheme"
         tools:targetApi="31">
-        <activity
-            android:name=".ui.main.MainActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:theme="@style/Theme.SmartAppSearch.Dialog">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
     </application>
 

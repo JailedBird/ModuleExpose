@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingVertical="12dp"
+    tools:context="cn.jailedbird.feature.search.main.SearchActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="8dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivSearch"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_baseline_search_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/search"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="12dp"
+            android:background="@null"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Type app name"
+            android:imeOptions="actionSearch"
+            android:importantForAutofill="no"
+            android:nextFocusDown="@id/search"
+            android:singleLine="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivMore"
+            app:layout_constraintStart_toEndOf="@+id/ivSearch"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText,LabelFor,TextFields" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivMore"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_baseline_more_vert_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="6dp"
+        android:background="#28000000" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_app_list" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

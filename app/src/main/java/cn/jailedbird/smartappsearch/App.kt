@@ -5,9 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import cn.jailedbird.smartappsearch.data.AppRepository
-import cn.jailedbird.smartappsearch.data.entity.AppModel
 import cn.jailedbird.core.settings.Settings
+import cn.jailedbird.feature.search.data.entity.AppModel
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -29,11 +28,11 @@ class App : Application() {
         super.onCreate()
         _applicationContext = this
         listenApkChange()
-        cn.jailedbird.core.settings.Settings.init(this)
+        Settings.init(this)
     }
 
     @Inject
-    lateinit var appRepository: AppRepository
+    lateinit var appRepository: cn.jailedbird.feature.search.data.AppRepository
 
     /** Dynamic broadcast for apk install and uninstall
      * [StackOverflow](https://stackoverflow.com/questions/7470314/receiving-package-install-and-uninstall-events)*/
@@ -43,7 +42,10 @@ class App : Application() {
                 @OptIn(DelicateCoroutinesApi::class)
                 GlobalScope.launch(Dispatchers.IO) {
                     appRepository.refreshAppModelTable(
-                        AppModel.updateMeta(this@App, appRepository.getApps())
+                        AppModel.updateMeta(
+                            this@App,
+                            appRepository.getApps()
+                        )
                     )
                 }
             }
