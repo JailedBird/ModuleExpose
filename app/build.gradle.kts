@@ -19,11 +19,11 @@ android {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":core:resource")))
-    implementation(project(mapOf("path" to ":core:common")))
-    implementation(project(mapOf("path" to ":core:settings")))
-    implementation(project(mapOf("path" to ":feature:settings")))
-    implementation(project(mapOf("path" to ":feature:search")))
+    implementation(projects.core.resource)
+    implementation(projects.core.common)
+    implementation(projects.core.settings)
+    implementation(projects.feature.search)
+    implementation(projects.feature.settings)
 
     // // Hilt https://developer.android.com/training/dependency-injection/hilt-android
 

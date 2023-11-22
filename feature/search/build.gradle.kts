@@ -17,8 +17,8 @@ android {
 
 dependencies {
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
-    implementation(project(mapOf("path" to ":core:settings")))
-    implementation(project(mapOf("path" to ":core:common")))
+    implementation(projects.core.settings)
+    implementation(projects.core.common)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.activity)
@@ -41,7 +41,7 @@ dependencies {
 
     implementation(libs.edgeutils)
     implementation(libs.recyclerview)
-    compileOnly(project(mapOf("path" to ":feature:settings_expose")))
+    compileOnly(projects.feature.settingsExpose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

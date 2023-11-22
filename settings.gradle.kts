@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -20,13 +22,16 @@ dependencyResolutionManagement {
         maven { url = uri("https://jitpack.io") }
     }
 }
+// TYPESAFE_PROJECT_ACCESSORS, we can implement project likes:
+// implementation(projects.core.resource)
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
 val includeWithApi: (projectPaths: String) -> Unit by extra
 val includeWithJavaApi: (projectPaths: String) -> Unit by extra
+
 rootProject.name = "SmartAppSearch"
 include(":app")
-// includeWithApi(":app")
-// include(":lib")
 include(":core:settings")
 include(":core:resource")
 include(":core:common")

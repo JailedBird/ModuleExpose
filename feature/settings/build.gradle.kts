@@ -18,9 +18,12 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.material)
     implementation(libs.edgeutils)
-    implementation(project(mapOf("path" to ":core:settings")))
-    implementation(project(mapOf("path" to ":core:common")))
-    compileOnly(project(mapOf("path" to ":feature:search_expose")))
+
+    implementation(projects.core.settings)
+    implementation(projects.core.common)
+
+    compileOnly(projects.feature.searchExpose)
+
     testImplementation(libs.junit4)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)

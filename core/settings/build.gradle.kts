@@ -7,7 +7,7 @@ android {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":core:resource")))
+    implementation(projects.core.resource)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
