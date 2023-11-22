@@ -12,7 +12,9 @@ import androidx.navigation.fragment.fragment
 import cn.jailedbird.edgeutils.EdgeUtils.edgeSetSystemBarLight
 import cn.jailedbird.edgeutils.EdgeUtils.edgeToEdge
 import cn.jailedbird.feature.settings.databinding.ActivitySettingsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
     companion object {
         @JvmStatic

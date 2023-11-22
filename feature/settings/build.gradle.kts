@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.edgeutils)
     implementation(project(mapOf("path" to ":core:settings")))
     implementation(project(mapOf("path" to ":core:common")))
+    compileOnly(project(mapOf("path" to ":feature:search_expose")))
     testImplementation(libs.junit4)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)

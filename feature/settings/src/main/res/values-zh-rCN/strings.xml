@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SmartAppSearch</string>
+    <string name="settings_title">设置</string>
+    <string name="settings_theme_title">设置</string>
+    <string name="enable_infix_match">启用中缀匹配</string>
+    <string name="enable_confuse_ing">启用in/ing模糊匹配</string>
+    <string name="enable_auto_pop_ime">启动时自动弹出键盘</string>
+    <string name="enable_auto_open_app">选中app时直接启动</string>
+    <string name="return_to_search">返回搜索</string>
+</resources>

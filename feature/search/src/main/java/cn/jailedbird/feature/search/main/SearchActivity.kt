@@ -1,6 +1,8 @@
 package cn.jailedbird.feature.search.main
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -13,16 +15,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
-import cn.jailedbird.core.settings.Settings
-import cn.jailedbird.feature.search.adapter.AppListTwoTypeAdapter
-import cn.jailedbird.feature.search.databinding.ActivityMainBinding
-import cn.jailedbird.feature.search.dialog.AppSettingsPopWindow
-import cn.jailedbird.feature.search.utils.LAUNCH_DELAY_TIME
 import cn.jailedbird.core.common.utils.hideKeyboard
 import cn.jailedbird.core.common.utils.setDebouncingClick
 import cn.jailedbird.core.common.utils.showKeyboard
 import cn.jailedbird.core.common.utils.toPx
 import cn.jailedbird.core.common.utils.toast
+import cn.jailedbird.core.settings.Settings
+import cn.jailedbird.feature.search.adapter.AppListTwoTypeAdapter
+import cn.jailedbird.feature.search.databinding.ActivityMainBinding
+import cn.jailedbird.feature.search.dialog.AppSettingsPopWindow
+import cn.jailedbird.feature.search.utils.LAUNCH_DELAY_TIME
 import cn.jailedbird.feature.settings.expose.SettingExpose
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +35,14 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchActivity : AppCompatActivity() {
+    companion object {
+        @JvmStatic
+        fun start(context: Context) {
+            val starter = Intent(context, SearchActivity::class.java)
+            context.startActivity(starter)
+        }
+    }
+
     private lateinit var binding: ActivityMainBinding
 
     @Inject

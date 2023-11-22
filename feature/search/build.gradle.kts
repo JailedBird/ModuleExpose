@@ -41,7 +41,6 @@ dependencies {
 
     implementation(libs.edgeutils)
     implementation(libs.recyclerview)
-    implementation(project(mapOf("path" to ":feature:settings")))
     compileOnly(project(mapOf("path" to ":feature:settings_expose")))
 
     implementation(libs.androidx.core.ktx)

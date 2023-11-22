@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SmartAppSearch</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme_title">Choose theme</string>
+    <string name="enable_infix_match">Infix matching</string>
+    <string name="enable_confuse_ing">enable_confuse_ing</string>
+    <string name="enable_auto_pop_ime">enable_auto_pop_ime</string>
+    <string name="enable_auto_open_app">enable_auto_open_app</string>
+    <string name="return_to_search">return to search</string>
+</resources>
