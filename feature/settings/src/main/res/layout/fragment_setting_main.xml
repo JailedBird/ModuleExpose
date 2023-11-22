@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/enable_auto_pop_ime" />
 
-            <Button
+            <TextView
                 android:id="@+id/btReturnSearch"
                 style="@style/Widget.IOSched.Settings.Button"
                 android:layout_width="match_parent"

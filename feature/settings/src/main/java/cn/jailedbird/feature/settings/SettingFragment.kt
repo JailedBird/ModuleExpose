@@ -14,8 +14,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingFragment : BaseVBFragment<FragmentSettingMainBinding>() {
-    // @Inject
-    // lateinit var searchExpose: SearchExpose
+    @Inject
+    lateinit var searchExpose: SearchExpose
 
     override val inflate: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSettingMainBinding
         get() = FragmentSettingMainBinding::inflate

@@ -11,8 +11,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
 import cn.jailedbird.edgeutils.EdgeUtils.edgeSetSystemBarLight
 import cn.jailedbird.edgeutils.EdgeUtils.edgeToEdge
+import cn.jailedbird.feature.search.expose.SearchExpose
 import cn.jailedbird.feature.settings.databinding.ActivitySettingsBinding
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
