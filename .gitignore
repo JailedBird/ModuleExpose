@@ -18,3 +18,4 @@ app/release/output-metadata.json
 app/release/app-release.apk
 **/build/
 *_api/
+*_expose/
