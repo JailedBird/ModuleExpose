@@ -19,14 +19,20 @@ Bug & Confuse
 https://www.yuque.com/jailedbird/exkxrk/mxgn49ts511b1622?singleDoc# 《Hilt运行时注入参数》
 https://www.yuque.com/jailedbird/exkxrk/gkyuffo5v76r4r0s?singleDoc# 《在非Android内中注入Hilt对象》
 ## TODO
-- 集成Now in Android脚本处理方案
-- 深度集成基于Hilt的组件化方案
-- 添加匹配规则，使用首字符匹配or非首字母按顺序匹配
-- 启动App时检查 or try catch异常
-- ~~卸载功能需要完善和优化 or 禁用~~
-- ~~启动APK时候需要可能需要优化启动方法~~
-- 搜索无果时，添加无内容交互、点击可刷新界面
-- 设置页面、开关及其配置加载
-- 最近搜索历史记录
-- ~~添加APK新增和卸载的监听 https://stackoverflow.com/questions/7470314/receiving-package-install-and-uninstall-events~~
-- ~~重构Room的获取规则 通one-shot迁移为Flow, 以及时响应最新的数据~~
+- 集成Now in Android脚本处理方案 【OK】
+
+- 深度集成基于Hilt的组件化方案【OK】
+
+- 设置页面、开关及其配置加载【OK】
+
+- 最近搜索历史记录-简易版本【OK】
+
+- 添加APK新增和卸载的监听 https://stackoverflow.com/questions/7470314/receiving-package-install-and-uninstall-events【OK】
+
+- 重构Room的获取规则 通one-shot迁移为Flow, 以及时响应最新的数据【OK】
+
+- 优化最近历史&权重等【TODO】
+
+- 更好的输入匹配规则【TODO】
+
+  
