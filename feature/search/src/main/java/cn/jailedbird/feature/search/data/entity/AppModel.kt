@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Context
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Entity
+import cn.jailedbird.core.common.utils.finishProcess
 import cn.jailedbird.feature.search.data.AppRepository
 import cn.jailedbird.feature.search.utils.LAUNCH_DELAY_TIME
-import cn.jailedbird.feature.search.utils.finishProcess
 import cn.jailedbird.feature.search.utils.launchApk
 import cn.jailedbird.feature.search.utils.packageManagerAppList
 import dagger.hilt.EntryPoint

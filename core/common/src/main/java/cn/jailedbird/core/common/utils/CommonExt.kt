@@ -1,6 +1,6 @@
 @file:Suppress("unused", "UnusedReceiverParameter")
 
-package cn.jailedbird.feature.search.utils
+package cn.jailedbird.core.common.utils
 
 import android.app.Activity
 import android.content.Context
@@ -9,9 +9,8 @@ import android.content.res.Resources
 import android.view.View
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import com.github.promeg.pinyinhelper.Pinyin
 
-internal fun String?.toast() {
+fun String?.toast() {
     val s = this
     /*if (!s.isNullOrEmpty()) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -24,45 +23,18 @@ internal fun String?.toast() {
     }*/
 }
 
-internal fun Any?.log() {
+fun Any?.log() {
     val s = this?.toString() ?: return
     /*if (s.isNotEmpty()) {
         Log.d(App.appName, s)
     }*/
 }
 
-private fun String?.isChinese(): Boolean {
-    val s = this
-    if (s.isNullOrEmpty()) {
-        return false
-    } else {
-        s.forEach {
-            if (Pinyin.isChinese(it)) {
-                return true
-            }
-        }
-    }
-    return false
-}
-
-internal fun String?.toPinyin(): String? {
-    val s = this
-    return try {
-        if (s.isChinese()) {
-            Pinyin.toPinyin(s, EMPTY)
-        } else {
-            null
-        }
-    } catch (e: Exception) {
-        null
-    }
-}
-
-internal fun Context.finishProcess() {
+fun Context.finishProcess() {
     android.os.Process.killProcess(android.os.Process.myPid())
 }
 
-internal fun Int.toPx(): Float {
+fun Int.toPx(): Float {
     val dpValue = this
     val scale = Resources.getSystem().displayMetrics.density
     return (dpValue * scale + 0.5f)
@@ -71,7 +43,7 @@ internal fun Int.toPx(): Float {
 /**
  * Avoid view's fast-click
  * */
-internal inline fun View.setDebouncingClick(
+inline fun View.setDebouncingClick(
     @Suppress("UNUSED_PARAMETER") duration: Long = 1000L,
     crossinline block: (view: View) -> Unit
 ) {
@@ -82,7 +54,7 @@ internal inline fun View.setDebouncingClick(
     }
 }
 
-internal fun Context.hideKeyboard() {
+fun Context.hideKeyboard() {
     if (this is Activity) {
         val window = this.window
         WindowCompat.getInsetsController(window, window.decorView)
@@ -90,7 +62,7 @@ internal fun Context.hideKeyboard() {
     }
 }
 
-internal fun Context.showKeyboard() {
+fun Context.showKeyboard() {
     if (this is Activity) {
         val window = this.window
         WindowCompat.getInsetsController(window, window.decorView)
@@ -122,7 +94,7 @@ private fun Context.isLightSystemTheme(): Boolean {
     }
 }
 
-internal fun Long.timer(label: String, withToast: Boolean = false): Long {
+fun Long.timer(label: String, withToast: Boolean = false): Long {
     val startTime = this
     val spend: Long = ((System.nanoTime() - startTime) / 1000_000)
     "$label cost $spend ms".apply {

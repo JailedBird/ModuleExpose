@@ -1,4 +1,4 @@
-package cn.jailedbird.feature.search.utils;
+package cn.jailedbird.core.common.utils;
 
 
 import android.os.SystemClock;

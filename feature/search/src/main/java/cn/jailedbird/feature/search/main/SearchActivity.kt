@@ -18,11 +18,11 @@ import cn.jailedbird.feature.search.adapter.AppListTwoTypeAdapter
 import cn.jailedbird.feature.search.databinding.ActivityMainBinding
 import cn.jailedbird.feature.search.dialog.AppSettingsPopWindow
 import cn.jailedbird.feature.search.utils.LAUNCH_DELAY_TIME
-import cn.jailedbird.feature.search.utils.hideKeyboard
-import cn.jailedbird.feature.search.utils.setDebouncingClick
-import cn.jailedbird.feature.search.utils.showKeyboard
-import cn.jailedbird.feature.search.utils.toPx
-import cn.jailedbird.feature.search.utils.toast
+import cn.jailedbird.core.common.utils.hideKeyboard
+import cn.jailedbird.core.common.utils.setDebouncingClick
+import cn.jailedbird.core.common.utils.showKeyboard
+import cn.jailedbird.core.common.utils.toPx
+import cn.jailedbird.core.common.utils.toast
 import cn.jailedbird.feature.settings.expose.SettingExpose
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers

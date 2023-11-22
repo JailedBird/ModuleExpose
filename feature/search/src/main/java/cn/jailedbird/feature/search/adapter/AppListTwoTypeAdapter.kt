@@ -8,12 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import cn.jailedbird.core.common.utils.hideKeyboard
 import cn.jailedbird.feature.search.R
 import cn.jailedbird.feature.search.data.entity.AppModel
 import cn.jailedbird.feature.search.dialog.AppListPopWindow
-import cn.jailedbird.feature.search.utils.DebouncingUtils
-import cn.jailedbird.feature.search.utils.hideKeyboard
-import cn.jailedbird.feature.search.utils.log
+import cn.jailedbird.core.common.utils.log
 import coil.load
 import kotlinx.coroutines.*
 
@@ -28,14 +27,14 @@ class AppListTwoTypeAdapter :
 
         init {
             root.setOnClickListener {
-                if (DebouncingUtils.isValid(it)) {
+                if (cn.jailedbird.core.common.utils.DebouncingUtils.isValid(it)) {
                     root.context.hideKeyboard()
                     bean?.launch(root.context)
                 }
             }
 
             ivMore.setOnClickListener {
-                if (DebouncingUtils.isValid(it)) {
+                if (cn.jailedbird.core.common.utils.DebouncingUtils.isValid(it)) {
                     it.context.hideKeyboard()
                     AppListPopWindow.open(root.context, it, bean)
                 }

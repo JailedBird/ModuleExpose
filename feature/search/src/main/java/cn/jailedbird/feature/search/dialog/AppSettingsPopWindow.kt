@@ -6,7 +6,7 @@ import android.view.View
 import androidx.core.widget.PopupWindowCompat
 import cn.jailedbird.feature.search.R
 import cn.jailedbird.feature.search.databinding.PopUpAppSettingBinding
-import cn.jailedbird.feature.search.utils.setDebouncingClick
+import cn.jailedbird.core.common.utils.setDebouncingClick
 
 class AppSettingsPopWindow(
     context: Context,

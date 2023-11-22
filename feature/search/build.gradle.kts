@@ -18,6 +18,7 @@ android {
 dependencies {
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
     implementation(project(mapOf("path" to ":core:settings")))
+    implementation(project(mapOf("path" to ":core:common")))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.activity)

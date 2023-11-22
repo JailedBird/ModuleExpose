@@ -1,5 +1,6 @@
 package cn.jailedbird.feature.search.utils
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -7,10 +8,14 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.provider.Settings
+import cn.jailedbird.core.common.utils.log
+import cn.jailedbird.core.common.utils.timer
+import cn.jailedbird.core.common.utils.toast
 import cn.jailedbird.feature.search.data.entity.AppModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Collections
+import java.util.Locale
 
 /**
  * launch via package name
@@ -82,13 +87,14 @@ internal fun Context.uninstallApk(packageName: String?) {
     }
 }
 
+
+@SuppressLint("QueryPermissionsNeeded")
 internal suspend fun Context.packageManagerAppList(): List<AppModel> =
     withContext(Dispatchers.IO) {
         val startTime = System.nanoTime()
         val pm = this@packageManagerAppList.packageManager
         val mainIntent = Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-        @Suppress("DEPRECATION")
         val resolveInfoList: List<ResolveInfo> =
             pm.queryIntentActivities(mainIntent, PackageManager.MATCH_ALL)
         Collections.sort(resolveInfoList, ResolveInfo.DisplayNameComparator(pm))

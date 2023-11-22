@@ -8,8 +8,8 @@ import cn.jailedbird.feature.search.R
 import cn.jailedbird.feature.search.data.entity.AppModel
 import cn.jailedbird.feature.search.databinding.PopUpAppListBinding
 import cn.jailedbird.feature.search.utils.gotoApkSettings
-import cn.jailedbird.feature.search.utils.setDebouncingClick
-import cn.jailedbird.feature.search.utils.toast
+import cn.jailedbird.core.common.utils.setDebouncingClick
+import cn.jailedbird.core.common.utils.toast
 import cn.jailedbird.feature.search.utils.uninstallApk
 import java.util.*
 
