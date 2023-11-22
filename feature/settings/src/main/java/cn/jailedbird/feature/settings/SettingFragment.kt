@@ -32,7 +32,8 @@ class SettingFragment : BaseVBFragment<FragmentSettingMainBinding>() {
 
     override fun initEvent() {
         binding.btReturnSearch.setDebouncingClick {
-            // searchExpose.openSearchActivity(this@SettingFragment.requireContext())
+            requireActivity().finish()
+            searchExpose.openSearchActivity(this@SettingFragment.requireContext())
         }
     }
 
