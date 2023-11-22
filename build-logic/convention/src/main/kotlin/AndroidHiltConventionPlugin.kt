@@ -14,14 +14,18 @@
  *   limitations under the License.
  */
 
+import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.gradle.internal.tasks.databinding.DataBindingGenBaseClassesTask
 import com.google.samples.apps.nowinandroid.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool
 
 class AndroidHiltConventionPlugin : Plugin<Project> {
-    override fun apply(target: Project) {
-        with(target) {
+    override fun apply(project: Project) {
+        with(project) {
             with(pluginManager) {
                 apply("com.google.devtools.ksp")
                 apply("dagger.hilt.android.plugin")
@@ -33,8 +37,23 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
                 "kspAndroidTest"(libs.findLibrary("hilt.compiler").get())
                 "kspTest"(libs.findLibrary("hilt.compiler").get())
             }
-
+            // Fix: [Ksp] InjectProcessingStep was unable to process 'test' because 'error.NonExistentClass' could not be resolved.
+            // https://github.com/google/dagger/issues/4097#issuecomment-1763781846
+            // Note, This is a temporary fix and needs to wait for the official official fix
+            val androidComponents =
+                project.extensions.getByType(AndroidComponentsExtension::class.java)
+            androidComponents.onVariants { variant ->
+                afterEvaluate {
+                    project.tasks.getByName("ksp" + variant.name.capitalized() + "Kotlin") {
+                        val dataBindingTask =
+                            project.tasks.getByName("dataBindingGenBaseClasses" + variant.name.capitalized()) as DataBindingGenBaseClassesTask
+                        (this as AbstractKotlinCompileTool<*>).setSource(dataBindingTask.sourceOutFolder)
+                    }
+                }
+            }
         }
+
+
     }
 
 }
