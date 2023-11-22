@@ -6,28 +6,34 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import net.vrallev.android.context.AppContext
 
+private val applicationContext = AppContext.getApplication()
 fun String?.toast() {
     val s = this
-    /*if (!s.isNullOrEmpty()) {
+    if (!s.isNullOrEmpty()) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             Handler(Looper.getMainLooper()).post {
-                Toast.makeText(App.applicationContext, s, Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, s, Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(App.applicationContext, s, Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, s, Toast.LENGTH_SHORT).show()
         }
-    }*/
+    }
 }
 
 fun Any?.log() {
     val s = this?.toString() ?: return
-    /*if (s.isNotEmpty()) {
-        Log.d(App.appName, s)
-    }*/
+    if (s.isNotEmpty()) {
+        Log.d("log", s)
+    }
 }
 
 fun Context.finishProcess() {

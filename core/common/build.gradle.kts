@@ -13,6 +13,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    api(libs.appContext)
     implementation(libs.material)
     testImplementation(libs.junit4)
     androidTestImplementation(libs.junit)

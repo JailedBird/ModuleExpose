@@ -160,6 +160,9 @@ leakcanary = "com.squareup.leakcanary:leakcanary-android:2.12"
 edgeutils = "com.github.JailedBird:EdgeUtils:1.0.0"
 junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+# https://github.com/vRallev/app-context
+appContext = "net.vrallev.android:app-context:1.0.0"
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
