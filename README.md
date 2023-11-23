@@ -39,21 +39,21 @@ ModuleExpose，顾名思义是将module内部代码通过脚本自动暴露出�
 
 ## 接入方式
 
-### 0、show you my code！
+0、show you my code！
 
 工程代码：https://github.com/JailedBird/ModuleExpose 
 
 
 
-### 1、项目启用kts配置
+**1、项目启用kts配置**
 
 因为脚本使用kts编写，因此需要在项目中启用kts配置；如因为gradle版本过低等原因导致无法接入kts，那应该是无法使用的；后续默认都开启kts，并使用kts语法脚本；
 
 
 
-### 2、导入脚本到gradle目录
+**2、导入脚本到gradle目录&修改模板**
 
-请拷贝项目`gradle/expose`目录到个人项目，拷贝后目录如下：
+请拷贝示例工程`gradle/expose`目录到个人项目gradle目录，拷贝后目录如下：
 
 ```
 Path
@@ -70,27 +70,9 @@ gradle
         gradle-wrapper.properties
 ```
 
-`expose.gradle.kts`是模块暴露的核心脚本，包含若干函数和配置参数；
+其中：expose.gradle.kts是模块暴露的核心脚本，包含若干函数和配置参数；
 
-
-
-### 3、settings.gradle.kts导入脚本函数
-
-启用kts后，建议将settings.gradle改为kts语法，然后添加如下代码：
-
-```
-apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
-val includeWithApi: (projectPaths: String) -> Unit by extra
-val includeWithJavaApi: (projectPaths: String) -> Unit by extra
-```
-
-注意：只要正确启用kts，settings.gradle应该也是可以导入includeWithApi的，但是我没尝试；其次老项目针对本项目改造kts时，可以渐进式改造-只改settings.gradle.kts即可，其他文件是不需要kts改造的；
-
-
-
-### 4、修改脚本模板
-
-脚本模板因项目不同而有所不同，需要自行根据项目修改，否则无法编译；
+其中：build_gradle_template_android和build_gradle_template_java脚本模板因项目不同而有所不同，需要自行根据项目修改，否则无法编译；
 
 - build_gradle_template_android，生成Android模块的脚本模板，注意高版本gradle必须配置namespace，因此最好保留如下的配置（细则见脚本如何处理的）：
 
@@ -106,11 +88,25 @@ val includeWithJavaApi: (projectPaths: String) -> Unit by extra
 
 - includeWithJavaApi函数使用build_gradle_template_java模板生成Java Library模块
 
-注意：Java模块编译更快，但是缺少Activity、Context等Android环境，请灵活使用；另外，如果不用includeWithJavaApi，其实build_gradle_template_java也是不需要的；
+**注意：**Java模块编译更快，但是缺少Activity、Context等Android环境，请灵活使用；另外，如果不用includeWithJavaApi，其实build_gradle_template_java也是不需要的；
 
 
 
-### 5、模块配置
+**3、settings.gradle.kts导入脚本函数**
+
+根目录settings.gradle.kts配置如下：
+
+```
+apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
+val includeWithApi: (projectPaths: String) -> Unit by extra
+val includeWithJavaApi: (projectPaths: String) -> Unit by extra
+```
+
+注意：只要正确启用kts，settings.gradle应该也是可以导入includeWithApi的，但是我没尝试；其次老项目针对ModuleExpose改造kts时，可以渐进式改造，即只改settings.gradle.kts即可，其他文件是不需要kts改造的；
+
+
+
+**4、模块配置**
 
 将需要暴露的模块，在settings.gradle.kts 使用includeWithApi（或includeWithJavaApi）导入；
 
@@ -129,7 +125,7 @@ includeWithApi(":feature:search")
 
 
 
-### 6、如何使用module_expose模块？
+**5、使用module_expose模块**
 
 请使用 `compileOnly` 导入项目，如下：
 
