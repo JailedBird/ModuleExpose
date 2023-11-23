@@ -102,7 +102,7 @@ val includeWithApi: (projectPaths: String) -> Unit by extra
 val includeWithJavaApi: (projectPaths: String) -> Unit by extra
 ```
 
-注意：只要正确启用kts，settings.gradle应该也是可以导入includeWithApi的，但是我没尝试；其次老项目针对ModuleExpose改造kts时，可以渐进式改造，即只改settings.gradle.kts即可，其他文件是不需要kts改造的；
+（PS：只要正确启用kts，settings.gradle应该也是可以导入includeWithApi的，但是我没尝试；其次老项目针对ModuleExpose改造kts时，可以渐进式改造，即只改settings.gradle.kts即可）
 
 
 
@@ -142,6 +142,10 @@ implementation(project(mapOf("path" to ":feature:search_expose")))
 原理解释：compileOnly只参与编译，不会被打包；implementation参与编译和打包；
 
 因此search_expose只能使用compileOnly导入，确保解耦的模块之间可以访问到类引用，但不会造成打包时2个类相同的冲突问题；
+
+
+
+
 
 
 
