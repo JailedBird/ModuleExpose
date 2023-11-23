@@ -1,5 +1,6 @@
 @file:Suppress("PrivatePropertyName")
 
+import java.io.File
 import java.nio.file.FileSystems
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -9,13 +10,18 @@ import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.absolutePathString
-import java.io.File
+
 /* [Tutorial documentation]
+Peoject: https://github.com/JailedBird/ModuleExpose
 1) import this gradle script in setting.gradle.kts, like this:
 apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
 2) import function includeWithApi & includeWithJavaApi, like this:
 val includeWithApi: (projectPaths: String) -> Unit by extra
 val includeWithJavaApi: (projectPaths: String) -> Unit by extra
+3) use includeWithApi or includeWithJavaApi include your project, like this:
+includeWithApi(":feature:settings")
+includeWithApi(":feature:search")
+4) in your module, create expose directory and place your file that need to be exposed
 
 Note: ensure your project enable kts! TODO: support traditional gradle project
 */
@@ -55,7 +61,14 @@ fun includeWithApi(
         val src = moduleProject.projectDir.absolutePath
         val des = "${src}_${MODULE_EXPOSE_TAG}"
         // generate build.gradle.kts
-        generateBuildGradle(des, "build.gradle.kts", moduleProject.name, isJava)
+        generateBuildGradle(
+            src,
+            "build_gradle_template_expose",
+            des,
+            "build.gradle.kts",
+            moduleProject.name,
+            isJava
+        )
         doSync(src, expose, condition)
         // Add module_expose to Project!
         include("${module}_${MODULE_EXPOSE_TAG}")
@@ -308,32 +321,41 @@ fun syncDirectory(
  * @param isJava Android module or Java module
  * */
 fun generateBuildGradle(
-    scriptDir: String,
-    scriptName: String,
+    srcScriptDir: String,
+    srcScriptName: String,
+    desScriptDir: String,
+    desScriptName: String,
     selfName: String,
     isJava: Boolean = false
 ) {
     // Ensure _expose directory is created!
-    File(scriptDir).let {
+    File(desScriptDir).let {
         if (!it.exists()) {
             it.mkdir()
         }
     }
-    val scriptPath = "${scriptDir}${File.separator}${scriptName}"
-    val buildScript = File(scriptPath)
-    val path = if (isJava) {
-        BUILD_TEMPLATE_PATH_JAVA
+    val ownTemplate = File(srcScriptDir, srcScriptName)
+    if (ownTemplate.exists()) {
+        val sourcePath: Path = Paths.get("${srcScriptDir}${File.separator}${srcScriptName}")
+        val destinationPath: Path = Paths.get("${desScriptDir}${File.separator}${desScriptName}")
+        Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING)
     } else {
-        BUILD_TEMPLATE_PATH_ANDROID
-    }
-    val templateFile = File(path)
+        val scriptPath = "${desScriptDir}${File.separator}${desScriptName}"
+        val buildScript = File(scriptPath)
+        val path = if (isJava) {
+            BUILD_TEMPLATE_PATH_JAVA
+        } else {
+            BUILD_TEMPLATE_PATH_ANDROID
+        }
+        val templateFile = File(path)
 
-    if (!templateFile.exists()) {
-        throw Exception("Template file ${templateFile.absolutePath} not found!")
+        if (!templateFile.exists()) {
+            throw Exception("Template file ${templateFile.absolutePath} not found!")
+        }
+        val readText = templateFile.readText()
+        val copyText = String.format(readText, String.format(MODULE_NAMESPACE_TEMPLATE, selfName))
+        buildScript.writeText(copyText)
     }
-    val readText = templateFile.readText()
-    val copyText = String.format(readText, String.format(MODULE_NAMESPACE_TEMPLATE, selfName))
-    buildScript.writeText(copyText)
 }
 
 
