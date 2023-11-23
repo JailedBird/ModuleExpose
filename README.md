@@ -88,7 +88,7 @@ gradle
 
 - includeWithJavaApi函数使用build_gradle_template_java模板生成Java Library模块
 
-**注意：**Java模块编译更快，但是缺少Activity、Context等Android环境，请灵活使用；另外，如果不用includeWithJavaApi，其实build_gradle_template_java也是不需要的；
+**注意：** Java模块编译更快，但是缺少Activity、Context等Android环境，请灵活使用；另外，如果不用includeWithJavaApi，其实build_gradle_template_java也是不需要的；
 
 
 
