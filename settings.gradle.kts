@@ -30,7 +30,7 @@ apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
 val includeWithApi: (projectPaths: String) -> Unit by extra
 val includeWithJavaApi: (projectPaths: String) -> Unit by extra
 
-rootProject.name = "SmartAppSearch"
+rootProject.name = "ModuleExpose"
 include(":app")
 include(":core:settings")
 include(":core:resource")

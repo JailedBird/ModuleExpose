@@ -1,4 +1,4 @@
-package cn.jailedbird.smartappsearch
+package cn.jailedbird.app
 
 import org.junit.Test
 

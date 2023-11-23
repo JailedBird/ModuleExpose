@@ -6,12 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "cn.jailedbird.smartappsearch"
-    buildFeatures {
-        dataBinding {
-            enable = true
-        }
-    }
+    namespace = "cn.jailedbird.app"
 
     buildFeatures {
         viewBinding = true
