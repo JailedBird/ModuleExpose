@@ -153,7 +153,7 @@ implementation(project(mapOf("path" to ":feature:search_expose")))
 
 思路原创：[微信Android模块化架构重构实践](https://mp.weixin.qq.com/s/6Q818XA5FaHd7jJMFBG60w)
 
-项目原创:  [github/tyhjh/module_api](https://github.com/tyhjh/module_api)
+项目原创：[github/tyhjh/module_api](https://github.com/tyhjh/module_api)
 
 官方文档：[将 build 配置从 Groovy 迁移到 KTS](https://developer.android.com/studio/build/migrate-to-kts?hl=zh-cn)
 
