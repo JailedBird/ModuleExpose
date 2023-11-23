@@ -39,7 +39,7 @@ ModuleExpose，顾名思义是将module内部代码通过脚本自动暴露出�
 
 ## 接入方式
 
-0、show you my code！
+**0、show you my code！**
 
 工程代码：https://github.com/JailedBird/ModuleExpose 
 
