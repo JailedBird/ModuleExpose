@@ -1,8 +1,14 @@
 // generate by :feature:about build_gradle_template_expose
 plugins {
     alias(libs.plugins.nowinandroid.android.library)
+    id("kotlin-parcelize")
 }
 
 android {
     namespace = "cn.jailedbird.module.about_expose"
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
 }
