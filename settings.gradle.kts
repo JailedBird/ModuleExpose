@@ -34,6 +34,6 @@ rootProject.name = "ModuleExpose"
 include(":app")
 include(":core:settings")
 include(":core:resource")
-include(":core:common")
+includeWithJavaApi(":core:common")
 includeWithApi(":feature:settings")
 includeWithApi(":feature:search")
