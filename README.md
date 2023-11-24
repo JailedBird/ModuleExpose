@@ -64,6 +64,7 @@ gradle
 ├─expose
 │      build_gradle_template_android
 │      build_gradle_template_java
+|	   build_gradle_template_expose
 │      expose.gradle.kts
 └─wrapper
         gradle-wrapper.jar
@@ -87,6 +88,10 @@ gradle
 - includeWithApi函数使用build_gradle_template_android模板生成Android Library模块
 
 - includeWithJavaApi函数使用build_gradle_template_java模板生成Java Library模块
+
+- build_gradle_template_expose，不同于build_gradle_template_android、build_gradle_template_java的模板形式的配置，使用includeWithApi、includeWithJavaApi时，**会优先检查模块根目录是否存在build_gradle_template_expose**，如果存在则**优先、直接**将build_gradle_template_expose内容拷贝到module_expose, 作为build.gradle.kts!  **保留这个配置的原因在于：如果需要暴露的类，引用三方类如gson、但不便将三方库implementation到build_gradle_template_android，这会导致module_expose编译报错，因此为解决这样的问题，最好使用自定义module_expose脚本（拷贝module的配置、稍加修改即可）**
+
+  PS：注意这几个模板都是无后缀的，kts后缀文件会被IDE提示一大堆东西；
 
 **注意：** Java模块编译更快，但是缺少Activity、Context等Android环境，请灵活使用；另外，如果不用includeWithJavaApi，其实build_gradle_template_java也是不需要的；
 
@@ -149,7 +154,7 @@ implementation(project(mapOf("path" to ":feature:search_expose")))
 
 
 
-## 参考资料：
+## 参考资料
 
 思路原创：[微信Android模块化架构重构实践](https://mp.weixin.qq.com/s/6Q818XA5FaHd7jJMFBG60w)
 

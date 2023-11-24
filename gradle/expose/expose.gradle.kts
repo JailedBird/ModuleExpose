@@ -38,6 +38,7 @@ private val DEFAULT_EXPOSE_DIR_NAME = "expose"
 private val SCRIPT_DIR = "$rootDir/gradle/expose/"
 private val BUILD_TEMPLATE_PATH_JAVA = "${SCRIPT_DIR}build_gradle_template_java"
 private val BUILD_TEMPLATE_PATH_ANDROID = "${SCRIPT_DIR}build_gradle_template_android"
+private val BUILD_TEMPLATE_PATH_CUSTOM = "build_gradle_template_expose"
 private val ENABLE_FILE_CONDITION = false
 private val MODULE_NAMESPACE_TEMPLATE = "cn.jailedbird.module.%s_expose"
 private val DEBUG_ENABLE = false
@@ -63,7 +64,7 @@ fun includeWithApi(
         // generate build.gradle.kts
         generateBuildGradle(
             src,
-            "build_gradle_template_expose",
+            BUILD_TEMPLATE_PATH_CUSTOM,
             des,
             "build.gradle.kts",
             moduleProject.name,
