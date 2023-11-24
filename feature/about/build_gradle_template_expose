@@ -1,0 +1,8 @@
+// generate by :feature:about build_gradle_template_expose
+plugins {
+    alias(libs.plugins.nowinandroid.android.library)
+}
+
+android {
+    namespace = "cn.jailedbird.module.about_expose"
+}
