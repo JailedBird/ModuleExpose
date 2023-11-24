@@ -64,7 +64,7 @@ gradle
 ├─expose
 │      build_gradle_template_android
 │      build_gradle_template_java
-|	   build_gradle_template_expose
+│      build_gradle_template_expose
 │      expose.gradle.kts
 └─wrapper
         gradle-wrapper.jar

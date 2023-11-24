@@ -1,1 +1,1 @@
-// Customize module configuration and place it in the module's root directory with the same file name as this file.
+// Customize the build.gradle.kts file for module_expose, named build_gradle_template_expose, and place the build_gradle_template_expose file in the module's root directory.
