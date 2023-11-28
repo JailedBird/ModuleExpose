@@ -15,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
+import cn.jailedbird.core.common.utils.finishProcess
 import cn.jailedbird.core.common.utils.hideKeyboard
 import cn.jailedbird.core.common.utils.log
 import cn.jailedbird.core.common.utils.setDebouncingClick
@@ -189,14 +190,16 @@ class SearchActivity : AppCompatActivity() {
                 appRepository.refreshAppModel(model)
                 launch(Dispatchers.Main) {
                     try {
-                        if(!this@SearchActivity.isDestroyed){
-                            while (this@SearchActivity.isFront) {
-                                delay(250) // 100ms check
-                            }
-                            delay(100)
-                            // 会导致onDestroy 因此暂时不必关心数据重置问题
-                            moveTaskToBack(false)
+                        // Clear current
+                        while (!this@SearchActivity.isDestroyed && this@SearchActivity.isFront  ) {
+                            "delay loop".log()
+                            delay(100) // 100ms check
                         }
+                        "finish self".log()
+                        this@SearchActivity.finish() // 暂时销毁自己
+                        // 不确定是否会导致销毁 TODO 尝试添加返回栈 便于快速启动 目前存在一点启动卡顿
+                        // moveTaskToBack(false)
+
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
