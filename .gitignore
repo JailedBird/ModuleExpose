@@ -19,3 +19,5 @@ app/release/app-release.apk
 **/build/
 *_api/
 *_expose/
+app/pro/release/app-pro-release.apk
+app/pro/release/output-metadata.json

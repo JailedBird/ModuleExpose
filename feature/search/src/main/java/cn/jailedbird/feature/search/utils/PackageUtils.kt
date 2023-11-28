@@ -112,7 +112,7 @@ internal suspend fun Context.packageManagerAppList(): List<AppModel> =
                 count = 0,
                 timestamp = now,
             )
-            item.toString().log()
+            // item.toString().log()
             res.add(item)
         }
         startTime.timer("getAppsFromPackageManager", false)
