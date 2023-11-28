@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import cn.jailedbird.core.common.utils.DebouncingUtils
 import cn.jailedbird.core.common.utils.hideKeyboard
 import cn.jailedbird.feature.search.R
 import cn.jailedbird.feature.search.data.entity.AppModel
@@ -16,10 +17,10 @@ import cn.jailedbird.core.common.utils.log
 import coil.load
 import kotlinx.coroutines.*
 
-class AppListTwoTypeAdapter :
+class AppListTwoTypeAdapter(private val callback:(appModel:AppModel)->Unit) :
     ListAdapter<AppModel, AppListTwoTypeAdapter.ViewHolder>(AppModel.Diff()) {
 
-    class ViewHolder(private val root: View) :
+    class ViewHolder(private val root: View, private val callback:(appModel:AppModel)->Unit) :
         RecyclerView.ViewHolder(root) {
         val ivIcon: ImageView = root.findViewById(R.id.ivIcon)
         val tvContent: TextView = root.findViewById(R.id.tvContent)
@@ -27,9 +28,11 @@ class AppListTwoTypeAdapter :
 
         init {
             root.setOnClickListener {
-                if (cn.jailedbird.core.common.utils.DebouncingUtils.isValid(it)) {
+                if (DebouncingUtils.isValid(it)) {
                     root.context.hideKeyboard()
-                    bean?.launch(root.context)
+                    if (bean != null) {
+                        callback.invoke(bean!!)
+                    }
                 }
             }
 
@@ -84,7 +87,7 @@ class AppListTwoTypeAdapter :
         @Suppress("UnnecessaryVariable")
         val layoutRes = viewType
         val view = LayoutInflater.from(context).inflate(layoutRes, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view, callback)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

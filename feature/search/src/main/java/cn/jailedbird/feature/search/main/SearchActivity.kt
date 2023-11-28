@@ -16,18 +16,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import cn.jailedbird.core.common.utils.hideKeyboard
+import cn.jailedbird.core.common.utils.log
 import cn.jailedbird.core.common.utils.setDebouncingClick
 import cn.jailedbird.core.common.utils.showKeyboard
 import cn.jailedbird.core.common.utils.toPx
 import cn.jailedbird.core.common.utils.toast
 import cn.jailedbird.core.settings.Settings
 import cn.jailedbird.feature.search.adapter.AppListTwoTypeAdapter
+import cn.jailedbird.feature.search.data.AppRepository
+import cn.jailedbird.feature.search.data.entity.AppModel
 import cn.jailedbird.feature.search.databinding.ActivityMainBinding
 import cn.jailedbird.feature.search.dialog.AppSettingsPopWindow
-import cn.jailedbird.feature.search.utils.LAUNCH_DELAY_TIME
+import cn.jailedbird.feature.search.utils.launchApk
 import cn.jailedbird.feature.settings.expose.SettingExpose
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -43,12 +48,16 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private var isFront = false
+
     private lateinit var binding: ActivityMainBinding
 
     @Inject
     lateinit var settingExpose: SettingExpose
+    @Inject
+    lateinit var appRepository: AppRepository
 
-    private val adapter = AppListTwoTypeAdapter()
+    private val adapter = AppListTwoTypeAdapter(::launch)
     private val viewModel by viewModels<SearchViewModel>()
 
     private val listener = object : AppSettingsPopWindow.Listener {
@@ -76,6 +85,7 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        "onCreate".log()
         // Please use NoActionBar theme
         window.requestFeature(Window.FEATURE_NO_TITLE)
         // prettify Window as Dialog style, Do this when Window is attached
@@ -104,11 +114,11 @@ class SearchActivity : AppCompatActivity() {
         initSearch(binding.search) {
             if (adapter.itemCount > 0) {
                 // Don't get first item by RecyclerView, Perhaps RecyclerView not refresh
-                adapter.currentList[0].launch(this@SearchActivity)
-                lifecycleScope.launch(Dispatchers.IO) {
-                    delay(LAUNCH_DELAY_TIME)
-                    finish()
-                }
+                launch(adapter.currentList[0])
+                // lifecycleScope.launch(Dispatchers.IO) {
+                //     delay(LAUNCH_DELAY_TIME)
+                //     finish()
+                // }
             }
         }
 
@@ -125,8 +135,9 @@ class SearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.list.collectLatest {
                 adapter.submitList(it)
-                if (it.size == 1 && cn.jailedbird.core.settings.Settings[cn.jailedbird.core.settings.Settings.Key.LaunchDirect]) {
-                    it[0].launch(this@SearchActivity)
+                if (it.size == 1 && Settings[Settings.Key.LaunchDirect]) {
+                    launch(it[0])
+                    // it[0].launch(this@SearchActivity)
                 }
             }
         }
@@ -169,13 +180,63 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+   private fun launch(model: AppModel) {
+        if (launchApk(model.appPackageName, model.activityName)) {
+            @OptIn(DelicateCoroutinesApi::class)
+            GlobalScope.launch(Dispatchers.IO) {
+                // EntryPointAccessors.fromApplication<AppModel.Companion.AppRepositoryEntryPoint>(this@SearchActivity.applicationContext)
+                //     .appRepository().refreshAppModel(model)
+                appRepository.refreshAppModel(model)
+                launch(Dispatchers.Main) {
+                    try {
+                        if(!this@SearchActivity.isDestroyed){
+                            while (this@SearchActivity.isFront) {
+                                delay(250) // 100ms check
+                            }
+                            delay(100)
+                            // 会导致onDestroy 因此暂时不必关心数据重置问题
+                            moveTaskToBack(false)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        "onStart".log()
+    }
+
     override fun onResume() {
         super.onResume()
+        isFront = true
+        "onResume".log()
         if (Settings[Settings.Key.ImeAutoPop]) {
             showKeyboard()
         } else { // Avoid ime pop due to other reason
             hideKeyboard()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        "onPause".log()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        isFront = false
+        "onStop".log()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        "onDestroy".log()
     }
 
 }
