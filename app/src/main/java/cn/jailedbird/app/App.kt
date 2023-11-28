@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import cn.jailedbird.core.common.utils.log
 import cn.jailedbird.core.settings.Settings
 import cn.jailedbird.feature.search.data.AppRepository
 import cn.jailedbird.feature.search.data.entity.AppModel
@@ -21,6 +22,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        "App create".log()
         listenApkChange()
         Settings.init(this)
     }
