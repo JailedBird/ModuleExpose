@@ -279,7 +279,7 @@ class SearchActivity : AppCompatActivity() {
 - 项目sync时候，会完整执行setting.gradle.kts文件，同步工程模块
 - 项目运行时候，会完整执行setting.gradle.kts文件，同步工程模块
 
-setting.gradle.kts中使用自定义的includeWithApi函数，实现include module以及module_expose的生成和include，因此任意修改发生后，只要运行项目，就能同步最新的module代码到module_expose；**但是，未发生修改时，**这个同步操作仍然会进行，性能问题由此而来；
+setting.gradle.kts中使用自定义的includeWithApi函数，实现include module以及module_expose的生成和include，因此任意修改发生后，只要运行项目，就能同步最新的module代码到module_expose；**但是，**未发生修改时，这个同步操作仍然会进行，性能问题由此而来；
 
 通过ModuleExpose核心函数includeWithApi看下module_expose处理逻辑：
 
@@ -349,7 +349,7 @@ fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
 
 1、 目录搜索
 
-基于NIO实现文件遍历，搜索文件expose文件；使用NIO的原因在于，测试使用Java IO基于递归搜索，耗时12ms，而NIO耗时2ms，性能确实高于Java IO；从目录树的角度看，时间复杂度为N，N为目录个数；另外这应该不算是文件IO操作，因此耗时可以直接忽略； **注意是支持多个expose目录的**
+基于NIO实现文件遍历，搜索文件expose文件；使用NIO的原因在于，测试使用Java IO基于递归搜索，耗时12ms，而NIO耗时2ms，性能确实高于Java IO；从目录树的角度看，时间复杂度为N，N为目录个数；另外这应该不算是文件IO操作，因此耗时可以直接忽略； 
 
 2、 文件同步
 
@@ -363,19 +363,21 @@ b）以替换形式拷贝module expose目录下的文件，到module_expose expo
 
 3、 删除空目录
 
-主要是精简结构，耗时不多；不在意空目录对视觉干扰的甚至可以去掉；另外这是基于Java IO的操作，写代码的是这块暂时没优化到；
+主要是精简目录结构，耗时不多；不在意空目录对视觉干扰的甚至可以去掉；另外这是基于Java IO的操作，写代码的是这块暂时没优化到；
+
+**综上：简单认为耗时和需要拷贝的文件数量成正比，因此尽量减少需要expose的内容吧，非必要不暴露！如果项目根本不需要暴露，请不要使用includeWithApi，直接include！请不要使用includeWithApi，直接include！请不要使用includeWithApi，直接include！**
+
+项目中单个模块耗时不超过20ms，当然主要也是需要同步的内容很少；
 
 
 
+**其他思考：**
+
+1、 绝大部分情况，我们是不会修改expose中任何代码的，因此可以认为90%+情况下的文件同步，都只是 2-b）中描述的情况， 替换拷贝；按照这个思路是否可以读出双方文件内容，计算hash确定文件是否完全相同？ 相同则直接不拷贝替换？但是考虑到计算hash、和读两个文件本身就是耗时任务，所以暂时没具体测试这个优化是否成立！
 
 
-**绝大部分情况，我们是不会修改expose中任何代码的，因此可以认为90%+情况下的文件同步，都只是 2-b）中描述的情况， 替换拷贝；按照这个思路是否可以读出双方文件内容，计算hash确定文件是否完全相同？ 相同则直接不拷贝替换？但是考虑到计算hash、和读两个文件本身就是耗时任务，所以暂时没具体测试这个优化是否成立！**
 
-
-
-**综上：简单认为耗时和需要拷贝的文件数量成正比，因此尽量减少需要expose的内容吧，非必要不暴露！**
-
-**另外：如果你需要暴露的东西已经很多、已经严重影响你的编译，那么建议直接将暴露的模块，单独抽出来真正的模块（而不仅仅是暴露模块）！ 删除module中expose的内容，直接implement module_expose（注意将其添加到git中去）， 禁止使用includeWithApi导入， 这样模块就不会参与同步，因为本身module_expose就是来自module，文件内容完全一致，因此可以算是0成本迁移了；这也是为何需要将暴露的内容，集中收敛到expose目录；**
+2、另外：如果你需要暴露的东西已经很多、已经严重影响你的编译，那么建议直接将暴露的模块，单独抽出来真正的模块（而不仅仅是暴露模块）！ 删除module中expose的内容，直接implement module_expose（注意将其添加到git中去）， 禁止使用includeWithApi导入， 这样模块就不会参与同步，因为本身module_expose就是来自module，文件内容完全一致，因此可以算是0成本迁移了；这也是为何需要将暴露的内容，集中收敛到expose目录；
 
 
 
@@ -399,13 +401,6 @@ private val BUILD_TEMPLATE_PATH_CUSTOM = "build_gradle_template_expose"
 private val ENABLE_FILE_CONDITION = false
 private val MODULE_NAMESPACE_TEMPLATE = "cn.jailedbird.module.%s_expose"
 private val DEBUG_ENABLE = false
-
-
-private val DEFAULT_CONDITION: (String) -> Boolean = if (ENABLE_FILE_CONDITION) {
-    ::ownCondition
-} else {
-    ::noFilter
-}
 ```
 
 
