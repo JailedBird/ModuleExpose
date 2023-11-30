@@ -272,20 +272,16 @@ class SearchActivity : AppCompatActivity() {
 
 ***注：测试设备SSD为顶配PCIE4 zhitai 7100，长江存储牛逼😘***
 
-开篇提到，ModuleExpose完全通过脚本实现自动暴露，并保证编译时 module和moudle_expose的代码完全同步；那ModuleExpose includeWithApi等函数的执行时机是什么、或者说为什么能保证代码是完全同步的呢？
+开篇提到，ModuleExpose完全通过脚本实现自动暴露，并保证编译时module和moudle_expose的代码完全同步；那ModuleExpose includeWithApi等函数的执行时机是什么、或者说为什么能保证代码是完全同步的呢？
 
 这个和gradle生命周期有关，我不是很懂，但已知有：
 
 - 项目sync时候，会完整执行setting.gradle.kts文件，同步工程模块
 - 项目运行时候，会完整执行setting.gradle.kts文件，同步工程模块
 
-setting.gradle.kts中使用自定义的includeWithApi函数，实现include和module_expose的导入和同步，因此当我们发生任意修改，只要运行项目，就能实时同步最新的module代码到module_expose；
+setting.gradle.kts中使用自定义的includeWithApi函数，实现include module以及module_expose的生成和include，因此任意修改发生后，只要运行项目，就能同步最新的module代码到module_expose；**但是，未发生修改时，**这个同步操作仍然会进行，性能问题由此而来；
 
-
-
-上述可知，每次运行都会存在module_expose文件的拷贝和生成，性能问题由此而来；
-
-通过ModuleExpose核心函数includeWithApi来看下相关处理步骤：
+通过ModuleExpose核心函数includeWithApi看下module_expose处理逻辑：
 
 ```
 fun includeWithApi(module: String, isJava: Boolean, expose: String, condition: (String) -> Boolean) {
@@ -295,8 +291,9 @@ fun includeWithApi(module: String, isJava: Boolean, expose: String, condition: (
         val src = moduleProject.projectDir.absolutePath
         val des = "${src}_${MODULE_EXPOSE_TAG}"
         // generate build.gradle.kts
-        generateBuildGradle(src,　BUILD_TEMPLATE_PATH_CUSTOM,　des,　"build.gradle.kts",
-        	moduleProject.name,　isJava
+        generateBuildGradle(
+            src, BUILD_TEMPLATE_PATH_CUSTOM, des,
+            "build.gradle.kts", moduleProject.name, isJava
         )
         doSync(src, expose, condition)
         // Add module_expose to Project!
@@ -307,15 +304,13 @@ fun includeWithApi(module: String, isJava: Boolean, expose: String, condition: (
 ```
 
 - include module，这个本身就需要做，不计入额外损耗；
-- generateBuildGradle创建module_expose的build.gradle.kts，涉及单个文件的拷贝；
-- doSync 源码文件的同步，处理稍微复杂，后续单独说；
-- include module_expose, 这个操作是将module_expose添加到工程，开销和include module是一个量级的，不影响；
+- generateBuildGradle，创建module_expose的build.gradle.kts，涉及单个文件的拷贝；
+- doSync，源码文件的同步，处理稍微复杂，后续单独说；
+- include module_expose, 这个操作是将module_expose include到工程，开销和include module相当，不影响；
 
-总体看， 处第三步文件同步doSync，其他的性能损耗都无关紧要；
+总体看， 除第三步文件同步doSync，其他的性能损耗都无关紧要；
 
-
-
-doSync的处理：
+`doSync`的处理函数：
 
 ```
 fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
@@ -331,14 +326,10 @@ fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
             findDirectoryByNIO(src, expose, pathList)
         }
     }
-
     pathList.forEach { copyFrom ->
         val suffix = copyFrom.removePrefix(src)
         val copyTo = des + suffix
         measure("syncDirectory $copyFrom") {
-            /*syncDirectory(copyFrom, copyTo) { fileName ->
-                fileName.endsWith(".api.kt") // Note: you can define your own filter statement
-            }*/
             // 2: 实现文件同步 
             //	a) 先遍历module_expose删除不存在于module中的文件 
             //	b) 将module中的文件，通过NIO StandardCopyOption.REPLACE_EXISTING模式直接拷贝
@@ -376,19 +367,21 @@ b）以替换形式拷贝module expose目录下的文件，到module_expose expo
 
 
 
+
+
 **绝大部分情况，我们是不会修改expose中任何代码的，因此可以认为90%+情况下的文件同步，都只是 2-b）中描述的情况， 替换拷贝；按照这个思路是否可以读出双方文件内容，计算hash确定文件是否完全相同？ 相同则直接不拷贝替换？但是考虑到计算hash、和读两个文件本身就是耗时任务，所以暂时没具体测试这个优化是否成立！**
 
 
 
-**综上：简单认为耗时和需要拷贝的文件数量成正比，因此尽量减少需要expose的内容吧，非必要不暴露！如何项目本身不需要任何暴露，请直接include！请直接include！请直接include！**
+**综上：简单认为耗时和需要拷贝的文件数量成正比，因此尽量减少需要expose的内容吧，非必要不暴露！**
 
-**另外：如果你需要暴露的东西已经很多、已经严重影响你的编译，那么建议直接将暴露的模块，单独抽出来真正的模块（而不仅仅是暴露模块）！ 删除module中expose的内容，直接implement module_expose（注意将其添加到git中去）， 禁止使用includeWithApi导入， 这样模块就不会参与同步，因为本身module_expose就是来自module，文件内容完全一致，因此可以算是0成本迁移了；这也是为什么需要将需要暴露的内容，集中收敛到expose目录；**
+**另外：如果你需要暴露的东西已经很多、已经严重影响你的编译，那么建议直接将暴露的模块，单独抽出来真正的模块（而不仅仅是暴露模块）！ 删除module中expose的内容，直接implement module_expose（注意将其添加到git中去）， 禁止使用includeWithApi导入， 这样模块就不会参与同步，因为本身module_expose就是来自module，文件内容完全一致，因此可以算是0成本迁移了；这也是为何需要将暴露的内容，集中收敛到expose目录；**
 
 
 
 ### groovy or kts？
 
-老项目，几乎不可能只存在kts；如果渐进式引入kts仍然不行，那么大家可以考虑直接用groovy重写，思路是一样的，或者直接使用[github/tyhjh/module_api](github/tyhjh/module_api) 的方案，目前暂时应该不会支持groovy（我不太会,重要的是思路）🤣
+老项目，几乎不可能只存在kts；如果渐进式引入kts仍然不行，那么大家可以考虑直接用groovy重写，思路是一样的，或者直接使用[github/tyhjh/module_api](https://github.com/JailedBird/ModuleExpose/blob/main/github/tyhjh/module_api) 的方案，目前暂时应该不会支持groovy（我不太会,重要的是思路）🤣
 
 
 
@@ -414,8 +407,6 @@ private val DEFAULT_CONDITION: (String) -> Boolean = if (ENABLE_FILE_CONDITION) 
     ::noFilter
 }
 ```
-
-
 
 
 
