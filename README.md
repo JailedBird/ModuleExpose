@@ -266,6 +266,155 @@ class SearchActivity : AppCompatActivity() {
 
 
 
+## 其他讨论
+
+### 关于性能
+
+***注：测试设备SSD为顶配PCIE4 zhitai 7100，长江存储牛逼😘***
+
+开篇提到，ModuleExpose完全通过脚本实现自动暴露，并保证编译时 module和moudle_expose的代码完全同步；那ModuleExpose includeWithApi等函数的执行时机是什么、或者说为什么能保证代码是完全同步的呢？
+
+这个和gradle生命周期有关，我不是很懂，但已知有：
+
+- 项目sync时候，会完整执行setting.gradle.kts文件，同步工程模块
+- 项目运行时候，会完整执行setting.gradle.kts文件，同步工程模块
+
+setting.gradle.kts中使用自定义的includeWithApi函数，实现include和module_expose的导入和同步，因此当我们发生任意修改，只要运行项目，就能实时同步最新的module代码到module_expose；
+
+
+
+上述可知，每次运行都会存在module_expose文件的拷贝和生成，性能问题由此而来；
+
+通过ModuleExpose核心函数includeWithApi来看下相关处理步骤：
+
+```
+fun includeWithApi(module: String, isJava: Boolean, expose: String, condition: (String) -> Boolean) {
+    include(module)
+    measure("Expose ${module}", true) {
+        val moduleProject = project(module)
+        val src = moduleProject.projectDir.absolutePath
+        val des = "${src}_${MODULE_EXPOSE_TAG}"
+        // generate build.gradle.kts
+        generateBuildGradle(src,　BUILD_TEMPLATE_PATH_CUSTOM,　des,　"build.gradle.kts",
+        	moduleProject.name,　isJava
+        )
+        doSync(src, expose, condition)
+        // Add module_expose to Project!
+        include("${module}_${MODULE_EXPOSE_TAG}")
+    }
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+}
+```
+
+- include module，这个本身就需要做，不计入额外损耗；
+- generateBuildGradle创建module_expose的build.gradle.kts，涉及单个文件的拷贝；
+- doSync 源码文件的同步，处理稍微复杂，后续单独说；
+- include module_expose, 这个操作是将module_expose添加到工程，开销和include module是一个量级的，不影响；
+
+总体看， 处第三步文件同步doSync，其他的性能损耗都无关紧要；
+
+
+
+doSync的处理：
+
+```
+fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
+    val start = System.currentTimeMillis()
+    val src = "${src0}${File.separator}src${File.separator}main"
+    val des = "${src0}_${MODULE_EXPOSE_TAG}${File.separator}src${File.separator}main"
+    // Do not delete
+    val root = File(src)
+    val pathList = mutableListOf<String>()
+    if (root.exists() && root.isDirectory) {
+        measure("findDirectoryByNio") {
+        	// 1: 使用NIO 搜索名称为expose目录
+            findDirectoryByNIO(src, expose, pathList)
+        }
+    }
+
+    pathList.forEach { copyFrom ->
+        val suffix = copyFrom.removePrefix(src)
+        val copyTo = des + suffix
+        measure("syncDirectory $copyFrom") {
+            /*syncDirectory(copyFrom, copyTo) { fileName ->
+                fileName.endsWith(".api.kt") // Note: you can define your own filter statement
+            }*/
+            // 2: 实现文件同步 
+            //	a) 先遍历module_expose删除不存在于module中的文件 
+            //	b) 将module中的文件，通过NIO StandardCopyOption.REPLACE_EXISTING模式直接拷贝
+            syncDirectory(copyFrom, copyTo, condition)
+        }
+        // 删除空目录
+        measure("Delete empty dir") {
+            // remove empty dirs
+            deleteEmptyDir(copyTo)
+        }
+    }
+    debug("Module $src all spend ${(System.currentTimeMillis() - start)} ms")
+}
+```
+
+
+
+1、 目录搜索
+
+基于NIO实现文件遍历，搜索文件expose文件；使用NIO的原因在于，测试使用Java IO基于递归搜索，耗时12ms，而NIO耗时2ms，性能确实高于Java IO；从目录树的角度看，时间复杂度为N，N为目录个数；另外这应该不算是文件IO操作，因此耗时可以直接忽略； **注意是支持多个expose目录的**
+
+2、 文件同步
+
+基于1的目录搜索，在expose目录下定点文件同步，可以减少很多开销和遍历；
+
+a）删除module_expose expose目录下，不存在于module expose中的文件， 文件删除比较耗时，貌似单个文件0.5ms的样子
+
+b）以替换形式拷贝module expose目录下的文件，到module_expose expose目录下，文件拷贝比较耗时，貌似也差不多单个文件0.5~1ms
+
+(当然和文件大小也有关)
+
+3、 删除空目录
+
+主要是精简结构，耗时不多；不在意空目录对视觉干扰的甚至可以去掉；另外这是基于Java IO的操作，写代码的是这块暂时没优化到；
+
+
+
+**绝大部分情况，我们是不会修改expose中任何代码的，因此可以认为90%+情况下的文件同步，都只是 2-b）中描述的情况， 替换拷贝；按照这个思路是否可以读出双方文件内容，计算hash确定文件是否完全相同？ 相同则直接不拷贝替换？但是考虑到计算hash、和读两个文件本身就是耗时任务，所以暂时没具体测试这个优化是否成立！**
+
+
+
+**综上：简单认为耗时和需要拷贝的文件数量成正比，因此尽量减少需要expose的内容吧，非必要不暴露！如何项目本身不需要任何暴露，请直接include！请直接include！请直接include！**
+
+**另外：如果你需要暴露的东西已经很多、已经严重影响你的编译，那么建议直接将暴露的模块，单独抽出来真正的模块（而不仅仅是暴露模块）！ 删除module中expose的内容，直接implement module_expose（注意将其添加到git中去）， 禁止使用includeWithApi导入， 这样模块就不会参与同步，因为本身module_expose就是来自module，文件内容完全一致，因此可以算是0成本迁移了；这也是为什么需要将需要暴露的内容，集中收敛到expose目录；**
+
+
+
+### groovy or kts？
+
+老项目，几乎不可能只存在kts；如果渐进式引入kts仍然不行，那么大家可以考虑直接用groovy重写，思路是一样的，或者直接使用[github/tyhjh/module_api](github/tyhjh/module_api) 的方案，目前暂时应该不会支持groovy（我不太会,重要的是思路）🤣
+
+
+
+### 自定义配置
+
+expose.gradle.kts中定义了很多自定义配置，比如需要暴露的目录名称、暴露模块名称、日志开关等；
+
+```
+private val MODULE_EXPOSE_TAG = "expose"
+private val DEFAULT_EXPOSE_DIR_NAME = "expose"
+private val SCRIPT_DIR = "$rootDir/gradle/expose/"
+private val BUILD_TEMPLATE_PATH_JAVA = "${SCRIPT_DIR}build_gradle_template_java"
+private val BUILD_TEMPLATE_PATH_ANDROID = "${SCRIPT_DIR}build_gradle_template_android"
+private val BUILD_TEMPLATE_PATH_CUSTOM = "build_gradle_template_expose"
+private val ENABLE_FILE_CONDITION = false
+private val MODULE_NAMESPACE_TEMPLATE = "cn.jailedbird.module.%s_expose"
+private val DEBUG_ENABLE = false
+
+
+private val DEFAULT_CONDITION: (String) -> Boolean = if (ENABLE_FILE_CONDITION) {
+    ::ownCondition
+} else {
+    ::noFilter
+}
+```
+
 
 
 
