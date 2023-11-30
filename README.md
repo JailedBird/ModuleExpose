@@ -381,7 +381,7 @@ b）以替换形式拷贝module expose目录下的文件，到module_expose expo
 
 ### groovy or kts？
 
-老项目，几乎不可能只存在kts；如果渐进式引入kts仍然不行，那么大家可以考虑直接用groovy重写，思路是一样的，或者直接使用[github/tyhjh/module_api](https://github.com/JailedBird/ModuleExpose/blob/main/github/tyhjh/module_api) 的方案，目前暂时应该不会支持groovy（我不太会,重要的是思路）🤣
+老项目，几乎不可能只存在kts；如果渐进式引入kts仍然不行，那么大家可以考虑直接用groovy重写，思路是一样的，或者直接使用[github/tyhjh/module_api](https://github.com/tyhjh/module_api) 的方案，目前暂时应该不会支持groovy（我不太会,重要的是思路）🤣
 
 
 
