@@ -377,7 +377,7 @@ b）以替换形式拷贝module expose目录下的文件，到module_expose expo
 
 
 
-2、另外：如果你需要暴露的东西已经很多、已经严重影响你的编译，那么建议直接将暴露的模块，单独抽出来真正的模块（而不仅仅是暴露模块）！ 删除module中expose的内容，直接implement module_expose（注意将其添加到git中去）， 禁止使用includeWithApi导入， 这样模块就不会参与同步，因为本身module_expose就是来自module，文件内容完全一致，因此可以算是0成本迁移了；这也是为何需要将暴露的内容，集中收敛到expose目录；
+2、另外：如果你需要暴露的东西已经很多、已经严重影响你的编译，那么建议直接将暴露的模块，单独抽出来真正的模块（而不仅仅是暴露模块）！ 删除module中expose的内容，直接implement module_expose（注意将其添加到git中去）， 使用include而非includeWithApi导入模块；因为本身module_expose就是来自module，文件内容完全一致，因此可以算是0成本迁移了；这也是为何需要将暴露的内容，集中收敛到expose目录；
 
 
 
