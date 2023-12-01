@@ -1,6 +1,6 @@
 @file:Suppress("PrivatePropertyName")
-
 import java.io.File
+import java.io.IOException
 import java.nio.file.FileSystems
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -10,6 +10,7 @@ import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.absolutePathString
+
 
 /* [Tutorial documentation]
 Project: https://github.com/JailedBird/ModuleExpose
@@ -57,20 +58,24 @@ fun includeWithApi(
     condition: (String) -> Boolean
 ) {
     include(module)
+    debug("[Module $module]")
     val namespace = module.replace(":",".").trim('.')
-    measure("Expose ${module}", true) {
+    measure("ModuleExpose $module", true) {
         val moduleProject = project(module)
         val src = moduleProject.projectDir.absolutePath
         val des = "${src}_${MODULE_EXPOSE_TAG}"
         // generate build.gradle.kts
-        generateBuildGradle(
-            src,
-            BUILD_TEMPLATE_PATH_CUSTOM,
-            des,
-            "build.gradle.kts",
-            namespace,
-            isJava
-        )
+        measure("[generateBuildGradle]") {
+            generateBuildGradle(
+                src,
+                BUILD_TEMPLATE_PATH_CUSTOM,
+                des,
+                "build.gradle.kts",
+                namespace,
+                isJava
+            )
+        }
+
         doSync(src, expose, condition)
         // Add module_expose to Project!
         include("${module}_${MODULE_EXPOSE_TAG}")
@@ -79,39 +84,41 @@ fun includeWithApi(
 }
 
 fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
-    val start = System.currentTimeMillis()
     val src = "${src0}${File.separator}src${File.separator}main"
     val des = "${src0}_${MODULE_EXPOSE_TAG}${File.separator}src${File.separator}main"
     // Do not delete
     val root = File(src)
     val pathList = mutableListOf<String>()
     if (root.exists() && root.isDirectory) {
-        measure("findDirectoryByNio") {
+        measure("[findDirectoryByNio]") {
             findDirectoryByNIO(src, expose, pathList)
+            if (DEBUG_ENABLE) {
+                pathList.forEach{ exposeDir->
+                    println("[findDirectoryByNio] find $exposeDir")
+                }
+            }
         }
     }
 
     pathList.forEach { copyFrom ->
         val suffix = copyFrom.removePrefix(src)
         val copyTo = des + suffix
-        measure("syncDirectory $copyFrom") {
-            /*syncDirectory(copyFrom, copyTo) { fileName ->
-                fileName.endsWith(".api.kt") // Note: you can define your own filter statement
-            }*/
-            syncDirectory(copyFrom, copyTo, condition)
-        }
+        /*syncDirectory(copyFrom, copyTo) { fileName ->
+            fileName.endsWith(".api.kt") // Note: you can define your own filter statement
+        }*/
+        syncDirectory(copyFrom, copyTo, condition)
+
         measure("Delete empty dir") {
             // remove empty dirs
             deleteEmptyDir(copyTo)
         }
     }
-    debug("Module $src all spend ${(System.currentTimeMillis() - start)} ms")
 }
 
-fun measure(tag: String, force: Boolean = false, block: () -> Unit) {
+inline fun measure(tag: String = "Measure", force: Boolean = false, block: () -> Unit) {
     val t1 = System.currentTimeMillis()
     block.invoke()
-    debug("Measure: $tag spend ${System.currentTimeMillis() - t1}ms", force)
+    debug("$tag spend ${System.currentTimeMillis() - t1}ms", force)
 }
 
 // @Deprecated(message = "Deprecated because of low performance")
@@ -168,7 +175,7 @@ fun deleteDirectoryByNio(dir: String) {
             debug("empty path ${path.toAbsolutePath()} to delete")
             return
         }
-        debug("to delete path " + path.absolutePathString().toString())
+        debug("to delete path " + path.absolutePathString())
         // Files.delete(path); // can not delete not empty dir
         Files.walkFileTree(
             path,
@@ -184,7 +191,7 @@ fun deleteDirectoryByNio(dir: String) {
 
                 override fun postVisitDirectory(
                     dir: Path?,
-                    exc: java.io.IOException?
+                    exc: IOException?
                 ): FileVisitResult {
                     if (dir != null) {
                         Files.delete(dir)
@@ -208,16 +215,16 @@ fun deleteExtraFiles(
     Files.walk(destinationDirectory)
         .filter { path -> path != destinationDirectory }
         .filter { path ->
-            !Files.exists(sourceDirectory.resolve(destinationDirectory.relativize(path)))
-                    || !condition.invoke(path.fileName.toString())
+            !condition.invoke(path.fileName.toString())
+                    || !Files.exists(sourceDirectory.resolve(destinationDirectory.relativize(path)))
         }
         .forEach { path ->
             try {
                 if (!Files.isDirectory(path)) { // Skip dir, avoid directory not empty exception
+                    debug("[deleteExtraFiles] deleted file: ${destinationDirectory.relativize(path)}")
                     Files.delete(path)
-                    debug("Deleted extra file: ${destinationDirectory.relativize(path)}")
                 }
-            } catch (e: java.io.IOException) {
+            } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
@@ -241,10 +248,7 @@ fun syncDirectory(
 ) {
     val sourceDirectory: Path = Paths.get(src)
 
-    if (!Files.exists(sourceDirectory) || !Files.isDirectory(
-            sourceDirectory
-        )
-    ) {
+    if (!Files.exists(sourceDirectory) || !Files.isDirectory(sourceDirectory)) {
         debug("Source directory does not exist or is not a directory.")
         return
     }
@@ -255,68 +259,113 @@ fun syncDirectory(
         try {
             Files.createDirectories(destinationDirectory)
             debug("Created destination directory: $destinationDirectory")
-        } catch (e: java.io.IOException) {
+        } catch (e: IOException) {
             e.printStackTrace()
             return
         }
     } else { // delete file in destinationDirectory that not exists in sourceDirectory
-        measure("deleteExtraFiles") {
+        measure("[deleteExtraFiles]") {
             deleteExtraFiles(destinationDirectory, sourceDirectory, condition)
         }
     }
 
+    val start = System.currentTimeMillis()
     try {
-        Files.walkFileTree(
-            sourceDirectory,
-            object : SimpleFileVisitor<Path>() {
-                override fun visitFile(
-                    file: Path,
-                    attrs: BasicFileAttributes
-                ): FileVisitResult {
-                    // Skip filter
-                    if (!condition.invoke(file.fileName.toString())) {
-                        return FileVisitResult.CONTINUE
-                    }
-
-                    val relativePath: Path = sourceDirectory.relativize(file)
-                    val destinationFile: Path =
-                        destinationDirectory.resolve(relativePath)
-
-                    Files.copy(
-                        file,
-                        destinationFile,
-                        StandardCopyOption.REPLACE_EXISTING
-                    )
-                    // debug("Copied file: $relativePath")
+        Files.walkFileTree(sourceDirectory, object : SimpleFileVisitor<Path>() {
+            override fun visitFile(
+                file: Path,
+                attrs: BasicFileAttributes
+            ): FileVisitResult {
+                // Skip filter
+                if (!condition.invoke(file.fileName.toString())) {
                     return FileVisitResult.CONTINUE
                 }
 
-                override fun preVisitDirectory(
-                    dir: Path,
-                    attrs: BasicFileAttributes
-                ): FileVisitResult {
-                    val relativePath: Path = sourceDirectory.relativize(dir)
-                    val destinationDir: Path =
-                        destinationDirectory.resolve(relativePath)
-
-                    if (!Files.exists(destinationDir)) {
-                        try {
-                            Files.createDirectories(destinationDir)
-                            // debug("Created directory: $relativePath")
-                        } catch (e: java.io.IOException) {
-                            e.printStackTrace()
-                            return FileVisitResult.TERMINATE
-                        }
+                val relativePath: Path = sourceDirectory.relativize(file)
+                val destinationFile: Path =
+                    destinationDirectory.resolve(relativePath)
+                if(areFilesContentEqual(file,destinationFile, "[directorySync]")){
+                    // Do nothing
+                }else{
+                    measure("[directorySync] ${file.fileName} sync with copy REPLACE_EXISTING",true) {
+                        Files.copy(
+                            file,
+                            destinationFile,
+                            StandardCopyOption.REPLACE_EXISTING
+                        )
                     }
 
-                    return FileVisitResult.CONTINUE
                 }
-            })
+                // debug("Copied file: $relativePath")
+                return FileVisitResult.CONTINUE
+            }
 
-        debug("Directory copy completed!")
-    } catch (e: java.io.IOException) {
+            override fun preVisitDirectory(
+                dir: Path,
+                attrs: BasicFileAttributes
+            ): FileVisitResult {
+                val relativePath: Path = sourceDirectory.relativize(dir)
+                val destinationDir: Path =
+                    destinationDirectory.resolve(relativePath)
+
+                if (!Files.exists(destinationDir)) {
+                    try {
+                        Files.createDirectories(destinationDir)
+                        // debug("Created directory: $relativePath")
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        return FileVisitResult.TERMINATE
+                    }
+                }
+
+                return FileVisitResult.CONTINUE
+            }
+        })
+
+        debug("[directorySync] all copy and sync spend ${System.currentTimeMillis()-start}" )
+    } catch (e: IOException) {
         e.printStackTrace()
     }
+}
+
+fun areFilesContentEqual(path1: Path, path2: Path,tag:String=""): Boolean {
+    try {
+        val size1 = Files.size(path1)
+        val size2 = Files.size(path2)
+        if (size1 != size2) {
+            return false // Different sizes, files can't be equal
+        }
+        if(size1 > 4_000_000){ // 4MB return false
+            return false
+        }
+        val start = System.currentTimeMillis()
+        val content1 = Files.readAllBytes(path1) // Huge file will cause performance problem
+        val content2 = Files.readAllBytes(path2)
+        val isSame = content1.contentEquals(content2)
+        debug("$tag Read ${path1.fileName}*2 & FilesContentEqual spend ${System.currentTimeMillis()-start} ms, isSame $isSame")
+        return isSame
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return false
+}
+
+fun areFilesContentEqual(path: Path, content2: ByteArray): Boolean {
+    try {
+        val size1 = Files.size(path)
+        val size2 = content2.size.toLong()
+        if (size1 != size2) {
+            return false // Different sizes, files can't be equal
+        }
+        if(size1 > 4_000_000){ // 4MB return false
+            return false
+        }
+        val content1 = Files.readAllBytes(path) // Huge file will cause performance problem
+        return java.util.Arrays.equals(content1, content2)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return false
 }
 
 /**
@@ -341,7 +390,12 @@ fun generateBuildGradle(
     if (ownTemplate.exists()) {
         val sourcePath: Path = Paths.get("${srcScriptDir}${File.separator}${srcScriptName}")
         val destinationPath: Path = Paths.get("${desScriptDir}${File.separator}${desScriptName}")
-        Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING)
+        if(areFilesContentEqual(sourcePath,destinationPath)){
+            debug("[generateBuildGradle] from [$srcScriptName] to build.gradle.kts has no change!")
+        }else{
+            Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING)
+            debug("[generateBuildGradle] from [$srcScriptName] to build.gradle.kts has change with Files.copy")
+        }
     } else {
         val scriptPath = "${desScriptDir}${File.separator}${desScriptName}"
         val buildScript = File(scriptPath)
@@ -357,7 +411,12 @@ fun generateBuildGradle(
         }
         val readText = templateFile.readText()
         val copyText = String.format(readText, String.format(MODULE_NAMESPACE_TEMPLATE, selfName))
-        buildScript.writeText(copyText)
+        if(buildScript.exists() && areFilesContentEqual(Path.of(scriptPath), copyText.toByteArray(Charsets.UTF_8))){
+            debug("[generateBuildGradle] from [${templateFile.name}] to build.gradle.kts has no change!")
+        }else{
+            buildScript.writeText(copyText)
+            debug("[generateBuildGradle] from [${templateFile.name}] to build.gradle.kts has change with writeText")
+        }
     }
 }
 
