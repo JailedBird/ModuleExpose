@@ -12,7 +12,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.absolutePathString
 
 /* [Tutorial documentation]
-Peoject: https://github.com/JailedBird/ModuleExpose
+Project: https://github.com/JailedBird/ModuleExpose
 1) import this gradle script in setting.gradle.kts, like this:
 apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
 2) import function includeWithApi & includeWithJavaApi, like this:
@@ -57,6 +57,7 @@ fun includeWithApi(
     condition: (String) -> Boolean
 ) {
     include(module)
+    val namespace = module.replace(":",".").trim('.')
     measure("Expose ${module}", true) {
         val moduleProject = project(module)
         val src = moduleProject.projectDir.absolutePath
@@ -67,7 +68,7 @@ fun includeWithApi(
             BUILD_TEMPLATE_PATH_CUSTOM,
             des,
             "build.gradle.kts",
-            moduleProject.name,
+            namespace,
             isJava
         )
         doSync(src, expose, condition)
@@ -223,7 +224,8 @@ fun deleteExtraFiles(
 }
 
 fun noFilter(@Suppress("UNUSED_PARAMETER") fileName: String) = true
-fun ownCondition(fileName: String): Boolean {
+
+fun ownCondition(@Suppress("UNUSED_PARAMETER") fileName: String): Boolean {
     /*TODO custom your own condition filter*/
     /*return fileName.endsWith(".api.kt")*/
     return true
