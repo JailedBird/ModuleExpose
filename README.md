@@ -54,7 +54,7 @@ ModuleExpose，是将module内部需要暴露的代码通过脚本自动暴露�
 
 本人工作：
 
-- 使用kts和nio重写脚本，基于性能的考量，对暴露规则和生成方式进行改进；
+- 使用kts和nio重写脚本，基于性能的考量，对暴露规则和生成方式进行改进；详见 [关于性能](#关于性能)
 - 将[nowinandroid](https://github.com/android/nowinandroid)项目编译脚本系统、Ksp版本的Hilt依赖注入框架、示例工程三者结合起来，完善基于 *模块暴露&依赖注入框架* 的模块解耦示例工程；
 - 将api改名expose（PS：因内部项目使用过之前的api方案，为避免冲突所以改名，也避免和大佬项目名字冲突😘 脚本中亦可自定义关键词）
 
@@ -162,7 +162,7 @@ includeWithApi(":feature:search")
 compileOnly(project(mapOf("path" to ":feature:search_expose")))
 ```
 
-错误：会导致资源冲突
+错误用法：会导致资源冲突
 
 ```
 implementation(project(mapOf("path" to ":feature:search_expose")))
@@ -266,22 +266,22 @@ class SearchActivity : AppCompatActivity() {
 
 
 
-## 其他讨论
+## 性能问题
 
 ### 关于性能
 
-***注：测试设备SSD为顶配PCIE4 zhitai 7100，长江存储牛逼😘***
+***注：测试设备SSD为顶配PCIE4 zhitai 7100，磁盘性能会影响观测结果（PS：长江存储牛逼😘）***
 
-开篇提到，ModuleExpose完全通过脚本实现自动暴露，并保证编译时module和moudle_expose的代码完全同步；那ModuleExpose includeWithApi等函数的执行时机是什么、或者说为什么能保证代码是完全同步的呢？
+开篇提到，ModuleExpose通过脚本实现自动暴露，并保证编译时module和moudle_expose的代码完全同步；那深究下ModuleExpose includeWithApi等函数的执行时机是什么？又为什么能保证代码是完全同步的呢？
 
 这个和gradle生命周期有关，我不是很懂，但已知有：
 
-- 项目sync时候，会完整执行setting.gradle.kts文件，同步工程模块
-- 项目运行时候，会完整执行setting.gradle.kts文件，同步工程模块
+- 项目sync时候，会执行setting.gradle.kts文件，同步工程模块
+- 项目运行时候，会执行setting.gradle.kts文件，同步工程模块
 
-setting.gradle.kts中使用自定义的includeWithApi函数，实现include module以及module_expose的生成和include，因此任意修改发生后，只要运行项目，就能同步最新的module代码到module_expose；**但是，**未发生修改时，这个同步操作仍然会进行，性能问题由此而来；
+setting.gradle.kts中使用自定义的includeWithApi函数，实现原有include module功能，并生成和include module_expose，这个操作在每次run运行都是会执行的，因此expose脚本的处理方式和性能，会对项目编译产生极大的影响！
 
-通过ModuleExpose核心函数includeWithApi看下module_expose处理逻辑：
+**1、分析下脚本includeWithApi处理细节和性能问题**
 
 ```
 fun includeWithApi(module: String, isJava: Boolean, expose: String, condition: (String) -> Boolean) {
@@ -306,11 +306,13 @@ fun includeWithApi(module: String, isJava: Boolean, expose: String, condition: (
 - include module，这个本身就需要做，不计入额外损耗；
 - generateBuildGradle，创建module_expose的build.gradle.kts，涉及单个文件的拷贝；
 - doSync，源码文件的同步，处理稍微复杂，后续单独说；
-- include module_expose, 这个操作是将module_expose include到工程，开销和include module相当，不影响；
+- include module_expose, 这个操作是将module_expose include到工程，开销和include module相当，实测无影响；
 
 总体看， 除第三步文件同步doSync，其他的性能损耗都无关紧要；
 
-`doSync`的处理函数：
+
+
+**2、分析下doSync文件同步的细节：**
 
 ```
 fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
@@ -322,7 +324,7 @@ fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
     val pathList = mutableListOf<String>()
     if (root.exists() && root.isDirectory) {
         measure("findDirectoryByNio") {
-        	// 1: 使用NIO 搜索名称为expose目录
+        	// 1): 使用NIO 搜索名称为expose目录
             findDirectoryByNIO(src, expose, pathList)
         }
     }
@@ -330,12 +332,12 @@ fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
         val suffix = copyFrom.removePrefix(src)
         val copyTo = des + suffix
         measure("syncDirectory $copyFrom") {
-            // 2: 实现文件同步 
+            // 2): 实现文件同步 
             //	a) 先遍历module_expose删除不存在于module中的文件 
             //	b) 将module中的文件，通过NIO StandardCopyOption.REPLACE_EXISTING模式直接拷贝
             syncDirectory(copyFrom, copyTo, condition)
         }
-        // 删除空目录
+        // 3):删除空目录
         measure("Delete empty dir") {
             // remove empty dirs
             deleteEmptyDir(copyTo)
@@ -347,37 +349,136 @@ fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
 
 
 
-1、 目录搜索
+1)、 目录搜索
 
-基于NIO实现文件遍历，搜索文件expose文件；使用NIO的原因在于，测试使用Java IO基于递归搜索，耗时12ms，而NIO耗时2ms，性能确实高于Java IO；从目录树的角度看，时间复杂度为N，N为目录个数；另外这应该不算是文件IO操作，因此耗时可以直接忽略； 
+基于NIO实现目录遍历，搜索所有名称为expose的目录；使用NIO的直接原因在于NIO的性能远高于Java IO；开发时使用Java IO基于递归搜索，耗时12+ms，而NIO耗时1~2ms；从时间复杂度来看，此算法时间复杂度为N，N为目录数量，实际项目N一般很小，耗时可以忽略不计；
 
-2、 文件同步
+2）、 文件同步
 
-基于1的目录搜索，在expose目录下定点文件同步，可以减少很多开销和遍历；
+基于1的目录搜索结果，在expose目录下定点文件同步，可以减少很多开销和遍历；
 
 a）删除module_expose expose目录下，不存在于module expose中的文件， 文件删除比较耗时，貌似单个文件0.5ms的样子
 
-b）以替换形式拷贝module expose目录下的文件，到module_expose expose目录下，文件拷贝比较耗时，貌似也差不多单个文件0.5~1ms
+b）以替换拷贝形式（**REPLACE_EXISTING**），复制module expose目录下的文件，到module_expose expose目录下，文件拷贝比较耗时，貌似也差不多单个文件0.5~1ms；**每次同步都需要拷贝，很不完美，后续有优化方案**
 
-(当然和文件大小也有关)
-
-3、 删除空目录
+3）、 删除空目录
 
 主要是精简目录结构，耗时不多；不在意空目录对视觉干扰的甚至可以去掉；另外这是基于Java IO的操作，写代码的是这块暂时没优化到；
 
-**综上：简单认为耗时和需要拷贝的文件数量成正比，因此尽量减少需要expose的内容吧，非必要不暴露！如果项目根本不需要暴露，请不要使用includeWithApi，直接include！请不要使用includeWithApi，直接include！请不要使用includeWithApi，直接include！**
-
-项目中单个模块耗时不超过20ms，当然主要也是需要同步的内容很少；
 
 
+**3、 优化理论及方案**
 
-**其他思考：**
+1、 绝大部分情况，我们是不会修改expose中任何代码的，因此可以认为 **95%+** 情况下的文件同步，都只是 2-b）中描述的【文件同步-替换拷贝】情况；因此直接读取拷贝源文件，拷贝目的文件，对比他们是否存在差异，性能是否会更好？经过尝试，如下方案有更好的性能，单个小文件处理耗时不超过1ms：
 
-1、 绝大部分情况，我们是不会修改expose中任何代码的，因此可以认为90%+情况下的文件同步，都只是 2-b）中描述的情况， 替换拷贝；按照这个思路是否可以读出双方文件内容，计算hash确定文件是否完全相同？ 相同则直接不拷贝替换？但是考虑到计算hash、和读两个文件本身就是耗时任务，所以暂时没具体测试这个优化是否成立！
+```
+fun areFilesContentEqual(path1: Path, path2: Path,tag:String=""): Boolean {
+    try {
+        val size1 = Files.size(path1)
+        val size2 = Files.size(path2)
+        if (size1 != size2) {
+            return false // Different sizes, files can't be equal
+        }
+        // 小细节 4MB大文件直接判定不相同，通过文件系统直接拷贝同步 项目中是不可能出现这种情况的！
+        if(size1 > 4_000_000){ // 4MB return false 
+            return false
+        }
+        val start = System.currentTimeMillis()
+        val content1 = Files.readAllBytes(path1) // Huge file will cause performance problem
+        val content2 = Files.readAllBytes(path2)
+        val isSame = content1.contentEquals(content2)
+        debug("$tag Read ${path1.fileName}*2 & FilesContentEqual spend ${System.currentTimeMillis()-start} ms, isSame $isSame")
+        return isSame
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return false
+}
+
+```
+
+先判定内容是否一致，不一致才进行拷贝【**算是增量编译了吧🤣**】；实测针对普通文件读文件和比较耗时小于**1ms**！
+
+```
+if(areFilesContentEqual(file,destinationFile, "[directorySync]")){
+    // Do nothing
+}else{
+    measure("[directorySync] ${file.fileName} sync with copy REPLACE_EXISTING",true) {
+        Files.copy(
+            file,
+            destinationFile,
+            StandardCopyOption.REPLACE_EXISTING
+        )
+    }
+
+}
+```
 
 
 
-2、另外：如果你需要暴露的东西已经很多、已经严重影响你的编译，那么建议直接将暴露的模块，单独抽出来真正的模块（而不仅仅是暴露模块）！ 删除module中expose的内容，直接implement module_expose（注意将其添加到git中去）， 使用include而非includeWithApi导入模块；因为本身module_expose就是来自module，文件内容完全一致，因此可以算是0成本迁移了；这也是为何需要将暴露的内容，集中收敛到expose目录；
+2、 改进点，看下老方案吧， a) 针对范围过大，未细化目录；b) 针对api后缀的目录，这个格式不是很灵活；
+
+```
+https://github.com/tyhjh/module_api#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0
+def includeWithApi(String moduleName) {
+    //先正常加载这个模块
+    include(moduleName)
+    // 每次编译删除之前的文件
+    deleteDir(targetDir)
+    //复制.api文件到新的路径
+    copy() {
+        from originDir
+        into targetDir
+        exclude '**/build/'
+        exclude '**/res/'
+        include '**/*.api'
+    }
+}
+```
+
+对比看下我的输出结果，二次编译情况下耗时，只能说相对完美 哈哈😘（测试tag：release-1.0.0-beta）
+
+```
+ModuleExpose :core:common spend 2ms
+ModuleExpose :feature:settings spend 2ms
+ModuleExpose :feature:search spend 2ms
+ModuleExpose :feature:about spend 2ms
+```
+
+3、另外，如果项目中模块暴露的文件已经多到影响编译，那么建议直接将暴露的模块，单独抽出来为真正的模块：
+
+- module_expose本就来自module，甚至包名都没变，直接将其作为独立模块是完全没问题的，但是要注意将其添加到git中去、当然最好改个名字吧
+- 删除module中expose的内容，然后直接implement module_expose，其他compileOnly module_expose 直接搜索替换为implement module_expose即可；
+- 使用include而非includeWithApi导入module，避免自动生成module_expose；
+
+Ok，几乎零成本拆除，这也是为什么相比原创项目要将暴露内容集中收敛到expose目录——**便于集中管理和后期迁移**
+
+
+
+**综上，绝绝绝大部分情况下，即已生成module_expose并且expose目录内容无任何变化，ModuleExpose额外性能开销约为：2N个文件读耗时+这2N个文件内容的ByteArray对象的contentEquals耗时！其中N为module中expose目录下的文件数量**
+
+
+
+**除MoudleExpose本身的开销，还需要考虑的一个问题是：源码不变情况下每次运行，module同步到module_expose，是否会破坏Transform、注解处理器、模块编译等增量编译机制，进而导致其他的编译耗时问题呢？**
+
+- 在之前不做文件内容校验，直接拷贝复制的情况下，虽然拷贝前后文件内容完全一致，但是从文件管理器可以看出其文件创建时间是变化了的；因为对gradle的编译机制不熟悉，所以我不确定他是否触发了module_expose的重新编译、以及其他可能的副作用；【按理来说可以不重新编译，但是文件时间戳确实又变了🤣】
+- 启用文件内容校验的情况下，module_expose中的文件也不会被重新生成，从任务管理器看文件本身、build文件夹等的创建时间也未变化，因此姑且可以断定 **最终的ModuleExpose不会破坏相关的增量机制，造成其他性能问题**； （有了解这个的大佬也欢迎指正！）
+
+编译日志如下，看起来确实是不会造成重新编译等问题；
+
+```
+> Task :feature:search:kspProDebugKotlin UP-TO-DATE
+> Task :feature:search:compileProDebugKotlin UP-TO-DATE
+> Task :feature:search:javaPreCompileProDebug UP-TO-DATE
+> Task :feature:search:compileProDebugJavaWithJavac UP-TO-DATE
+> Task :feature:search_expose:preBuild UP-TO-DATE
+> Task :feature:search_expose:preProDebugBuild UP-TO-DATE
+> Task :feature:search_expose:generateProDebugBuildConfig UP-TO-DATE
+> Task :feature:search_expose:generateProDebugResValues UP-TO-DATE
+> Task :feature:search_expose:generateProDebugResources UP-TO-DATE
+```
+
+**另外：虽然但是，还是尽量减少需要expose的内容吧，非必要不暴露！如果项目根本不需要暴露，请不要使用includeWithApi，直接include！**
 
 
 
@@ -389,7 +490,7 @@ b）以替换形式拷贝module expose目录下的文件，到module_expose expo
 
 ### 自定义配置
 
-expose.gradle.kts中定义了很多自定义配置，比如需要暴露的目录名称、暴露模块名称、日志开关等；
+*expose.gradle.kts* 中定义了很多自定义配置，比如需要暴露的目录名称、暴露模块名称、日志开关等，方便大家自定义；
 
 ```
 private val MODULE_EXPOSE_TAG = "expose"
