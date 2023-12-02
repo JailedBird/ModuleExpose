@@ -80,7 +80,6 @@ fun includeWithApi(
         // Add module_expose to Project!
         include("${module}_${MODULE_EXPOSE_TAG}")
     }
-    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 }
 
 fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {

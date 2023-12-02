@@ -445,6 +445,23 @@ ModuleExpose :feature:search spend 2ms
 ModuleExpose :feature:about spend 2ms
 ```
 
+极端情况下测试：在settings模块expose目录下添加100个内容为expose.gradle.kts的文件，单文件480行、16.2 KB；
+
+分别测试首次编译、源码不变情况下的二次编译、修改单个文件的二次编译，耗时如下：
+
+```
+ModuleExpose :feature:settings spend 80ms
+ModuleExpose :feature:settings spend 32ms
+ModuleExpose :feature:settings spend 34ms 
+// 可以看出源码修改的耗时 介于首次编译 ~ 源码不变情况下的二次编译之间 且耗时和修改内容成正比！
+```
+
+**综上：性能还是非常优秀的，请大家放心食用😘**
+
+
+
+
+
 3、另外，如果项目中模块暴露的文件已经多到影响编译，那么建议直接将暴露的模块，单独抽出来为真正的模块：
 
 - module_expose本就来自module，甚至包名都没变，直接将其作为独立模块是完全没问题的，但是要注意将其添加到git中去、当然最好改个名字吧
