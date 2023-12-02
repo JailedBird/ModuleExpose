@@ -22,3 +22,17 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.org.jetbrains.kotlin.android) apply false
 }
+
+task("clean").dependsOn("module_expose_clean")
+tasks.register("module_expose_clean"){
+    doLast {
+        println("execute clean expose")
+        subprojects.forEach{ project->
+            if(project.name.endsWith("_expose")){
+                println("ModuleExpose: delete ${project.path}")
+                project.projectDir.deleteRecursively()
+            }
+        }
+    }
+}
+
