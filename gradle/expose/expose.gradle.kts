@@ -287,7 +287,7 @@ fun syncDirectory(
                 if(areFilesContentEqual(file,destinationFile, "[directorySync]")){
                     // Do nothing
                 }else{
-                    measure("[directorySync] ${file.fileName} sync with copy REPLACE_EXISTING",true) {
+                    measure("[directorySync] ${file.fileName} sync with copy REPLACE_EXISTING") {
                         Files.copy(
                             file,
                             destinationFile,
@@ -330,6 +330,9 @@ fun syncDirectory(
 
 fun areFilesContentEqual(path1: Path, path2: Path,tag:String=""): Boolean {
     try {
+        if(!Files.exists(path1) || !Files.exists(path2)){
+            return false
+        }
         val size1 = Files.size(path1)
         val size2 = Files.size(path2)
         if (size1 != size2) {
@@ -352,6 +355,9 @@ fun areFilesContentEqual(path1: Path, path2: Path,tag:String=""): Boolean {
 
 fun areFilesContentEqual(path: Path, content2: ByteArray): Boolean {
     try {
+        if(!Files.exists(path)){
+            return false
+        }
         val size1 = Files.size(path)
         val size2 = content2.size.toLong()
         if (size1 != size2) {
