@@ -24,10 +24,12 @@ plugins {
 }
 
 task("clean").dependsOn("module_expose_clean")
+// This task is used for delete xx_expose module
 tasks.register("module_expose_clean"){
     doLast {
         println("execute clean expose")
         subprojects.forEach{ project->
+            // Please exclude these project that you don't want to delete
             if(project.name.endsWith("_expose")){
                 println("ModuleExpose: delete ${project.path}")
                 project.projectDir.deleteRecursively()
