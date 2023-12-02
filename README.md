@@ -322,7 +322,6 @@ fun includeWithApi(module: String, isJava: Boolean, expose: String, condition: (
         // Add module_expose to Project!
         include("${module}_${MODULE_EXPOSE_TAG}")
     }
-    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 }
 ```
 
