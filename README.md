@@ -174,6 +174,29 @@ implementation(project(mapOf("path" to ":feature:search_expose")))
 
 
 
+**6、 添加clean module_expose**
+
+当clean项目，最好是能删除所有module_expose目录所有代码，请在项目根build.gradle.kts中添加如下task任务；
+
+```
+task("clean").dependsOn("module_expose_clean")
+// This task is used for delete xx_expose module
+tasks.register("module_expose_clean"){
+    doLast {
+        println("execute clean expose")
+        subprojects.forEach{ project->
+            // Please exclude these project that you don't want to delete
+            if(project.name.endsWith("_expose")){
+                println("ModuleExpose: delete ${project.path}")
+                project.projectDir.deleteRecursively()
+            }
+        }
+    }
+}
+```
+
+
+
 ## 依赖注入
 
 **基于模块暴露的相关接口，可以使用依赖注入框架Hilt实现基于接口的解耦；** 当然如果大家不使用Hilt技术栈的话，这节可以跳过；
