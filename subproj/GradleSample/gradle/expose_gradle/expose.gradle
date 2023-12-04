@@ -1,0 +1,328 @@
+import java.io.File
+import java.io.IOException
+import java.nio.file.FileSystems
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.StandardCopyOption
+import java.nio.file.attribute.BasicFileAttributes
+
+ext.includeWithApi = { String module ->
+    includeWithApi(module, false, ModuleExposeConfig.DEFAULT_EXPOSE_DIR_NAME, ModuleExposeConfig.DEFAULT_CONDITION)
+}
+
+ext.includeWithJavaApi = { String module  ->
+    includeWithApi(module, true, ModuleExposeConfig.DEFAULT_EXPOSE_DIR_NAME, ModuleExposeConfig.DEFAULT_CONDITION)
+}
+class ModuleExposeConfig{
+    static MODULE_EXPOSE_TAG = "expose"
+    static DEFAULT_EXPOSE_DIR_NAME = "expose"
+
+    static BUILD_GRADLE_FILE_NAME = "build.gradle"
+    static BUILD_TEMPLATE_PATH_JAVA = "build_gradle_template_java"
+    static BUILD_TEMPLATE_PATH_ANDROID = "build_gradle_template_android"
+    static BUILD_TEMPLATE_PATH_CUSTOM = "build_gradle_template_expose"
+    static ENABLE_FILE_CONDITION = false
+    static MODULE_NAMESPACE_TEMPLATE = "cn.jailedbird.module.%s_expose"
+    static DEBUG_ENABLE = false
+
+    static def getExposeDir(String rootDir) {
+        "$rootDir/gradle/expose_gradle/"
+    }
+
+    static def GET_BUILD_TEMPLATE_PATH_JAVA(String rootDir){
+        getExposeDir(rootDir) + BUILD_TEMPLATE_PATH_JAVA
+    }
+    static def GET_BUILD_TEMPLATE_PATH_ANDROID(String rootDir){
+        getExposeDir(rootDir) + BUILD_TEMPLATE_PATH_ANDROID
+    }
+
+    static ownCondition = { String str ->
+        return true
+    }
+
+    static noFilter = { String str ->
+        return true
+    }
+
+    static DEFAULT_CONDITION = ModuleExposeConfig.ENABLE_FILE_CONDITION ? ownCondition : noFilter
+
+}
+
+def includeWithApi(
+        String module,
+        Boolean isJava,
+        String expose,
+        Closure<Boolean> condition
+) {
+    include(module)
+    debug("[Module $module]")
+    String namespace = module.replace(':', '.').stripMargin('.')
+    measure("ModuleExpose $module", true) {
+        def moduleProject = project(module)
+        def src = moduleProject.projectDir.absolutePath
+        def des = "${src}_${ModuleExposeConfig.MODULE_EXPOSE_TAG}"
+        // generate build.gradle
+        measure("[generateBuildGradle]") {
+            generateBuildGradle(
+                    src,
+                    ModuleExposeConfig.BUILD_TEMPLATE_PATH_CUSTOM,
+                    des,
+                    ModuleExposeConfig.BUILD_GRADLE_FILE_NAME,
+                    namespace,
+                    isJava
+            )
+        }
+
+        doSync(src, expose, condition)
+//        // Add module_expose to Project!
+        include("${module}_${ModuleExposeConfig.MODULE_EXPOSE_TAG}")
+    }
+}
+
+
+def doSync(String src0, String expose, Closure<Boolean> condition) {
+    String src = "${src0}${File.separator}src${File.separator}main"
+    String des = "${src0}_${ModuleExposeConfig.MODULE_EXPOSE_TAG}${File.separator}src${File.separator}main"
+
+    // Do not delete
+    def root = new File(src)
+    ArrayList<String>  pathList = []
+
+    if (root.exists() && root.isDirectory()) {
+        measure("[findDirectoryByNio]") {
+            findDirectoryByNIO(src, expose, pathList)
+
+            if (ModuleExposeConfig.DEBUG_ENABLE) {
+                pathList.each { exposeDir ->
+                    println("[findDirectoryByNio] find $exposeDir")
+                }
+            }
+        }
+    }
+
+    pathList.forEach { copyFrom ->
+        def suffix =copyFrom.replace(src,"" )
+        def copyTo = des + suffix
+
+        syncDirectory(copyFrom, copyTo, condition)
+    }
+}
+
+
+static def measure(String tag = "Measure", Boolean force = false, Closure block) {
+    def t1 = System.currentTimeMillis()
+    block.call()
+    debug("$tag spend ${System.currentTimeMillis() - t1}ms", force)
+}
+
+static def findDirectoryByNIO(String dirStr, String specPath, ArrayList<String> pathList) {
+    Files.walkFileTree(Paths.get(dirStr), new SimpleFileVisitor<Path>() {
+        @Override
+        FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+            if (dir.fileName.toString() == specPath) {
+                pathList.add(dir.toAbsolutePath().toString())
+                return FileVisitResult.SKIP_SUBTREE
+            } else {
+                return FileVisitResult.CONTINUE
+            }
+        }
+    })
+}
+
+def deleteExtraFiles(Path destinationDirectory, Path sourceDirectory, condition = { fileName -> noFilter(fileName) }) {
+    // Delete files not in sourceDirectory
+    Files.walk(destinationDirectory)
+            .findAll { path -> path != destinationDirectory }
+            .findAll { path ->
+                !condition(path.fileName.toString()) ||
+                        !Files.exists(sourceDirectory.resolve(destinationDirectory.relativize(path)))
+            }
+            .each { path ->
+                try {
+                    if (!Files.isDirectory(path)) { // Skip dir, avoid directory not empty exception
+                        debug("[deleteExtraFiles] deleted file: ${destinationDirectory.relativize(path)}")
+                        Files.delete(path)
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace()
+                }
+            }
+}
+
+def syncDirectory(String src, String des, Closure<Boolean> condition = { fileName -> noFilter(fileName) }) {
+    def sourceDirectory = Paths.get(src)
+
+    if (!Files.exists(sourceDirectory) || !Files.isDirectory(sourceDirectory)) {
+        debug("Source directory does not exist or is not a directory.")
+        return
+    }
+
+    def destinationDirectory = Paths.get(des)
+
+    if (!Files.exists(destinationDirectory)) {
+        try {
+            Files.createDirectories(destinationDirectory)
+            debug("Created destination directory: $destinationDirectory")
+        } catch (IOException e) {
+            e.printStackTrace()
+            return
+        }
+    } else { // delete file in destinationDirectory that not exists in sourceDirectory
+        measure("[deleteExtraFiles]") {
+            deleteExtraFiles(destinationDirectory, sourceDirectory, condition)
+        }
+    }
+
+    def start = System.currentTimeMillis()
+    try {
+        Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
+            @Override
+            FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                // Skip filter
+                if (!condition(file.fileName.toString())) {
+                    return FileVisitResult.CONTINUE
+                }
+
+                def relativePath = sourceDirectory.relativize(file)
+                def destinationFile = destinationDirectory.resolve(relativePath)
+
+                if (areFilesContentEqual(file, destinationFile, "[directorySync]")) {
+                    // Do nothing
+                } else {
+                    measure("[directorySync] ${file.fileName} sync with copy REPLACE_EXISTING") {
+                        Files.copy(
+                                file,
+                                destinationFile,
+                                StandardCopyOption.REPLACE_EXISTING
+                        )
+                    }
+                }
+
+                // debug("Copied file: $relativePath")
+                return FileVisitResult.CONTINUE
+            }
+
+            @Override
+            FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                def relativePath = sourceDirectory.relativize(dir)
+                def destinationDir = destinationDirectory.resolve(relativePath)
+
+                if (!Files.exists(destinationDir)) {
+                    try {
+                        Files.createDirectories(destinationDir)
+                        // debug("Created directory: $relativePath")
+                    } catch (IOException e) {
+                        e.printStackTrace()
+                        return FileVisitResult.TERMINATE
+                    }
+                }
+
+                return FileVisitResult.CONTINUE
+            }
+        })
+
+        debug("[directorySync] all copy and sync spend ${System.currentTimeMillis() - start}")
+    } catch (IOException e) {
+        e.printStackTrace()
+    }
+}
+
+static boolean areFilesContentEqual(Path path1, Path path2, String tag = "") {
+    try {
+        if (!Files.exists(path1) || !Files.exists(path2)) {
+            return false
+        }
+        def size1 = Files.size(path1)
+        def size2 = Files.size(path2)
+        if (size1 != size2) {
+            return false // Different sizes, files can't be equal
+        }
+        if (size1 > 4_000_000) { // 4MB return false
+            return false
+        }
+        def start = System.currentTimeMillis()
+        def content1 = Files.readAllBytes(path1) // Huge file will cause performance problem
+        def content2 = Files.readAllBytes(path2)
+        def isSame = content1 == content2
+        debug("$tag Read ${path1.fileName}*2 & FilesContentEqual spend ${System.currentTimeMillis() - start} ms, isSame $isSame")
+        return isSame
+    } catch (Exception e) {
+        e.printStackTrace()
+    }
+    return false
+}
+
+static boolean areFilesContentEqual(Path path, byte[] content2) {
+    try {
+        if (!Files.exists(path)) {
+            return false
+        }
+        def size1 = Files.size(path)
+        def size2 = content2.size() as long
+        if (size1 != size2) {
+            return false // Different sizes, files can't be equal
+        }
+        if (size1 > 4_000_000) { // 4MB return false
+            return false
+        }
+        def content1 = Files.readAllBytes(path) // Huge file will cause performance problem
+        return Arrays.equals(content1, content2)
+    } catch (Exception e) {
+        e.printStackTrace()
+    }
+    return false
+}
+
+/**
+ * Create build.gradle.kts
+ * @param isJava Android module or Java module
+ */
+def generateBuildGradle(String srcScriptDir, String srcScriptName, String desScriptDir,
+                        String desScriptName, String selfName, boolean isJava = false) {
+    // Ensure _expose directory is created!
+    File desScriptDirFile = new File(desScriptDir)
+    if (!desScriptDirFile.exists()) {
+        desScriptDirFile.mkdir()
+    }
+
+    File ownTemplate = new File(srcScriptDir, srcScriptName)
+    if (ownTemplate.exists()) {
+        Path sourcePath = Paths.get("${srcScriptDir}${File.separator}${srcScriptName}")
+        Path destinationPath = Paths.get("${desScriptDir}${File.separator}${desScriptName}")
+
+        if (areFilesContentEqual(sourcePath, destinationPath)) {
+            debug("[generateBuildGradle] from [$srcScriptName] to build.gradle.kts has no change!")
+        } else {
+            Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING)
+            debug("[generateBuildGradle] from [$srcScriptName] to build.gradle.kts has change with Files.copy")
+        }
+    } else {
+        String scriptPath = "${desScriptDir}${File.separator}${desScriptName}"
+        File buildScript = new File(scriptPath)
+        String path = isJava ? ModuleExposeConfig.GET_BUILD_TEMPLATE_PATH_JAVA(rootDir.absolutePath) : ModuleExposeConfig.GET_BUILD_TEMPLATE_PATH_ANDROID(rootDir.absolutePath)
+        File templateFile = new File(path)
+
+        if (!templateFile.exists()) {
+            throw new Exception("Template file ${templateFile.absolutePath} not found!")
+        }
+
+        String readText = templateFile.text
+        String copyText = String.format(readText, String.format(ModuleExposeConfig.MODULE_NAMESPACE_TEMPLATE, selfName))
+
+        if (buildScript.exists() && areFilesContentEqual(Paths.get(scriptPath), copyText.bytes)) {
+            debug("[generateBuildGradle] from [${templateFile.name}] to build.gradle.kts has no change!")
+        } else {
+            buildScript.write(copyText)
+            debug("[generateBuildGradle] from [${templateFile.name}] to build.gradle.kts has change with writeText")
+        }
+    }
+}
+
+static debug(String message, boolean force = false) {
+    if (force || ModuleExposeConfig.DEBUG_ENABLE) {
+        println(message)
+    }
+}

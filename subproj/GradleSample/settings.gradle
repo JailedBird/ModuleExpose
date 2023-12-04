@@ -1,0 +1,21 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "Gradle sample"
+
+apply from: "gradle/expose_gradle/expose.gradle"
+includeWithApi(":app")
+includeWithApi ':mylibrary'
+includeWithJavaApi ':lib'
