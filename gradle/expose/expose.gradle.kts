@@ -106,11 +106,6 @@ fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
             fileName.endsWith(".api.kt") // Note: you can define your own filter statement
         }*/
         syncDirectory(copyFrom, copyTo, condition)
-
-        measure("Delete empty dir") {
-            // remove empty dirs
-            deleteEmptyDir(copyTo)
-        }
     }
 }
 
@@ -163,47 +158,6 @@ fun findDirectoryByNIO(dir: String, specPath: String, pathList: MutableList<Stri
         }
     })
 }
-
-/**
- * delete by nio, delete app module, 43->22ms
- * */
-fun deleteDirectoryByNio(dir: String) {
-    try {
-        val path = FileSystems.getDefault().getPath(dir)
-        if (!Files.exists(path)) { // empty dir to check
-            debug("empty path ${path.toAbsolutePath()} to delete")
-            return
-        }
-        debug("to delete path " + path.absolutePathString())
-        // Files.delete(path); // can not delete not empty dir
-        Files.walkFileTree(
-            path,
-            object : SimpleFileVisitor<Path>() {
-                override fun visitFile(
-                    file: Path,
-                    attrs: BasicFileAttributes?
-                ): FileVisitResult {
-                    // debug("${file.absolutePathString()} to delete")
-                    Files.delete(file)
-                    return super.visitFile(file, attrs)
-                }
-
-                override fun postVisitDirectory(
-                    dir: Path?,
-                    exc: IOException?
-                ): FileVisitResult {
-                    if (dir != null) {
-                        Files.delete(dir)
-                    }
-                    return super.postVisitDirectory(dir, exc)
-                }
-            })
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-
-}
-
 
 fun deleteExtraFiles(
     destinationDirectory: Path,
@@ -423,54 +377,6 @@ fun generateBuildGradle(
             debug("[generateBuildGradle] from [${templateFile.name}] to build.gradle.kts has change with writeText")
         }
     }
-}
-
-
-fun deleteEmptyDir(path: String) {
-    deleteEmptyDir(File(path))
-}
-
-// A包含A1 A2 A3 AN AN全为空 A不会被删除
-fun deleteEmptyDir(file: File) {
-    if (file.isDirectory) {
-        file.listFiles()?.forEach {
-            if (it.isDirectory) {
-                if (it.listFiles()?.isEmpty() == true) {
-                    it.delete() // 删除后 file对象依然存在
-                    if (it.parentFile?.listFiles()?.isEmpty() == true) {
-                        it.parentFile.delete() // 使用file对象尝试删除父目录
-                    }
-                } else {
-                    deleteEmptyDir(it)
-                }
-            }
-        }
-    }
-}
-
-/**
- * @param src0 : such as module1 abs path
- * */
-@Deprecated("Deprecated because of low performance")
-fun doSyncByGradleApi(src0: String) {
-    val t1 = System.currentTimeMillis()
-    val src = "${src0}${File.separator}src${File.separator}main"
-    val des = "${src0}_${MODULE_EXPOSE_TAG}${File.separator}src${File.separator}main"
-    debug("debug $src")
-    debug("debug $des")
-    delete(des)
-    copy {
-        from(src)
-        into(des)
-        exclude("assets")
-        exclude("res")
-        exclude("jniLibs")
-        exclude("AndroidManifest.xml")
-        include("**/*.api.kt")
-    }
-    // remove empty dirs
-    deleteEmptyDir(des)
-    debug("Module $src do copy spend ${(System.currentTimeMillis() - t1)} ms")
 }
 
 fun debug(message: String, force: Boolean = false) {
