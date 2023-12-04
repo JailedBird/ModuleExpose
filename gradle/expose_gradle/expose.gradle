@@ -1,6 +1,3 @@
-import java.io.File
-import java.io.IOException
-import java.nio.file.FileSystems
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
 import java.nio.file.Path
@@ -37,9 +34,6 @@ class ModuleExposeConfig{
     }
     static def GET_BUILD_TEMPLATE_PATH_ANDROID(String rootDir){
         getExposeDir(rootDir) + BUILD_TEMPLATE_PATH_ANDROID
-    }
-    static def GET_BUILD_TEMPLATE_PATH_CUSTOM(String rootDir){
-        getExposeDir(rootDir) + BUILD_TEMPLATE_PATH_CUSTOM
     }
 
     static ownCondition = { String str ->
@@ -124,7 +118,7 @@ static def measure(String tag = "Measure", Boolean force = false, Closure block)
 static def findDirectoryByNIO(String dirStr, String specPath, ArrayList<String> pathList) {
     Files.walkFileTree(Paths.get(dirStr), new SimpleFileVisitor<Path>() {
         @Override
-        FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
             if (dir.fileName.toString() == specPath) {
                 pathList.add(dir.toAbsolutePath().toString())
                 return FileVisitResult.SKIP_SUBTREE
@@ -183,7 +177,7 @@ def syncDirectory(String src, String des, Closure<Boolean> condition = { fileNam
     try {
         Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
             @Override
-            FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                 // Skip filter
                 if (!condition(file.fileName.toString())) {
                     return FileVisitResult.CONTINUE
