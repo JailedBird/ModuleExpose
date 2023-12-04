@@ -16,22 +16,22 @@ import kotlin.io.path.absolutePathString
 Project: https://github.com/JailedBird/ModuleExpose
 1) import this gradle script in setting.gradle.kts, like this:
 apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
-2) import function includeWithApi & includeWithJavaApi, like this:
-val includeWithApi: (projectPaths: String) -> Unit by extra
-val includeWithJavaApi: (projectPaths: String) -> Unit by extra
-3) use includeWithApi or includeWithJavaApi include your project, like this:
-includeWithApi(":feature:settings")
-includeWithApi(":feature:search")
+2) import function includeWithExpose & includeWithJavaExpose, like this:
+val includeWithExpose: (projectPaths: String) -> Unit by extra
+val includeWithJavaExpose: (projectPaths: String) -> Unit by extra
+3) use includeWithExpose or includeWithJavaExpose include your project, like this:
+includeWithExpose(":feature:settings")
+includeWithExpose(":feature:search")
 4) in your module, create expose directory and place your file that need to be exposed
 
 Note: ensure your project enable kts! TODO: support traditional gradle project
 */
-extra["includeWithApi"] = { module: String ->
-    includeWithApi(module, isJava = false, DEFAULT_EXPOSE_DIR_NAME, DEFAULT_CONDITION)
+extra["includeWithExpose"] = { module: String ->
+    includeWithExpose(module, isJava = false, DEFAULT_EXPOSE_DIR_NAME, DEFAULT_CONDITION)
 }
 
-extra["includeWithJavaApi"] = { module: String ->
-    includeWithApi(module, isJava = true, DEFAULT_EXPOSE_DIR_NAME, DEFAULT_CONDITION)
+extra["includeWithJavaExpose"] = { module: String ->
+    includeWithExpose(module, isJava = true, DEFAULT_EXPOSE_DIR_NAME, DEFAULT_CONDITION)
 }
 
 private val MODULE_EXPOSE_TAG = "expose"
@@ -51,7 +51,7 @@ private val DEFAULT_CONDITION: (String) -> Boolean = if (ENABLE_FILE_CONDITION) 
     ::noFilter
 }
 
-fun includeWithApi(
+fun includeWithExpose(
     module: String,
     isJava: Boolean,
     expose: String,

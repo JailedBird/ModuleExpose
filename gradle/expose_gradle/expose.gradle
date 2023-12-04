@@ -6,12 +6,12 @@ import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.BasicFileAttributes
 
-ext.includeWithApi = { String module ->
-    includeWithApi(module, false, ModuleExposeConfig.DEFAULT_EXPOSE_DIR_NAME, ModuleExposeConfig.DEFAULT_CONDITION)
+ext.includeWithExpose = { String module ->
+    includeWithExpose(module, false, ModuleExposeConfig.DEFAULT_EXPOSE_DIR_NAME, ModuleExposeConfig.DEFAULT_CONDITION)
 }
 
-ext.includeWithJavaApi = { String module  ->
-    includeWithApi(module, true, ModuleExposeConfig.DEFAULT_EXPOSE_DIR_NAME, ModuleExposeConfig.DEFAULT_CONDITION)
+ext.includeWithJavaExpose = { String module  ->
+    includeWithExpose(module, true, ModuleExposeConfig.DEFAULT_EXPOSE_DIR_NAME, ModuleExposeConfig.DEFAULT_CONDITION)
 }
 class ModuleExposeConfig{
     static MODULE_EXPOSE_TAG = "expose"
@@ -48,7 +48,7 @@ class ModuleExposeConfig{
 
 }
 
-def includeWithApi(
+def includeWithExpose(
         String module,
         Boolean isJava,
         String expose,

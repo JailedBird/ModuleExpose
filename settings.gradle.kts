@@ -27,15 +27,15 @@ dependencyResolutionManagement {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
-val includeWithApi: (projectPaths: String) -> Unit by extra
-val includeWithJavaApi: (projectPaths: String) -> Unit by extra
+val includeWithExpose: (projectPaths: String) -> Unit by extra
+val includeWithJavaExpose: (projectPaths: String) -> Unit by extra
 
 rootProject.name = "ModuleExpose"
 include(":app")
 include(":core:settings")
 include(":core:resource")
-includeWithJavaApi(":core:common")
-includeWithApi(":feature:settings")
-includeWithApi(":feature:search")
-includeWithApi(":feature:about")
-includeWithApi(":feature:benchmark")
+includeWithJavaExpose(":core:common")
+includeWithExpose(":feature:settings")
+includeWithExpose(":feature:search")
+includeWithExpose(":feature:about")
+includeWithExpose(":feature:benchmark")

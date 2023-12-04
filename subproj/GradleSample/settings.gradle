@@ -16,6 +16,6 @@ dependencyResolutionManagement {
 rootProject.name = "Gradle sample"
 
 apply from: "gradle/expose_gradle/expose.gradle"
-includeWithApi(":app")
-includeWithApi ':mylibrary'
-includeWithJavaApi ':lib'
+includeWithExpose(":app")
+includeWithExpose ':mylibrary'
+includeWithJavaExpose ':lib'

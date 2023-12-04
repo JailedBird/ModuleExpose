@@ -127,8 +127,8 @@ gradle
 
 ```
 apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
-val includeWithApi: (projectPaths: String) -> Unit by extra
-val includeWithJavaApi: (projectPaths: String) -> Unit by extra
+val includeWithExpose: (projectPaths: String) -> Unit by extra
+val includeWithJavaExpose: (projectPaths: String) -> Unit by extra
 ```
 
 （PS：只要正确启用kts，settings.gradle应该也是可以导入includeWithApi的，但是我没尝试；其次老项目针对ModuleExpose改造kts时，可以渐进式改造，即只改settings.gradle.kts即可）
@@ -140,8 +140,8 @@ val includeWithJavaApi: (projectPaths: String) -> Unit by extra
 将需要暴露的模块，在settings.gradle.kts 使用includeWithApi（或includeWithJavaApi）导入；
 
 ```
-includeWithApi(":feature:settings")
-includeWithApi(":feature:search")
+includeWithExpose(":feature:settings")
+includeWithExpose(":feature:search")
 ```
 
 即可自动生成新模块 `${module_expose}`；然后在模块源码目录下创建名为expose的目录，将需要暴露的文件放在expose目录下， expose目录下的文件即可在新模块中自动拷贝生成；
@@ -307,7 +307,7 @@ setting.gradle.kts中使用自定义的includeWithApi函数，实现原有includ
 **1、分析下脚本includeWithApi处理细节和性能问题**
 
 ```
-fun includeWithApi(module: String, isJava: Boolean, expose: String, condition: (String) -> Boolean) {
+fun includeWithExpose(module: String, isJava: Boolean, expose: String, condition: (String) -> Boolean) {
     include(module)
     measure("Expose ${module}", true) {
         val moduleProject = project(module)
