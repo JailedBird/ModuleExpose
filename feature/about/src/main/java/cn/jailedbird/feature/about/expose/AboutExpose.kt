@@ -1,6 +1,7 @@
-package cn.jcn.jailedbird.feature.about.expose
+package cn.jailedbird.feature.about.expose
 
 import androidx.appcompat.app.AppCompatActivity
+import cn.jailedbird.feature.about.expose.AboutEntity
 
 interface AboutExpose {
     /**

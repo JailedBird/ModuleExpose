@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.edgeutils)
     implementation(libs.recyclerview)
     compileOnly(projects.feature.settingsExpose)
+    compileOnly(projects.feature.aboutExpose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

@@ -61,6 +61,11 @@ class AppSettingsPopWindow(
             listener.settings()
             dismiss()
         }
+
+        binding.tvAbout.setDebouncingClick {
+            listener.about()
+            dismiss()
+        }
     }
 
     interface Listener {
@@ -69,5 +74,6 @@ class AppSettingsPopWindow(
         fun share()
         fun clearHistory()
         fun settings()
+        fun about()
     }
 }

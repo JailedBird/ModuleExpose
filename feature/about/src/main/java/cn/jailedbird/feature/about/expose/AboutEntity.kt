@@ -1,4 +1,4 @@
-package cn.jcn.jailedbird.feature.about.expose
+package cn.jailedbird.feature.about.expose
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -8,4 +8,4 @@ import kotlinx.parcelize.Parcelize
  * to make compile process successful
  * */
 @Parcelize
-data class AboutEntity(val title: String, val desc: String) : Parcelable
+data class AboutEntity(val title: String, val url: String) : Parcelable

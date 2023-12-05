@@ -1,7 +1,7 @@
-package cn.jcn.jailedbird.feature.about.di
+package cn.jailedbird.feature.about.di
 
-import cn.jcn.jailedbird.feature.about.expose.AboutExpose
-import cn.jcn.jailedbird.feature.about.exposeimpl.AboutExposeImpl
+import cn.jailedbird.feature.about.expose.AboutExpose
+import cn.jailedbird.feature.about.exposeimpl.AboutExposeImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

@@ -15,7 +15,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
-import cn.jailedbird.core.common.utils.finishProcess
 import cn.jailedbird.core.common.utils.hideKeyboard
 import cn.jailedbird.core.common.utils.log
 import cn.jailedbird.core.common.utils.setDebouncingClick
@@ -23,6 +22,8 @@ import cn.jailedbird.core.common.utils.showKeyboard
 import cn.jailedbird.core.common.utils.toPx
 import cn.jailedbird.core.common.utils.toast
 import cn.jailedbird.core.settings.Settings
+import cn.jailedbird.feature.about.expose.AboutEntity
+import cn.jailedbird.feature.about.expose.AboutExpose
 import cn.jailedbird.feature.search.adapter.AppListTwoTypeAdapter
 import cn.jailedbird.feature.search.data.AppRepository
 import cn.jailedbird.feature.search.data.entity.AppModel
@@ -55,6 +56,10 @@ class SearchActivity : AppCompatActivity() {
 
     @Inject
     lateinit var settingExpose: SettingExpose
+
+    @Inject
+    lateinit var aboutExpose: AboutExpose
+
     @Inject
     lateinit var appRepository: AppRepository
 
@@ -80,6 +85,15 @@ class SearchActivity : AppCompatActivity() {
 
         override fun settings() {
             settingExpose.startSettingActivity(this@SearchActivity)
+        }
+
+        override fun about() {
+            aboutExpose.openAboutActivity(
+                this@SearchActivity, AboutEntity(
+                    "Welcome JailedBird's ModuleExpose project",
+                    "https://github.com/JailedBird/ModuleExpose"
+                )
+            )
         }
     }
 

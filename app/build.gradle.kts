@@ -19,6 +19,7 @@ dependencies {
     implementation(projects.core.settings)
     implementation(projects.feature.search)
     implementation(projects.feature.settings)
+    implementation(projects.feature.about)
 
     // // Hilt https://developer.android.com/training/dependency-injection/hilt-android
 
