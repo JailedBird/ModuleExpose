@@ -10,10 +10,11 @@ ext.includeWithExpose = { String module ->
     includeWithExpose(module, false, ModuleExposeConfig.DEFAULT_EXPOSE_DIR_NAME, ModuleExposeConfig.DEFAULT_CONDITION)
 }
 
-ext.includeWithJavaExpose = { String module  ->
+ext.includeWithJavaExpose = { String module ->
     includeWithExpose(module, true, ModuleExposeConfig.DEFAULT_EXPOSE_DIR_NAME, ModuleExposeConfig.DEFAULT_CONDITION)
 }
-class ModuleExposeConfig{
+
+class ModuleExposeConfig {
     static MODULE_EXPOSE_TAG = "expose"
     static DEFAULT_EXPOSE_DIR_NAME = "expose"
 
@@ -29,10 +30,11 @@ class ModuleExposeConfig{
         "$rootDir/gradle/expose_gradle/"
     }
 
-    static def GET_BUILD_TEMPLATE_PATH_JAVA(String rootDir){
+    static def GET_BUILD_TEMPLATE_PATH_JAVA(String rootDir) {
         getExposeDir(rootDir) + BUILD_TEMPLATE_PATH_JAVA
     }
-    static def GET_BUILD_TEMPLATE_PATH_ANDROID(String rootDir){
+
+    static def GET_BUILD_TEMPLATE_PATH_ANDROID(String rootDir) {
         getExposeDir(rootDir) + BUILD_TEMPLATE_PATH_ANDROID
     }
 
@@ -86,7 +88,7 @@ def doSync(String src0, String expose, Closure<Boolean> condition) {
 
     // Do not delete
     def root = new File(src)
-    ArrayList<String>  pathList = []
+    ArrayList<String> pathList = []
 
     if (root.exists() && root.isDirectory()) {
         measure("[findDirectoryByNio]") {
@@ -101,7 +103,7 @@ def doSync(String src0, String expose, Closure<Boolean> condition) {
     }
 
     pathList.forEach { copyFrom ->
-        def suffix =copyFrom.replace(src,"" )
+        def suffix = copyFrom.replace(src, "")
         def copyTo = des + suffix
 
         syncDirectory(copyFrom, copyTo, condition)

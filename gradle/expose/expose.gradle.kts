@@ -1,4 +1,5 @@
 @file:Suppress("PrivatePropertyName")
+
 import java.io.File
 import java.io.IOException
 import java.nio.file.FileSystems
@@ -59,7 +60,7 @@ fun includeWithExpose(
 ) {
     include(module)
     debug("[Module $module]")
-    val namespace = module.replace(":",".").trim('.')
+    val namespace = module.replace(":", ".").trim('.')
     measure("ModuleExpose $module", true) {
         val moduleProject = project(module)
         val src = moduleProject.projectDir.absolutePath
@@ -92,7 +93,7 @@ fun doSync(src0: String, expose: String, condition: (String) -> Boolean) {
         measure("[findDirectoryByNio]") {
             findDirectoryByNIO(src, expose, pathList)
             if (DEBUG_ENABLE) {
-                pathList.forEach{ exposeDir->
+                pathList.forEach { exposeDir ->
                     println("[findDirectoryByNio] find $exposeDir")
                 }
             }
@@ -237,9 +238,9 @@ fun syncDirectory(
                 val relativePath: Path = sourceDirectory.relativize(file)
                 val destinationFile: Path =
                     destinationDirectory.resolve(relativePath)
-                if(areFilesContentEqual(file,destinationFile, "[directorySync]")){
+                if (areFilesContentEqual(file, destinationFile, "[directorySync]")) {
                     // Do nothing
-                }else{
+                } else {
                     measure("[directorySync] ${file.fileName} sync with copy REPLACE_EXISTING") {
                         Files.copy(
                             file,
@@ -275,15 +276,15 @@ fun syncDirectory(
             }
         })
 
-        debug("[directorySync] all copy and sync spend ${System.currentTimeMillis()-start}" )
+        debug("[directorySync] all copy and sync spend ${System.currentTimeMillis() - start}")
     } catch (e: IOException) {
         e.printStackTrace()
     }
 }
 
-fun areFilesContentEqual(path1: Path, path2: Path,tag:String=""): Boolean {
+fun areFilesContentEqual(path1: Path, path2: Path, tag: String = ""): Boolean {
     try {
-        if(!Files.exists(path1) || !Files.exists(path2)){
+        if (!Files.exists(path1) || !Files.exists(path2)) {
             return false
         }
         val size1 = Files.size(path1)
@@ -291,14 +292,14 @@ fun areFilesContentEqual(path1: Path, path2: Path,tag:String=""): Boolean {
         if (size1 != size2) {
             return false // Different sizes, files can't be equal
         }
-        if(size1 > 4_000_000){ // 4MB return false
+        if (size1 > 4_000_000) { // 4MB return false
             return false
         }
         val start = System.currentTimeMillis()
         val content1 = Files.readAllBytes(path1) // Huge file will cause performance problem
         val content2 = Files.readAllBytes(path2)
         val isSame = content1.contentEquals(content2)
-        debug("$tag Read ${path1.fileName}*2 & FilesContentEqual spend ${System.currentTimeMillis()-start} ms, isSame $isSame")
+        debug("$tag Read ${path1.fileName}*2 & FilesContentEqual spend ${System.currentTimeMillis() - start} ms, isSame $isSame")
         return isSame
     } catch (e: Exception) {
         e.printStackTrace()
@@ -308,7 +309,7 @@ fun areFilesContentEqual(path1: Path, path2: Path,tag:String=""): Boolean {
 
 fun areFilesContentEqual(path: Path, content2: ByteArray): Boolean {
     try {
-        if(!Files.exists(path)){
+        if (!Files.exists(path)) {
             return false
         }
         val size1 = Files.size(path)
@@ -316,7 +317,7 @@ fun areFilesContentEqual(path: Path, content2: ByteArray): Boolean {
         if (size1 != size2) {
             return false // Different sizes, files can't be equal
         }
-        if(size1 > 4_000_000){ // 4MB return false
+        if (size1 > 4_000_000) { // 4MB return false
             return false
         }
         val content1 = Files.readAllBytes(path) // Huge file will cause performance problem
@@ -349,9 +350,9 @@ fun generateBuildGradle(
     if (ownTemplate.exists()) {
         val sourcePath: Path = Paths.get("${srcScriptDir}${File.separator}${srcScriptName}")
         val destinationPath: Path = Paths.get("${desScriptDir}${File.separator}${desScriptName}")
-        if(areFilesContentEqual(sourcePath,destinationPath)){
+        if (areFilesContentEqual(sourcePath, destinationPath)) {
             debug("[generateBuildGradle] from [$srcScriptName] to build.gradle.kts has no change!")
-        }else{
+        } else {
             Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING)
             debug("[generateBuildGradle] from [$srcScriptName] to build.gradle.kts has change with Files.copy")
         }
@@ -370,9 +371,13 @@ fun generateBuildGradle(
         }
         val readText = templateFile.readText()
         val copyText = String.format(readText, String.format(MODULE_NAMESPACE_TEMPLATE, selfName))
-        if(buildScript.exists() && areFilesContentEqual(Path.of(scriptPath), copyText.toByteArray(Charsets.UTF_8))){
+        if (buildScript.exists() && areFilesContentEqual(
+                Path.of(scriptPath),
+                copyText.toByteArray(Charsets.UTF_8)
+            )
+        ) {
             debug("[generateBuildGradle] from [${templateFile.name}] to build.gradle.kts has no change!")
-        }else{
+        } else {
             buildScript.writeText(copyText)
             debug("[generateBuildGradle] from [${templateFile.name}] to build.gradle.kts has change with writeText")
         }
