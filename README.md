@@ -109,15 +109,15 @@ gradle
 
 - build_gradle_template_java， 生成Java模块的脚本模板，配置较为简单；
 
-- includeWithApi函数使用build_gradle_template_android模板生成Android Library模块
+- includeWithExpose函数使用build_gradle_template_android模板生成Android Library模块
 
-- includeWithJavaApi函数使用build_gradle_template_java模板生成Java Library模块
+- includeWithJavaExpose函数使用build_gradle_template_java模板生成Java Library模块
 
-- build_gradle_template_expose，不同于build_gradle_template_android、build_gradle_template_java的模板形式的配置，使用includeWithApi、includeWithJavaApi时，**会优先检查模块根目录是否存在build_gradle_template_expose**，如果存在则**优先、直接**将build_gradle_template_expose内容拷贝到module_expose, 作为build.gradle.kts ！ **保留这个配置的原因在于：如果需要暴露的类，引用三方类如gson、但不便将三方库implementation到build_gradle_template_android，这会导致module_expose编译报错，因此为解决这样的问题，最好使用自定义module_expose脚本（拷贝module的配置、稍加修改即可）**
+- build_gradle_template_expose，不同于build_gradle_template_android、build_gradle_template_java的模板形式的配置，使用includeWithExpose、includeWithJavaExpose时，**会优先检查模块根目录是否存在build_gradle_template_expose**，如果存在则**优先、直接**将build_gradle_template_expose内容拷贝到module_expose, 作为build.gradle.kts ！ **保留这个配置的原因在于：如果需要暴露的类，引用三方类如gson、但不便将三方库implementation到build_gradle_template_android，这会导致module_expose编译报错，因此为解决这样的问题，最好使用自定义module_expose脚本（拷贝module的配置、稍加修改即可）**
 
   PS：注意这几个模板都是无后缀的，kts后缀文件会被IDE提示一大堆东西；
 
-**注意：** Java模块编译更快，但是缺少Activity、Context等Android环境，请灵活使用；当然最灵活的方式是为每个module_expose单独配置build_gradle_template_expose （稍微麻烦一点）；另外，如果不用includeWithJavaApi，其实build_gradle_template_java也是不需要的；
+**注意：** Java模块编译更快，但是缺少Activity、Context等Android环境，请灵活使用；当然最灵活的方式是为每个module_expose单独配置build_gradle_template_expose （稍微麻烦一点）；另外，如果不用includeWithJavaExpose，其实build_gradle_template_java也是不需要的；
 
 
 
@@ -131,13 +131,13 @@ val includeWithExpose: (projectPaths: String) -> Unit by extra
 val includeWithJavaExpose: (projectPaths: String) -> Unit by extra
 ```
 
-（PS：只要正确启用kts，settings.gradle应该也是可以导入includeWithApi的，但是我没尝试；其次老项目针对ModuleExpose改造kts时，可以渐进式改造，即只改settings.gradle.kts即可）
+（PS：只要正确启用kts，settings.gradle应该也是可以导入includeWithExpose的，但是我没尝试；其次老项目针对ModuleExpose改造kts时，可以渐进式改造，即只改settings.gradle.kts即可）
 
 
 
 **4、模块配置**
 
-将需要暴露的模块，在settings.gradle.kts 使用includeWithApi（或includeWithJavaApi）导入；
+将需要暴露的模块，在settings.gradle.kts 使用includeWithExpose（或includeWithJavaExpose）导入；
 
 ```
 includeWithExpose(":feature:settings")
@@ -216,7 +216,7 @@ PS：关于Hilt的配置和导入，本项目直接沿用nowinandroid工程中bu
 
 ![image.png](https://zhaojunchen-1259455842.cos.ap-nanjing.myqcloud.com//imgimg1701008044066-f5a578b3-0e3a-4f50-a891-f71333294e65.png)
 
-导入脚本之后，使用includeWithApi导入三个业务模块，各自生成对应的module_expose；
+导入脚本之后，使用includeWithExpose导入三个业务模块，各自生成对应的module_expose；
 
 **注意，请将`*_expose/`添加到gitignore，避免expose模块提交到git**
 
@@ -295,16 +295,16 @@ class SearchActivity : AppCompatActivity() {
 
 ***注：测试设备SSD为顶配PCIE4 zhitai 7100，磁盘性能会影响观测结果（PS：长江存储牛逼😘）***
 
-开篇提到，ModuleExpose通过脚本实现自动暴露，并保证编译时module和moudle_expose的代码完全同步；那深究下ModuleExpose includeWithApi等函数的执行时机是什么？又为什么能保证代码是完全同步的呢？
+开篇提到，ModuleExpose通过脚本实现自动暴露，并保证编译时module和moudle_expose的代码完全同步；那深究下ModuleExpose includeWithExpose等函数的执行时机是什么？又为什么能保证代码是完全同步的呢？
 
 这个和gradle生命周期有关，我不是很懂，但已知有：
 
 - 项目sync时候，会执行setting.gradle.kts文件，同步工程模块
 - 项目运行时候，会执行setting.gradle.kts文件，同步工程模块
 
-setting.gradle.kts中使用自定义的includeWithApi函数，实现原有include module功能，并生成和include module_expose，这个操作在每次run运行都是会执行的，因此expose脚本的处理方式和性能，会对项目编译产生极大的影响！
+setting.gradle.kts中使用自定义的includeWithExpose函数，实现原有include module功能，并生成和include module_expose，这个操作在每次run运行都是会执行的，因此expose脚本的处理方式和性能，会对项目编译产生极大的影响！
 
-**1、分析下脚本includeWithApi处理细节和性能问题**
+**1、分析下脚本includeWithExpose处理细节和性能问题**
 
 ```
 fun includeWithExpose(module: String, isJava: Boolean, expose: String, condition: (String) -> Boolean) {
@@ -488,7 +488,7 @@ ModuleExpose :feature:settings spend 34ms
 
 - module_expose本就来自module，甚至包名都没变，直接将其作为独立模块是完全没问题的，但是要注意将其添加到git中去、当然最好改个名字吧
 - 删除module中expose的内容，然后直接implement module_expose，其他compileOnly module_expose 直接搜索替换为implement module_expose即可；
-- 使用include而非includeWithApi导入module，避免自动生成module_expose；
+- 使用include而非includeWithExpose导入module，避免自动生成module_expose；
 
 Ok，几乎零成本拆除，这也是为什么相比原创项目要将暴露内容集中收敛到expose目录——**便于集中管理和后期迁移**
 
@@ -517,7 +517,7 @@ Ok，几乎零成本拆除，这也是为什么相比原创项目要将暴露内
 > Task :feature:search_expose:generateProDebugResources UP-TO-DATE
 ```
 
-**另外：虽然但是，还是尽量减少需要expose的内容吧，非必要不暴露！如果项目根本不需要暴露，请不要使用includeWithApi，直接include！**
+**另外：虽然但是，还是尽量减少需要expose的内容吧，非必要不暴露！如果项目根本不需要暴露，请不要使用includeWithExpose，直接include！**
 
 
 
