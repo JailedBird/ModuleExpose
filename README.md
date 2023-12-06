@@ -30,7 +30,7 @@ ModuleExpose，是将module内部需要暴露的代码通过脚本自动暴露�
 
 如图所示：
 
-![image-20231205111636714](https://zhaojunchen-1259455842.cos.ap-nanjing.myqcloud.com//imgimage-20231205111636714.png)
+![image-20231206141629690](https://zhaojunchen-1259455842.cos.ap-nanjing.myqcloud.com//imgimage-20231206141629690.png)
 
 注意这种方案并非原创，原创出处如下：
 
