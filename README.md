@@ -2,6 +2,8 @@
 
 项目地址：[https://github.com/JailedBird/ModuleExpose](https://github.com/JailedBird/ModuleExpose)
 
+维基文档：[https://github.com/JailedBird/ModuleExpose/wiki](https://github.com/JailedBird/ModuleExpose/wiki)
+
 ## 序言
 
 Android模块化必须要解决的问题是 *如何实现模块间通信* ？而模块之间通信往往需要获取相同的实体类和接口，造成部分涉及模块通信的接口和实体类被迫下沉到基础模块，导致 基础模块代码膨胀、模块代码分散和不便维护等问题；
@@ -26,7 +28,9 @@ ModuleExpose，是将module内部需要暴露的代码通过脚本自动暴露�
 - 业务模块：包含业务功能，业务模块可以依赖基础模块，但无法依赖其他业务模块（避免循环依赖）；
 - 暴露模块：由脚本基于业务模块或基础模块自动拷贝生成，业务模块可依赖其他暴露模块（通过compileOnly方式，只参与编译不参与打包），避免模块通信所需的接口、数据实体类下沉到基础模块，造成基础模块膨胀、业务模块核心类分散到基础模块等问题；
 
+如图所示：
 
+![image-20231205111636714](https://zhaojunchen-1259455842.cos.ap-nanjing.myqcloud.com//imgimage-20231205111636714.png)
 
 注意这种方案并非原创，原创出处如下：
 
@@ -71,7 +75,12 @@ ModuleExpose，是将module内部需要暴露的代码通过脚本自动暴露�
 
 **1、项目启用kts配置**
 
-因为脚本使用kts编写，因此需要在项目中启用kts配置；如因为gradle版本过低等原因导致无法接入kts，那应该是无法使用的；后续默认都开启kts，并使用kts语法脚本；
+ModuleExpose同时适配了Groovy和Kts，这里以kts脚本演示；
+
+Groovy接入方式：
+
+- 参考文档：https://github.com/JailedBird/ModuleExpose/wiki
+- 参考项目：https://github.com/JailedBird/ModuleExpose/tree/main/subproj/GradleSample
 
 
 
@@ -99,7 +108,7 @@ gradle
 
 其中：build_gradle_template_android和build_gradle_template_java脚本模板因项目不同而有所不同，需要自行根据项目修改，否则无法编译；
 
-- build_gradle_template_android，生成Android模块的脚本模板，注意高版本gradle必须配置namespace，因此最好保留如下的配置（细则见脚本如何处理的）：
+- build_gradle_template_android，生成Android模块的脚本模板，注意高版本gradle必须配置namespace，因此最好保留%s的配置（细节见脚本）：
 
   ```
   android {
@@ -130,8 +139,6 @@ apply(from = "$rootDir/gradle/expose/expose.gradle.kts")
 val includeWithExpose: (projectPaths: String) -> Unit by extra
 val includeWithJavaExpose: (projectPaths: String) -> Unit by extra
 ```
-
-（PS：只要正确启用kts，settings.gradle应该也是可以导入includeWithExpose的，但是我没尝试；其次老项目针对ModuleExpose改造kts时，可以渐进式改造，即只改settings.gradle.kts即可）
 
 
 
@@ -214,7 +221,7 @@ PS：关于Hilt的配置和导入，本项目直接沿用nowinandroid工程中bu
 
 **1、 基本配置&工程结构：**
 
-![image.png](https://zhaojunchen-1259455842.cos.ap-nanjing.myqcloud.com//imgimg1701008044066-f5a578b3-0e3a-4f50-a891-f71333294e65.png)
+![image-20231204171057867](https://zhaojunchen-1259455842.cos.ap-nanjing.myqcloud.com//imgimage-20231204171057867.png)
 
 导入脚本之后，使用includeWithExpose导入三个业务模块，各自生成对应的module_expose；
 
@@ -226,7 +233,7 @@ PS：关于Hilt的配置和导入，本项目直接沿用nowinandroid工程中bu
 
 settings模块expose目录下暴露`SettingExpose`接口， 脚本会自动将其同步拷贝到settings_expose中对应expose目录
 
-![image.png](https://zhaojunchen-1259455842.cos.ap-nanjing.myqcloud.com//img1701008271448-b0b32e1f-0988-479e-bc16-ba9845414ea7.png)
+![image-20231204171204479](https://zhaojunchen-1259455842.cos.ap-nanjing.myqcloud.com//imgimage-20231204171204479.png)
 
 
 
@@ -290,8 +297,6 @@ class SearchActivity : AppCompatActivity() {
 
 
 ## 性能问题
-
-### 关于性能
 
 ***注：测试设备SSD为顶配PCIE4 zhitai 7100，磁盘性能会影响观测结果（PS：长江存储牛逼😘）***
 
@@ -521,13 +526,17 @@ Ok，几乎零成本拆除，这也是为什么相比原创项目要将暴露内
 
 
 
-### groovy or kts？
+**groovy or kts？**
 
-老项目，几乎不可能只存在kts；如果渐进式引入kts仍然不行，那么大家可以考虑直接用groovy重写，思路是一样的，或者直接使用[github/tyhjh/module_api](https://github.com/tyhjh/module_api) 的方案，目前暂时应该不会支持groovy（我不太会,重要的是思路）🤣
+老项目，几乎不可能只存在kts；如果渐进式引入kts仍然不行，ModuleExpose是同样支持groovy的；
+
+文档请参考：https://github.com/JailedBird/ModuleExpose/wiki
+
+项目请参考：https://github.com/JailedBird/ModuleExpose/tree/main/subproj/GradleSample
 
 
 
-### 自定义配置
+**自定义配置**
 
 *expose.gradle.kts* 中定义了很多自定义配置，比如需要暴露的目录名称、暴露模块名称、日志开关等，方便大家自定义；
 
