@@ -42,12 +42,18 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
             // Note, This is a temporary fix and needs to wait for the official official fix
             val androidComponents =
                 project.extensions.getByType(AndroidComponentsExtension::class.java)
+            // Fix: when a module do not have dataBindingGenBaseClasses will crash
+            /**
+             * [org.gradle.api.NamedDomainObjectCollection.findByName] to replace [org.gradle.api.NamedDomainObjectCollection.getByName]
+             * */
             androidComponents.onVariants { variant ->
                 afterEvaluate {
                     project.tasks.getByName("ksp" + variant.name.capitalized() + "Kotlin") {
                         val dataBindingTask =
-                            project.tasks.getByName("dataBindingGenBaseClasses" + variant.name.capitalized()) as DataBindingGenBaseClassesTask
-                        (this as AbstractKotlinCompileTool<*>).setSource(dataBindingTask.sourceOutFolder)
+                            project.tasks.findByName("dataBindingGenBaseClasses" + variant.name.capitalized()) as? DataBindingGenBaseClassesTask
+                        if (dataBindingTask != null) {
+                            (this as AbstractKotlinCompileTool<*>).setSource(dataBindingTask.sourceOutFolder)
+                        }
                     }
                 }
             }

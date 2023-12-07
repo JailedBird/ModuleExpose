@@ -46,6 +46,10 @@ internal fun Project.configureAndroidCompose(
             // Screenshot Tests on JVM
             add("testImplementation", libs.findLibrary("robolectric").get())
             add("testImplementation", libs.findLibrary("roborazzi").get())
+            //  debugImplementation(libs.androidx.compose.ui.tooling)
+            //  implementation(libs.androidx.compose.ui.tooling.preview)
+            add("debugImplementation", libs.findLibrary("androidx.compose.ui.tooling").get())
+            add("implementation", libs.findLibrary("androidx.compose.ui.tooling.preview").get())
         }
 
         testOptions {
