@@ -34,7 +34,7 @@ rootProject.name = "ModuleExpose"
 include(":app")
 include(":core:settings")
 include(":core:resource")
-includeWithJavaExpose(":core:common")
+include(":core:common")
 includeWithExpose(":feature:settings")
 includeWithExpose(":feature:search")
 includeWithExpose(":feature:about")
