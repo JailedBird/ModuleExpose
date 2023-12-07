@@ -2,9 +2,9 @@
 
 ## 项目资料
 
-最新项目地址：[JailedBird/ModuleExpose](https://github.com/JailedBird/ModuleExpose)
+项目地址：[JailedBird/ModuleExpose](https://github.com/JailedBird/ModuleExpose)
 
-详细维基文档：[JailedBird/ModuleExpose/wiki](https://github.com/JailedBird/ModuleExpose/wiki)
+维基文档：[JailedBird/ModuleExpose/wiki](https://github.com/JailedBird/ModuleExpose/wiki)
 
 - [1、模块暴露](https://github.com/JailedBird/ModuleExpose/wiki/1、模块暴露)
 - [2、接入方式](https://github.com/JailedBird/ModuleExpose/wiki/2、接入方式)
@@ -42,7 +42,7 @@ ModuleExpose方案（简称模块暴露），是将module内部的通信代码�
 
 ## 工程简介
 
-ModuleExpose工程内容：
+[ModuleExpose](https://github.com/JailedBird/ModuleExpose)工程内容：
 
 - 基于nio重写脚本，并同时支持kts脚本和groovy脚本，详见维基文档；
 - 基于性能的考量，对暴露规则和生成方式进行改进，详见维基文档；
@@ -51,4 +51,6 @@ ModuleExpose工程内容：
   - 结合最新ksp版本Hilt依赖注入框架，实现基于暴露接口的模块化解耦方案
   - 完整实现支持拼音的安卓App搜索启动器，包含Room等 Jetpack主流组件
 
-如果对大家有帮助，欢迎点亮star😘
+
+
+更多细节，请参阅[维基文档](https://github.com/JailedBird/ModuleExpose/wiki) 和 [项目代码](https://github.com/JailedBird/ModuleExpose)；如果对大家有帮助，欢迎点亮项目star😘
