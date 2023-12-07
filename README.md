@@ -2,9 +2,9 @@
 
 ## 项目资料
 
-最新项目地址：[https://github.com/JailedBird/ModuleExpose](https://github.com/JailedBird/ModuleExpose)
+最新项目地址：[JailedBird/ModuleExpose](https://github.com/JailedBird/ModuleExpose)
 
-详细维基文档：[https://github.com/JailedBird/ModuleExpose/wiki](https://github.com/JailedBird/ModuleExpose/wiki)
+详细维基文档：[JailedBird/ModuleExpose/wiki](https://github.com/JailedBird/ModuleExpose/wiki)
 
 - [1、模块暴露](https://github.com/JailedBird/ModuleExpose/wiki/1、模块暴露)
 - [2、接入方式](https://github.com/JailedBird/ModuleExpose/wiki/2、接入方式)
