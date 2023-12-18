@@ -1,5 +1,7 @@
 # ModuleExpose
 
+[![GitHub stars](https://img.shields.io/github/stars/JailedBird/ModuleExpose.svg)](https://github.com/JailedBird/ModuleExpose/stargazers) [![GitHub forks](https://img.shields.io/github/forks/JailedBird/ModuleExpose.svg)](https://github.com/JailedBird/ModuleExpose/network/members) [![GitHub issues](https://img.shields.io/github/issues/JailedBird/ModuleExpose.svg)](https://github.com/JailedBird/ModuleExpose/issues) [![GitHub license](https://img.shields.io/github/license/JailedBird/ModuleExpose.svg)](https://github.com/JailedBird/ModuleExpose/blob/master/LICENSE)
+
 安卓模块化最重要点就是：如何优雅的实现模块间通信；而模块之间通信往往需要获取相同的实体类或接口，导致部分涉及模块通信的实体类和接口被迫下沉到基础模块，造成 *基础模块膨胀、模块代码分散、不便维护* 等问题；
 
 ModuleExpose方案（简称模块暴露），是将module内部的通信代码暴露出来，并自动生成新的module_expose模块；不同于手动形式的代码下沉，ModuleExpose是直接将module中需要暴露的代码完整拷贝到module_expose模块，而module_expose模块的生成、拷贝和配置是由ModuleExpose脚本自动完成，并保证编译时两者代码的完全同步；
