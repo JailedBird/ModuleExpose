@@ -4,6 +4,26 @@
 
 安卓模块化最重要点就是：如何优雅的实现模块间通信；而模块之间通信往往需要获取相同的实体类或接口，导致部分涉及模块通信的实体类和接口被迫下沉到基础模块，造成 *基础模块膨胀、模块代码分散、不便维护* 等问题；
 
+
+
+## 快速接入
+
+```
+# 1 set project directory as your work directory, and then create gradle/expose directory
+cd gradle && mkdir expose && cd .. 
+# 2 download expose.gradle.kts and place it to gradle/expose
+cd gradle/expose && curl -O https://raw.githubusercontent.com/JailedBird/ModuleExpose/main/gradle/expose/expose.gradle.kts
+# 3 download android and java(optional) template file
+curl -O https://raw.githubusercontent.com/JailedBird/ModuleExpose/main/gradle/expose/build_gradle_template_android
+curl -O https://raw.githubusercontent.com/JailedBird/ModuleExpose/main/gradle/expose/build_gradle_template_java
+# 4 then modify the template file to meet the compilation configuration requirements of your project
+# 5 Integration is complete; for detailed information, please refer to document https://github.com/JailedBird/ModuleExpose
+```
+
+
+
+## 简单介绍
+
 **ModuleExpose方案（简称模块暴露），是将模块（module）内部的这部分代码暴露出来并自动生成新的暴露模块（module_expose）；**
 
 不同于手动形式的代码下沉，本方案是直接将module中需要暴露的代码完整拷贝到module_expose模块，而module_expose模块的生成和配置是由脚本自动完成，并保证编译时两者代码的完全同步；
@@ -29,6 +49,8 @@
 
 
 
+## 工程架构
+
 示例工程简介：
 
 - 基于nio重写脚本，并同时支持kts脚本和groovy脚本，详见维基文档；
@@ -39,6 +61,8 @@
   - 完整实现支持拼音的安卓App搜索启动器，包含Room等 Jetpack主流组件
 
 
+
+## 工程文档
 
 详细维基文档：[JailedBird/ModuleExpose/wiki](https://github.com/JailedBird/ModuleExpose/wiki)
 
