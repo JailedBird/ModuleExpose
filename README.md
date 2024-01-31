@@ -8,19 +8,25 @@
 
 ## 快速接入
 
-```
-# 1 set project directory as your work directory, and then create gradle/expose directory
-cd gradle && mkdir expose && cd .. 
-# 2 download expose.gradle.kts and place it to gradle/expose
-cd gradle/expose && curl -O https://raw.githubusercontent.com/JailedBird/ModuleExpose/main/gradle/expose/expose.gradle.kts
-# 3 download android and java(optional) template file
-curl -O https://raw.githubusercontent.com/JailedBird/ModuleExpose/main/gradle/expose/build_gradle_template_android
-curl -O https://raw.githubusercontent.com/JailedBird/ModuleExpose/main/gradle/expose/build_gradle_template_java
-# 4 then modify the template file to meet the compilation configuration requirements of your project
-# 5 Integration is complete; for detailed information, please refer to document https://github.com/JailedBird/ModuleExpose
-```
+以kts版本为例展示，gradle版本、详细用法请参考对应维基文档；
 
+方式1：克隆本项目，将本项目 gradle/expose目录文件拷贝到工程的gradle/expose即可；
 
+方式2：考虑到克隆项目比较麻烦，提供命令行操作方式如下：
+
+- 在项目gradle目录下创建expose目录，将命令行工作目录切换到gradle/expose 
+
+- 在gradle/expose下执行curl命令，分别下载 核心脚本expose.gradle.kts、Android Library配置模板、Java Library配置模板
+
+  ```
+  curl -O https://raw.githubusercontent.com/JailedBird/ModuleExpose/main/gradle/expose/expose.gradle.kts
+  curl -O https://raw.githubusercontent.com/JailedBird/ModuleExpose/main/gradle/expose/build_gradle_template_android
+  curl -O https://raw.githubusercontent.com/JailedBird/ModuleExpose/main/gradle/expose/build_gradle_template_java
+  ```
+
+  PS：两个模板文件需要根据项目实际情况进行定制；
+
+  
 
 ## 简单介绍
 
